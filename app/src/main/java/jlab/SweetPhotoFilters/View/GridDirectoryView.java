@@ -1,10 +1,7 @@
 package jlab.SweetPhotoFilters.View;
 
-<<<<<<< HEAD
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
-=======
->>>>>>> bfcd75c0ca8134830d6fe14bd0803dfa931d3892
 import android.view.View;
 import android.os.Handler;
 import jlab.SweetPhotoFilters.R;
@@ -14,11 +11,6 @@ import android.widget.GridView;
 import android.widget.ImageView;
 import android.util.AttributeSet;
 import android.widget.AdapterView;
-<<<<<<< HEAD
-=======
-
-import jlab.SweetPhotoFilters.Resource.AlbumDirectory;
->>>>>>> bfcd75c0ca8134830d6fe14bd0803dfa931d3892
 import jlab.SweetPhotoFilters.Resource.Directory;
 import jlab.SweetPhotoFilters.Resource.FileResource;
 import jlab.SweetPhotoFilters.Utils;
@@ -32,10 +24,7 @@ import jlab.SweetPhotoFilters.Activity.DirectoryActivity;
 
 public class GridDirectoryView extends GridView implements Interfaces.IListContent, AbsListView.OnScrollListener {
 
-<<<<<<< HEAD
     private ScaleGestureDetector mScaleDetector;
-=======
->>>>>>> bfcd75c0ca8134830d6fe14bd0803dfa931d3892
     private int first, antFirst;
     public boolean scrolling = false;
     protected Handler handler = new Handler();
@@ -48,30 +37,21 @@ public class GridDirectoryView extends GridView implements Interfaces.IListConte
         super(context);
         mAdapter = new ResourceDetailsAdapter();
         setAdapter(mAdapter);
-<<<<<<< HEAD
         mScaleDetector = new ScaleGestureDetector(context, new ScaleListener());
-=======
->>>>>>> bfcd75c0ca8134830d6fe14bd0803dfa931d3892
     }
 
     public GridDirectoryView(Context context, AttributeSet attrs) {
         super(context, attrs);
         mAdapter = new ResourceDetailsAdapter();
         setAdapter(mAdapter);
-<<<<<<< HEAD
         mScaleDetector = new ScaleGestureDetector(context, new ScaleListener());
-=======
->>>>>>> bfcd75c0ca8134830d6fe14bd0803dfa931d3892
     }
 
     public GridDirectoryView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         mAdapter = new ResourceDetailsAdapter();
         setAdapter(mAdapter);
-<<<<<<< HEAD
         mScaleDetector = new ScaleGestureDetector(context, new ScaleListener());
-=======
->>>>>>> bfcd75c0ca8134830d6fe14bd0803dfa931d3892
     }
 
     public void loadItemClickListener() {
@@ -91,15 +71,12 @@ public class GridDirectoryView extends GridView implements Interfaces.IListConte
     }
 
     @Override
-<<<<<<< HEAD
     public boolean onTouchEvent(MotionEvent ev) {
         mScaleDetector.onTouchEvent(ev);
         return super.onTouchEvent(ev);
     }
 
     @Override
-=======
->>>>>>> bfcd75c0ca8134830d6fe14bd0803dfa931d3892
     public void onScrollStateChanged(AbsListView absListView, int scrollState) {
         if (scrollState == SCROLL_STATE_IDLE && mdirectory != null && mdirectory.loaded()) {
             scrollingStop(absListView);
@@ -229,7 +206,6 @@ public class GridDirectoryView extends GridView implements Interfaces.IListConte
         this.mAdapter.setonGetSetViewListener(activityDirectory);
         this.mListener = activityDirectory;
     }
-<<<<<<< HEAD
 
     private class ScaleListener extends ScaleGestureDetector.SimpleOnScaleGestureListener {
         @Override
@@ -238,6 +214,4 @@ public class GridDirectoryView extends GridView implements Interfaces.IListConte
             return true;
         }
     }
-=======
->>>>>>> bfcd75c0ca8134830d6fe14bd0803dfa931d3892
 }
