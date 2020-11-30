@@ -1,2 +1,2 @@
-# jlab.ImageExplorer
-ImageExplorer Android App
+# jlab.SweetPhotoFilters
+Image Photo Filter
