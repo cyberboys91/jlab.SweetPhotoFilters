@@ -38,6 +38,8 @@ import android.content.pm.PackageManager;
 import jlab.SweetPhotoFilters.Filter.AverageSmoothSubFilter;
 import jlab.SweetPhotoFilters.Filter.FilterType;
 import jlab.SweetPhotoFilters.Filter.GammaCorrectionSubFilter;
+import jlab.SweetPhotoFilters.Filter.LightSubFilter;
+import jlab.SweetPhotoFilters.Filter.ORSubFilter;
 import jlab.SweetPhotoFilters.Filter.XORSubFilter;
 import jlab.SweetPhotoFilters.Resource.Resource;
 import android.support.v7.app.AlertDialog;
@@ -320,8 +322,7 @@ public class Utils {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                Runtime runtime = Runtime.getRuntime();
-                runtime.gc();
+                System.gc();
             }
         }).start();
     }
@@ -912,6 +913,12 @@ public class Utils {
                 break;
             case XOR:
                 filter.addSubFilter(new XORSubFilter());
+                break;
+            case OR:
+                filter.addSubFilter(new ORSubFilter());
+                break;
+            case Light:
+                filter.addSubFilter(new LightSubFilter());
                 break;
         }
     }

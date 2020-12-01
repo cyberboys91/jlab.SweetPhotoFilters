@@ -1,5 +1,6 @@
 package jlab.SweetPhotoFilters.View;
 
+import android.graphics.Point;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
@@ -25,7 +26,7 @@ import jlab.SweetPhotoFilters.Activity.DirectoryActivity;
 public class GridDirectoryView extends GridView implements Interfaces.IListContent, AbsListView.OnScrollListener {
 
     private ScaleGestureDetector mScaleDetector;
-    private int first, antFirst;
+    private int first, antFirst, last;
     public boolean scrolling = false;
     protected Handler handler = new Handler();
     protected Directory mdirectory;
@@ -58,13 +59,13 @@ public class GridDirectoryView extends GridView implements Interfaces.IListConte
         setOnItemClickListener(new OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-               openResource(mdirectory.getResource(position), position);
+                openResource(mdirectory.getResource(position), position, new Point((int) view.getX(), (int) view.getY()));
             }
         });
         setOnItemLongClickListener(new OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> adapterView, View view, final int position, long id) {
-                return mListener.onResourceLongClick(mdirectory.getResource(position), position);
+                return mListener.onResourceLongClick(mdirectory.getResource(position), position, new Point((int) view.getX(), (int) view.getY()));
             }
         });
         setOnScrollListener(this);
@@ -89,6 +90,7 @@ public class GridDirectoryView extends GridView implements Interfaces.IListConte
     public void onScroll(AbsListView absListView, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
         antFirst = first != firstVisibleItem ? first : antFirst;
         first = firstVisibleItem;
+        last = first + visibleItemCount - 1;
     }
 
     private void scrollingStop(AbsListView view) {
@@ -125,6 +127,11 @@ public class GridDirectoryView extends GridView implements Interfaces.IListConte
     @Override
     public int getFirstVisiblePosition() {
         return first;
+    }
+
+    @Override
+    public int getLastVisiblePosition() {
+        return last;
     }
 
     @Override
@@ -185,7 +192,7 @@ public class GridDirectoryView extends GridView implements Interfaces.IListConte
     }
 
     @Override
-    public void openResource(Resource res, int position) {
+    public void openResource(Resource res, int index, Point position) {
         scrolling = false;
         try {
             Utils.Variables var = Utils.stackVars.get(Utils.stackVars.size() - 1);
@@ -193,9 +200,9 @@ public class GridDirectoryView extends GridView implements Interfaces.IListConte
             if (res.isDir()) {
                 Utils.stackVars.add(new Utils.Variables(res.getRelUrl(), res.getName(), 0));
                 loadDirectory();
-                mListener.onDirectoryClick(res.getName(), res.getRelUrl());
+                mListener.onDirectoryClick(res.getName(), res.getRelUrl(), index, position);
             } else
-                mListener.onFileClick((FileResource) res, position);
+                mListener.onFileClick((FileResource) res, index, position);
         } catch (Exception e) {
             e.printStackTrace();
         }

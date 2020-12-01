@@ -2,6 +2,8 @@ package jlab.SweetPhotoFilters.Activity;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.graphics.Point;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.MediaStore;
@@ -18,6 +20,7 @@ import android.view.MenuItem;
 import android.text.Selection;
 import android.content.Intent;
 import android.view.ViewGroup;
+import android.view.animation.TranslateAnimation;
 import android.widget.TextView;
 import android.widget.ImageView;
 import jlab.SweetPhotoFilters.View.*;
@@ -51,11 +54,11 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.design.widget.NavigationView;
 
-import static jlab.SweetPhotoFilters.Utils.getDimensionScreen;
 import static jlab.SweetPhotoFilters.Utils.specialDirectories;
 import android.support.design.widget.FloatingActionButton;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.RequestBuilder;
 
 public class DirectoryActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, Interfaces.ILoadThumbnailForFile,
@@ -64,7 +67,7 @@ public class DirectoryActivity extends AppCompatActivity
         ActivityCompat.OnRequestPermissionsResultCallback, Interfaces.IElementRefreshListener,
         Interfaces.ICloseListener, Interfaces.IRefreshListener {
 
-    private int PERMISSION_REQUEST_CODE = 2901;
+    private int iconSize, swipeColor = R.color.accent, countColumns;
     private FloatingActionButton mfbSearch;
     private TextView mtvEmptyFolder;
     private static Interfaces.IListContent mlcResourcesDir;
@@ -74,26 +77,23 @@ public class DirectoryActivity extends AppCompatActivity
     private SwipeRefreshLayout msrlRefresh;
     private DrawerLayout mdrawer;
     private LinearLayout llDirectory;
-    private boolean isRemoteDirectory = false;
     private Toolbar toolbar;
     private SearchView msvSearch;
-    private int iconSize, id, swipeColor = R.color.accent;
-    private boolean isPortrait;
-    private boolean isMoving = false;
-    private static final int TIME_WAIT_FBUTTON_ANIM = 300;
-    private static final String STACK_VARS_KEY = "STACK_VARS_KEY";
-    private static final String NAME_DOWNLOAD_DIR_KEY = "NAME_DOWNLOAD_DIR_KEY";
-    private static final String LOST_CONNECTION_KEY = "LOST_CONNECTION_KEY";
-    private static final String SHOW_HIDDEN_FILES_KEY = "SHOW_HIDDEN_FILES_KEY";
+    private boolean isRemoteDirectory = false, isPortrait, isMoving = false;
+    private static final int TIME_WAIT_FBUTTON_ANIM = 300, PERMISSION_REQUEST_CODE = 2901;
+    private static final String STACK_VARS_KEY = "STACK_VARS_KEY",
+            NAME_DOWNLOAD_DIR_KEY = "NAME_DOWNLOAD_DIR_KEY",
+            LOST_CONNECTION_KEY = "LOST_CONNECTION_KEY",
+            SHOW_HIDDEN_FILES_KEY = "SHOW_HIDDEN_FILES_KEY";
     public static Uri treeUri;
-    private Semaphore mutexLoadDataSpecial = new Semaphore(1);
-    private Semaphore mutexLoadDirectory = new Semaphore(1);
+    private Semaphore mutexLoadDataSpecial = new Semaphore(1),
+            mutexLoadDirectory = new Semaphore(1);
+    private Point fromPoint;
 
     private Handler handler = new Handler() {
         @Override
         public void handleMessage(final Message msg) {
-            if (msg.what != Utils.SCROLLER_PATH)
-            {
+            if (msg.what != Utils.SCROLLER_PATH) {
                 mtvEmptyFolder.setVisibility(View.INVISIBLE);
                 switch (msg.what) {
                     case Utils.LOADING_INVISIBLE:
@@ -103,7 +103,6 @@ public class DirectoryActivity extends AppCompatActivity
                     case Utils.LOADING_VISIBLE:
                         if (!msrlRefresh.isRefreshing()) {
                             msrlRefresh.setRefreshing(true);
-                            msrlRefresh.setVisibility(View.VISIBLE);
                             invalidateOptionsMenu();
                         }
                         break;
@@ -171,6 +170,8 @@ public class DirectoryActivity extends AppCompatActivity
         setOnListeners();
         this.mdMgr = (DownloadManager) getSystemService(DOWNLOAD_SERVICE);
         this.mlinflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
+        DisplayMetrics displayMetrics = Utils.getDimensionScreen();
+        fromPoint = new Point(displayMetrics.widthPixels / 2, displayMetrics.heightPixels / 2);
         reloadSpecialDir();
         requestPermission();
     }
@@ -260,12 +261,18 @@ public class DirectoryActivity extends AppCompatActivity
 
     @Override
     public void setImage(final ImageView imageView, final String path) {
-        runOnUiThread(new Runnable() {
+        new Thread(new Runnable() {
             @Override
             public void run() {
-                Glide.with(getBaseContext()).load(path).into(imageView);
+                final RequestBuilder<Drawable> req = Glide.with(getBaseContext()).load(path);
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        req.into(imageView);
+                    }
+                });
             }
-        });
+        }).start();
     }
 
     @Override
@@ -369,7 +376,6 @@ public class DirectoryActivity extends AppCompatActivity
             public void onRefresh() {
                 reloadSpecialDir();
                 msrlRefresh.setRefreshing(true);
-                msrlRefresh.setVisibility(View.VISIBLE);
                 handler.removeMessages(Utils.LOADING_VISIBLE);
                 updateBeginPosition(0);
                 loadDirectory();
@@ -429,18 +435,25 @@ public class DirectoryActivity extends AppCompatActivity
     }
 
     @Override
-    public void onFileClick(FileResource res, int position) {
-        createOptionActivity(res, position);
+    public void onFileClick(FileResource res, int index, Point position) {
+        this.fromPoint = position;
+        createOptionActivity(res, index);
+    }
+
+    @Override
+    public void onDirectoryClick(String name, String relurlDir, int index, Point position) {
+        this.fromPoint = position;
+        handler.sendEmptyMessage(Utils.SCROLLER_PATH);
     }
 
     @Override
     public void onDirectoryClick(String name, String relurlDir) {
+        DisplayMetrics displayMetrics = Utils.getDimensionScreen();
+        this.fromPoint = new Point(displayMetrics.widthPixels / 2, displayMetrics.heightPixels / 2);
         handler.sendEmptyMessage(Utils.SCROLLER_PATH);
     }
 
     private void refreshFloatingButton(boolean wait) {
-        int size = Utils.stackVars.size();
-        Directory dir = mlcResourcesDir != null ? getDirectory() : null;
         if (Utils.clipboardRes != null)
             toAddMode(false, wait);
         if (Utils.clipboardRes == null)
@@ -462,7 +475,7 @@ public class DirectoryActivity extends AppCompatActivity
     }
 
     @Override
-    public boolean onResourceLongClick(final Resource resource, final int position) {
+    public boolean onResourceLongClick(final Resource resource, final int index, final Point position) {
         CharSequence[] items = resource.isDir()
                 ? new CharSequence[]{getString(R.string.open), getString(R.string.details)}
                 : new CharSequence[]{getString(R.string.open), getString(R.string.share),
@@ -475,7 +488,7 @@ public class DirectoryActivity extends AppCompatActivity
                 switch (i) {
                     case 0:
                         //Open
-                        mlcResourcesDir.openResource(resource, position);
+                        mlcResourcesDir.openResource(resource, index, position);
                         break;
                     case 1:
                         //Share
@@ -611,7 +624,8 @@ public class DirectoryActivity extends AppCompatActivity
     private void reloadDir(Directory directory) {
         if (directory.isMultiColumn()) {
             reload(R.layout.grid_view_directory, directory);
-            mlcResourcesDir.setNumColumns(isPortrait ? 2 : 4);
+            this.countColumns = isPortrait ? 2 : 4;
+            mlcResourcesDir.setNumColumns(countColumns);
         } else if (mlcResourcesDir.getNumColumns() > 1)
             reload(R.layout.list_view_directory, directory);
     }
@@ -635,13 +649,34 @@ public class DirectoryActivity extends AppCompatActivity
         this.msrlRefresh.setRefreshing(false);
         int size = Utils.stackVars.size();
         this.handler.removeMessages(Utils.LOADING_VISIBLE);
-        int pos = size == 0 ? 0 : Utils.stackVars.get(size - 1).BeginPosition;
+        final int pos = size == 0 ? 0 : Utils.stackVars.get(size - 1).BeginPosition;
         mlcResourcesDir.setSelection(pos);
         if (!Utils.lostConnection && mlcResourcesDir.isEmpty()) {
             this.mtvEmptyFolder.setText(R.string.empty_folder);
             this.mtvEmptyFolder.setVisibility(View.VISIBLE);
         } else if (Utils.lostConnection)
             lostConnection();
+        else {
+            mlcResourcesDir.startAnimation(AnimationUtils.loadAnimation(this, R.anim.scale_in));
+            mlcResourcesDir.post(new Runnable() {
+                @Override
+                public void run() {
+                    int first = mlcResourcesDir.getFirstVisiblePosition();
+                    for (int i = 0; i <= mlcResourcesDir.getLastVisiblePosition() - first; i++) {
+                        final View current = mlcResourcesDir.getChildAt(i);
+                        if (current != null) {
+                            final TranslateAnimation animation = new TranslateAnimation(
+                                    fromPoint.x - current.getX(), 0, fromPoint.y - current.getY(), 0);
+                            animation.setStartOffset(-200);
+                            animation.setDuration(400);
+                            current.startAnimation(animation);
+                        }
+                        else
+                            break;
+                    }
+                }
+            });
+        }
         loadServerData();
         invalidateOptionsMenu();
     }
@@ -717,7 +752,8 @@ public class DirectoryActivity extends AppCompatActivity
         DisplayMetrics displayMetrics = Utils.getDimensionScreen();
         int rotation = getWindowManager().getDefaultDisplay().getRotation();
         isPortrait = rotation == Surface.ROTATION_0 || rotation == Surface.ROTATION_180;
-        this.iconSize = (displayMetrics.widthPixels / (isPortrait ? 2 : 4));
+        this.countColumns = isPortrait ? 2 : 4;
+        this.iconSize = (displayMetrics.widthPixels / countColumns);
     }
 
     @Override
@@ -726,7 +762,7 @@ public class DirectoryActivity extends AppCompatActivity
         refreshConfiguration();
         if (getDirectory().isMultiColumn()) {
             mlcResourcesDir.setSelection(mlcResourcesDir.getFirstVisiblePosition());
-            mlcResourcesDir.setNumColumns(isPortrait ? 2 : 4);
+            mlcResourcesDir.setNumColumns(countColumns);
         }
     }
 
@@ -988,7 +1024,7 @@ public class DirectoryActivity extends AppCompatActivity
 
     @Override
     public int getId() {
-        return this.id;
+        return 0;
     }
 
     @Override

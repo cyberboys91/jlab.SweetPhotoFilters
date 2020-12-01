@@ -1,5 +1,6 @@
 package jlab.SweetPhotoFilters.View;
 
+import android.graphics.Point;
 import android.view.View;
 import android.os.Handler;
 import android.content.Context;
@@ -58,13 +59,13 @@ public class ListDirectoryView extends ListView implements AbsListView.OnScrollL
         setOnItemClickListener(new OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                openResource(mdirectory.getResource(position), position);
+                openResource(mdirectory.getResource(position), position, new Point((int) view.getX(), (int) view.getY()));
             }
         });
         setOnItemLongClickListener(new OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> adapterView, View view, final int position, long id) {
-                return mListener.onResourceLongClick(mdirectory.getResource(position), position);
+                return mListener.onResourceLongClick(mdirectory.getResource(position), position, new Point((int) view.getX(), (int) view.getY()));
             }
         });
         setOnScrollListener(this);
@@ -76,7 +77,7 @@ public class ListDirectoryView extends ListView implements AbsListView.OnScrollL
     }
 
     @Override
-    public void openResource(Resource res, int position) {
+    public void openResource(Resource res, int index, Point position) {
         scrolling = false;
         try {
             Utils.Variables var = Utils.stackVars.get(Utils.stackVars.size() - 1);
@@ -84,9 +85,9 @@ public class ListDirectoryView extends ListView implements AbsListView.OnScrollL
             if (res.isDir()) {
                 Utils.stackVars.add(new Utils.Variables(res.getRelUrl(), res.getName(), 0));
                 loadDirectory();
-                mListener.onDirectoryClick(res.getName(), res.getRelUrl());
+                mListener.onDirectoryClick(res.getName(), res.getRelUrl(), index, position);
             } else
-                mListener.onFileClick((FileResource) res, position);
+                mListener.onFileClick((FileResource) res, index, position);
         } catch (Exception e) {
             e.printStackTrace();
         }

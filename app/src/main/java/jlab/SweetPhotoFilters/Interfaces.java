@@ -1,8 +1,11 @@
 package jlab.SweetPhotoFilters;
 
+import android.graphics.Point;
 import android.net.Uri;
 import android.os.Handler;
 import android.graphics.Bitmap;
+import android.view.View;
+import android.view.animation.Animation;
 import android.widget.ImageView;
 import android.content.ContentResolver;
 import jlab.SweetPhotoFilters.Activity.*;
@@ -87,11 +90,13 @@ public class Interfaces {
     }
 
     public interface IRemoteResourceClickListener {
-        void onFileClick(FileResource res, int position);
+        void onFileClick(FileResource res, int index, Point position);
+
+        void onDirectoryClick(String name, String relurlDir, int index, Point position);
 
         void onDirectoryClick(String name, String relurlDir);
 
-        boolean onResourceLongClick(Resource resource, int position);
+        boolean onResourceLongClick(Resource resource, int index, Point position);
     }
 
     public interface IListContent {
@@ -107,6 +112,10 @@ public class Interfaces {
         void setHandler(Handler handler);
 
         int getFirstVisiblePosition();
+
+        int getLastVisiblePosition();
+
+        View getChildAt(int index);
 
         void loadDirectory();
 
@@ -128,7 +137,11 @@ public class Interfaces {
 
         void setDirectory(Directory directory);
 
-        void openResource(Resource res, int position);
+        void openResource(Resource res, int index, Point position);
+
+        void startAnimation(Animation animation);
+
+        boolean post(Runnable runnable);
 
     }
 

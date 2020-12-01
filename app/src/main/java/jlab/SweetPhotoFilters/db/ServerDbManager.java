@@ -27,18 +27,18 @@ public class ServerDbManager extends SQLiteOpenHelper {
         try {
             db.execSQL("CREATE TABLE " + ServerDetailsContract.SERVER_TABLE_NAME + " ("
                     + ServerDetailsContract._ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
-                    + ServerDetailsContract.HOST + " TEXT NOT NULL,"
-                    + ServerDetailsContract.PORT + " TEXT NOT NULL,"
-                    + ServerDetailsContract.PATH_DOWNLOAD + " TEXT NOT NULL,"
-                    + ServerDetailsContract.COMMENT + " TEXT NOT NULL)");
+                    + ServerDetailsContract.HOST + " TEXT OR NULL,"
+                    + ServerDetailsContract.PORT + " TEXT OR NULL,"
+                    + ServerDetailsContract.PATH_DOWNLOAD + " TEXT OR NULL,"
+                    + ServerDetailsContract.COMMENT + " TEXT OR NULL)");
 
             db.execSQL("CREATE TABLE " + ServerDetailsContract.FAVORITE_TABLE_NAME + " ("
                     + ServerDetailsContract._ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
-                    + ServerDetailsContract.PATH + " TEXT NOT NULL,"
-                    + ServerDetailsContract.SIZE + " BIGINT NOT NULL,"
-                    + ServerDetailsContract.MODIFICATION_DATE + " BIGINT NOT NULL,"
+                    + ServerDetailsContract.PATH + " TEXT OR NULL,"
+                    + ServerDetailsContract.SIZE + " BIGINT OR NULL,"
+                    + ServerDetailsContract.MODIFICATION_DATE + " BIGINT OR NULL,"
                     + ServerDetailsContract.PARENT_NAME + " TEXT,"
-                    + ServerDetailsContract.COMMENT + " TEXT NOT NULL)");
+                    + ServerDetailsContract.COMMENT + " TEXT OR NULL)");
 
             //TODO: Cambiar el comentario del servidor estandar.
             saveServerData(db, new ServerDetails(0, Utils.getString(R.string.my_files), Utils.portServer, "", ""));
