@@ -39,6 +39,7 @@ import jlab.SweetPhotoFilters.Filter.AverageSmoothSubFilter;
 import jlab.SweetPhotoFilters.Filter.FilterType;
 import jlab.SweetPhotoFilters.Filter.GammaCorrectionSubFilter;
 import jlab.SweetPhotoFilters.Filter.LightSubFilter;
+import jlab.SweetPhotoFilters.Filter.PixelateFilter;
 import jlab.SweetPhotoFilters.Filter.ORSubFilter;
 import jlab.SweetPhotoFilters.Filter.XORSubFilter;
 import jlab.SweetPhotoFilters.Resource.Resource;
@@ -919,6 +920,9 @@ public class Utils {
                 break;
             case Light:
                 filter.addSubFilter(new LightSubFilter());
+                break;
+            case Pixelate:
+                filter.addSubFilter(new PixelateFilter());
                 break;
         }
     }

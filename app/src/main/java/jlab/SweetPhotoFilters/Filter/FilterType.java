@@ -14,4 +14,5 @@ public enum  FilterType {
     XOR,
     OR,
     Light,
+    Pixelate,
 }

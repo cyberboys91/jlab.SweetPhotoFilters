@@ -206,6 +206,12 @@
                         android:layout_gravity="center_vertical"
                         android:layout_margin="@dimen/middle_short_margin"/>
 
+                    <ImageView
+                        android:id="@+id/ivPixelateFilter"
+                        android:layout_width="60dp"
+                        android:layout_height="60dp"
+                        android:layout_gravity="center_vertical"
+                        android:layout_margin="@dimen/middle_short_margin"/>
 
                     <ImageView
                         android:id="@+id/ivGammaCorrectionAFilter"
