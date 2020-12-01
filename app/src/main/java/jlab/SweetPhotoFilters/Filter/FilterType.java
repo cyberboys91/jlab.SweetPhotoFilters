@@ -15,4 +15,5 @@ public enum  FilterType {
     OR,
     Light,
     Pixelate,
+    Sketch,
 }

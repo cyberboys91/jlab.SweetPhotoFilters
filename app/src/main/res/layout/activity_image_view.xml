@@ -136,6 +136,13 @@
                         android:src="@drawable/img_default_filter"/>
 
                     <ImageView
+                        android:id="@+id/ivSketchFilter"
+                        android:layout_width="60dp"
+                        android:layout_height="60dp"
+                        android:layout_gravity="center_vertical"
+                        android:layout_margin="@dimen/middle_short_margin"/>
+
+                    <ImageView
                         android:id="@+id/ivBlackAndWhiteFilter"
                         android:layout_width="60dp"
                         android:layout_height="60dp"
