@@ -136,21 +136,29 @@
                         android:src="@drawable/img_default_filter"/>
 
                     <ImageView
-                        android:id="@+id/ivSketchFilter"
+                        android:id="@+id/ivColorOverlayFilter"
                         android:layout_width="60dp"
                         android:layout_height="60dp"
                         android:layout_gravity="center_vertical"
                         android:layout_margin="@dimen/middle_short_margin"/>
 
                     <ImageView
-                        android:id="@+id/ivBlackAndWhiteFilter"
+                        android:id="@+id/ivPixelateFilter"
                         android:layout_width="60dp"
                         android:layout_height="60dp"
                         android:layout_gravity="center_vertical"
                         android:layout_margin="@dimen/middle_short_margin"/>
+
 
                     <ImageView
                         android:id="@+id/ivLowSaturationFilter"
+                        android:layout_width="60dp"
+                        android:layout_height="60dp"
+                        android:layout_gravity="center_vertical"
+                        android:layout_margin="@dimen/middle_short_margin"/>
+
+                    <ImageView
+                        android:id="@+id/ivAverageSmoothFilter"
                         android:layout_width="60dp"
                         android:layout_height="60dp"
                         android:layout_gravity="center_vertical"
@@ -199,22 +207,21 @@
                         android:layout_margin="@dimen/middle_short_margin"/>
 
                     <ImageView
-                        android:id="@+id/ivColorOverlayFilter"
-                        android:layout_width="60dp"
-                        android:layout_height="60dp"
-                        android:layout_gravity="center_vertical"
-                        android:layout_margin="@dimen/middle_short_margin"/>
-
-
-                    <ImageView
-                        android:id="@+id/ivAverageSmoothFilter"
+                        android:id="@+id/ivBlackAndWhiteFilter"
                         android:layout_width="60dp"
                         android:layout_height="60dp"
                         android:layout_gravity="center_vertical"
                         android:layout_margin="@dimen/middle_short_margin"/>
 
                     <ImageView
-                        android:id="@+id/ivPixelateFilter"
+                        android:id="@+id/ivSketchFilter"
+                        android:layout_width="60dp"
+                        android:layout_height="60dp"
+                        android:layout_gravity="center_vertical"
+                        android:layout_margin="@dimen/middle_short_margin"/>
+
+                    <ImageView
+                        android:id="@+id/ivTvFilter"
                         android:layout_width="60dp"
                         android:layout_height="60dp"
                         android:layout_gravity="center_vertical"
@@ -227,7 +234,6 @@
                         android:layout_gravity="center_vertical"
                         android:layout_margin="@dimen/middle_short_margin"/>
 
-
                     <ImageView
                         android:id="@+id/ivGammaCorrectionBFilter"
                         android:layout_width="60dp"
@@ -235,14 +241,12 @@
                         android:layout_gravity="center_vertical"
                         android:layout_margin="@dimen/middle_short_margin"/>
 
-
                     <ImageView
                         android:id="@+id/ivGammaCorrectionCFilter"
                         android:layout_width="60dp"
                         android:layout_height="60dp"
                         android:layout_gravity="center_vertical"
                         android:layout_margin="@dimen/middle_short_margin"/>
-
 
                     <ImageView
                         android:id="@+id/ivOriginalFilter"

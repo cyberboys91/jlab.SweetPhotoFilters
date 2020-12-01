@@ -159,7 +159,8 @@ public class ImageViewActivity extends AppCompatActivity implements View.OnTouch
                 ivORFilter = (ImageView) findViewById(R.id.ivORFilter),
                 ivLightFilter = (ImageView) findViewById(R.id.ivLightFilter),
                 ivPixelateFilter = (ImageView) findViewById(R.id.ivPixelateFilter),
-                ivSketchFilter = (ImageView) findViewById(R.id.ivSketchFilter);
+                ivSketchFilter = (ImageView) findViewById(R.id.ivSketchFilter),
+                ivTvFilter = (ImageView) findViewById(R.id.ivTvFilter);
 
         ivBrightnessFilter.setImageResource(R.drawable.img_brightness_filter);
         ivHightBrightnessFilter.setImageResource(R.drawable.img_hight_brightness_filter);
@@ -181,6 +182,7 @@ public class ImageViewActivity extends AppCompatActivity implements View.OnTouch
         ivLightFilter.setImageResource(R.drawable.img_light_filter);
         ivPixelateFilter.setImageResource(R.drawable.img_pixelate_filter);
         ivSketchFilter.setImageResource(R.drawable.img_sketch_filter);
+        ivTvFilter.setImageResource(R.drawable.img_tv_filter);
         ivOriginalFilter.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -207,6 +209,7 @@ public class ImageViewActivity extends AppCompatActivity implements View.OnTouch
         ivLightFilter.setOnClickListener(applyFilterAux(FilterType.Light));
         ivPixelateFilter.setOnClickListener(applyFilterAux(FilterType.Pixelate));
         ivSketchFilter.setOnClickListener(applyFilterAux(FilterType.Sketch));
+        ivTvFilter.setOnClickListener(applyFilterAux(FilterType.Tv));
     }
 
     private View.OnClickListener applyFilterAux(final FilterType filterType,  final float ...params) {

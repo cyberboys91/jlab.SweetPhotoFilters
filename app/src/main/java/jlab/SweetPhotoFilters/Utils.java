@@ -41,6 +41,7 @@ import jlab.SweetPhotoFilters.Filter.GammaCorrectionSubFilter;
 import jlab.SweetPhotoFilters.Filter.LightSubFilter;
 import jlab.SweetPhotoFilters.Filter.PixelateFilter;
 import jlab.SweetPhotoFilters.Filter.ORSubFilter;
+import jlab.SweetPhotoFilters.Filter.TvFilter;
 import jlab.SweetPhotoFilters.Filter.SketchFilter;
 import jlab.SweetPhotoFilters.Filter.XORSubFilter;
 import jlab.SweetPhotoFilters.Resource.Resource;
@@ -927,6 +928,9 @@ public class Utils {
                 break;
             case Sketch:
                 filter.addSubFilter(new SketchFilter());
+                break;
+            case Tv:
+                filter.addSubFilter(new TvFilter());
                 break;
         }
     }

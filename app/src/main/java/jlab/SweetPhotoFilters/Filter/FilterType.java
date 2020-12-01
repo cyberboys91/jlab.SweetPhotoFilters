@@ -16,4 +16,5 @@ public enum  FilterType {
     Light,
     Pixelate,
     Sketch,
+    Tv,
 }
