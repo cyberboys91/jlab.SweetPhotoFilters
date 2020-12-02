@@ -42,7 +42,7 @@ import android.text.SpannableStringBuilder;
 import jlab.SweetPhotoFilters.DownloadImageTask;
 import android.support.v7.widget.SearchView;
 import jlab.SweetPhotoFilters.db.FavoriteDetails;
-import jlab.SweetPhotoFilters.db.ServerDbManager;
+import jlab.SweetPhotoFilters.db.FavoriteDbManager;
 import android.support.v4.view.GravityCompat;
 import android.view.animation.AnimationUtils;
 import android.support.v4.app.ActivityCompat;
@@ -910,7 +910,7 @@ public class DirectoryActivity extends AppCompatActivity
         }
         this.mdrawer.closeDrawer(GravityCompat.START);
         invalidateOptionsMenu();
-        ServerDbManager manager = new ServerDbManager(getApplicationContext());
+        FavoriteDbManager manager = new FavoriteDbManager(getApplicationContext());
         loadServerData();
         manager.close();
         msrlRefresh.setRefreshing(false);
