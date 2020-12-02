@@ -126,4 +126,6 @@
     <string name="save_image_complete">The image was save like</string>
     <string name="saving_image_wait">Saving image, please wait…</string>
     <string name="please_wait">Please wait…</string>
+    <string name="loading_image_error">Error loading image…</string>
+    <string name="error_saving_image">Error saving image…</string>
 </resources>

@@ -93,11 +93,11 @@ public class FavoriteDetails implements Parcelable {
 
     public ContentValues toContentValues() {
         ContentValues contentValues = new ContentValues();
-        contentValues.put(ServerDetailsContract.PATH, this.path);
-        contentValues.put(ServerDetailsContract.SIZE, this.size);
-        contentValues.put(ServerDetailsContract.MODIFICATION_DATE, this.modification);
-        contentValues.put(ServerDetailsContract.COMMENT, this.comment);
-        contentValues.put(ServerDetailsContract.PARENT_NAME, this.parentName);
+        contentValues.put(FavoriteContract.PATH, this.path);
+        contentValues.put(FavoriteContract.SIZE, this.size);
+        contentValues.put(FavoriteContract.MODIFICATION_DATE, this.modification);
+        contentValues.put(FavoriteContract.COMMENT, this.comment);
+        contentValues.put(FavoriteContract.PARENT_NAME, this.parentName);
         return contentValues;
     }
 }

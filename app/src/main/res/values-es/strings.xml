@@ -126,4 +126,6 @@
     <string name="save_image_complete">La imagen fue guardada como</string>
     <string name="saving_image_wait">Guardando imagen, por favor espere…</string>
     <string name="please_wait">Por favor espere…</string>
+    <string name="loading_image_error">Error cargando imagen…</string>
+    <string name="error_saving_image">Error guardando imagen…</string>
 </resources>

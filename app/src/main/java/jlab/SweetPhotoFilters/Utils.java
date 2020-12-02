@@ -48,7 +48,7 @@ import jlab.SweetPhotoFilters.Resource.Resource;
 import android.support.v7.app.AlertDialog;
 import jlab.SweetPhotoFilters.Resource.Directory;
 import jlab.SweetPhotoFilters.db.FavoriteDetails;
-import jlab.SweetPhotoFilters.db.ServerDbManager;
+import jlab.SweetPhotoFilters.db.FavoriteDbManager;
 import android.media.MediaScannerConnection;
 import android.media.MediaMetadataRetriever;
 import jlab.SweetPhotoFilters.Resource.FileResource;
@@ -119,7 +119,7 @@ public class Utils {
     private static Semaphore mutexDelete = new Semaphore(1);
     private static Semaphore semaphoreLoadThumbnail = new Semaphore(4);
     private static CharSequence[] invalidChars = {"?", "|", "*", "\\", "/", "<", ">", ":", "\""};
-    private static ServerDbManager serverDbManager;
+    private static FavoriteDbManager favoriteDbManager;
     public static LocalStorageDirectories specialDirectories;
     private static DocumentFile parentDir = DocumentFile.fromFile(new File(String.format("%s/SweetPhotoFilters"
             , Environment.getExternalStorageDirectory().getPath())))
@@ -350,13 +350,11 @@ public class Utils {
                 Interfaces.IDetailsThumbnailerResource details = getDetailsThumbFromType(file);
                 Cursor ca = resolver.query(details.getUriThumbnails(),
                         new String[]{MediaStore.MediaColumns._ID}, MediaStore.MediaColumns.DATA + "=?", new String[]{path}, null);
-
                 copy = getBitmap(ca, resolver, details);
             } else if (file.isAudio()) {
                 bm = getArtThumbnailFromAudioFile(path, THUMB_SIZE, THUMB_SIZE);
                 return bm;
             }
-
             if (copy == null && file.isImage()) {
                 copy = BitmapFactory.decodeFile(path);
                 bm = ThumbnailUtils.extractThumbnail(copy, THUMB_SIZE, THUMB_SIZE);
@@ -375,9 +373,14 @@ public class Utils {
         return copy;
     }
 
-    private static void recycleBitmap(Bitmap bm) {
-        if (bm != null && !bm.isRecycled())
-            bm.recycle();
+    public static void recycleBitmap(final Bitmap bm) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                if (bm != null && !bm.isRecycled())
+                    bm.recycle();
+            }
+        }).start();
     }
 
     public static Bitmap getArtThumbnailFromAudioFile(String path, int width, int height) {
@@ -839,9 +842,9 @@ public class Utils {
     public static boolean isFavorite(FileResource resource) {
         if (resource.isFavorite())
             return true;
-        if (serverDbManager == null)
-            serverDbManager = new ServerDbManager(currentActivity);
-        ArrayList<FavoriteDetails> favoriteData = serverDbManager.getFavoriteData();
+        if (favoriteDbManager == null)
+            favoriteDbManager = new FavoriteDbManager(currentActivity);
+        ArrayList<FavoriteDetails> favoriteData = favoriteDbManager.getFavoriteData();
         for (int i = 0; i < favoriteData.size(); i++)
             if (favoriteData.get(i).getSize() == resource.mSize
                     && favoriteData.get(i).getModification() == resource.getModificationDate()
@@ -854,19 +857,19 @@ public class Utils {
     }
 
     public static long deleteFavoriteData(long idFavorite) {
-        if (serverDbManager == null)
-            serverDbManager = new ServerDbManager(currentActivity);
-        return serverDbManager.deleteFavoriteData(idFavorite);
+        if (favoriteDbManager == null)
+            favoriteDbManager = new FavoriteDbManager(currentActivity);
+        return favoriteDbManager.deleteFavoriteData(idFavorite);
     }
 
     public static void updateFavoriteData(long id, String newPath, String parent) {
-        if (serverDbManager == null)
-            serverDbManager = new ServerDbManager(currentActivity);
+        if (favoriteDbManager == null)
+            favoriteDbManager = new FavoriteDbManager(currentActivity);
         File file = new File(newPath);
         MediaPlayer mp = new MediaPlayer();
         try {
             mp.setDataSource(newPath);
-            serverDbManager.updateFavoriteData(id, new FavoriteDetails(newPath, Utils.getDurationString(mp.getDuration()),
+            favoriteDbManager.updateFavoriteData(id, new FavoriteDetails(newPath, Utils.getDurationString(mp.getDuration()),
                     parent, file.length(), file.lastModified()));
         } catch (IOException e) {
             e.printStackTrace();
@@ -874,16 +877,16 @@ public class Utils {
     }
 
     public static long saveFavoriteData(FavoriteDetails favoriteDetails) {
-        if (serverDbManager == null)
-            serverDbManager = new ServerDbManager(currentActivity);
-        return serverDbManager.saveFavoriteData(favoriteDetails);
+        if (favoriteDbManager == null)
+            favoriteDbManager = new FavoriteDbManager(currentActivity);
+        return favoriteDbManager.saveFavoriteData(favoriteDetails);
     }
 
     public static ArrayList<FavoriteDetails> getFavorites()
     {
-        if (serverDbManager == null)
-            serverDbManager = new ServerDbManager(currentActivity);
-        return serverDbManager.getFavoriteData();
+        if (favoriteDbManager == null)
+            favoriteDbManager = new FavoriteDbManager(currentActivity);
+        return favoriteDbManager.getFavoriteData();
     }
 
 
@@ -935,7 +938,7 @@ public class Utils {
         }
     }
 
-    public static void ApplyFilter (Bitmap bm, Filter filter, boolean onlyLast) {
+    public static boolean ApplyFilter (Bitmap bm, Filter filter, boolean onlyLast) {
         try {
             if (onlyLast) {
                 Filter aux = new Filter();
@@ -944,8 +947,10 @@ public class Utils {
             }
             else
                 filter.processFilter(bm);
+            return true;
         } catch (Exception ignored) {
             ignored.printStackTrace();
+            return false;
         } finally {
             System.gc();
         }
@@ -959,16 +964,16 @@ public class Utils {
         try {
             if ((parentDir.exists() || rootDir.createDirectory("SweetPhotoFilters").exists())
                     && (new File(pathImage).exists() || parentDir.createFile("", name).exists())) {
-                current.compress(Bitmap.CompressFormat.PNG, 100, new FileOutputStream(pathImage));
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Utils.addFileToContent(currentActivity, pathImage);
-                    }
-                }).start();
+                String ext = FileResource.getExtension(name).toLowerCase();
+                current.compress(ext.length() > 2 && ext.substring(0, 2).equals("jpg")
+                                ? Bitmap.CompressFormat.JPEG
+                                : Bitmap.CompressFormat.PNG,
+                        100, new FileOutputStream(pathImage));
+                Utils.addFileToContent(currentActivity, pathImage);
             }
         } catch (Exception ignored) {
             ignored.printStackTrace();
+            return null;
         }
         return name;
     }

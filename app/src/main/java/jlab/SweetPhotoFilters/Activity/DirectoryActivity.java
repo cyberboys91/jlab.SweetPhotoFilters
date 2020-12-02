@@ -264,7 +264,7 @@ public class DirectoryActivity extends AppCompatActivity
         new Thread(new Runnable() {
             @Override
             public void run() {
-                final RequestBuilder<Drawable> req = Glide.with(getBaseContext()).load(path);
+                final RequestBuilder<Drawable> req = Glide.with(imageView).load(path);
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
