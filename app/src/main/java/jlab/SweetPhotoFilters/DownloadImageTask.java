@@ -1,5 +1,6 @@
 package jlab.SweetPhotoFilters;
 
+import android.graphics.Bitmap;
 import android.view.View;
 import android.widget.ImageView;
 import jlab.SweetPhotoFilters.db.FavoriteDetails;
@@ -13,6 +14,11 @@ public class DownloadImageTask {
     public static OnSetImageIconUIThread monSetImageIcon = new OnSetImageIconUIThread() {
         @Override
         public void setImage(ImageView imageView, String path) {
+
+        }
+
+        @Override
+        public void setImage(ImageView imageView, Bitmap image) {
 
         }
 
@@ -78,6 +84,7 @@ public class DownloadImageTask {
     public interface OnSetImageIconUIThread
     {
         void setImage(ImageView imageView, String path);
+        void setImage(ImageView imageView, Bitmap image);
         void setImage(ImageView imageView, int idRes);
         void runOnUserInterfaceThread(Runnable runnable);
     }

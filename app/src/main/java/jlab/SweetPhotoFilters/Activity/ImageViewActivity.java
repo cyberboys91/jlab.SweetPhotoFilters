@@ -41,6 +41,8 @@ import static jlab.SweetPhotoFilters.Utils.ApplyFilter;
 import com.zomato.photofilters.imageprocessors.SubFilter;
 import jlab.SweetPhotoFilters.View.ResourceDetailsAdapter;
 import android.support.design.widget.FloatingActionButton;
+import android.widget.Toast;
+
 import jlab.SweetPhotoFilters.View.ImageSwipeRefreshLayout;
 import static jlab.SweetPhotoFilters.Utils.specialDirectories;
 import jlab.SweetPhotoFilters.Resource.LocalStorageDirectories;
@@ -71,6 +73,7 @@ public class ImageViewActivity extends AppCompatActivity implements View.OnTouch
     private boolean loadingImage, cancelFilter, savingFilter, cancelReset;
     private ImageSwipeRefreshLayout msrlRefresh;
     private Bitmap bmCurrent;
+    private Thread currentThread;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -119,17 +122,40 @@ public class ImageViewActivity extends AppCompatActivity implements View.OnTouch
         loadFiltersImages();
     }
 
+    public static int calculateInSampleSize(BitmapFactory.Options options, int reqWidth, int reqHeight) {
+        final int height = options.outHeight;
+        final int width = options.outWidth;
+        int inSampleSize = 1;
+
+        if (height > reqHeight || width > reqWidth) {
+
+            final int halfHeight = height / 2;
+            final int halfWidth = width / 2;
+
+            while ((halfHeight / inSampleSize) >= reqHeight
+                    && (halfWidth / inSampleSize) >= reqWidth) {
+                inSampleSize *= 2;
+            }
+        }
+
+        return inSampleSize;
+    }
+
     private boolean loadBitmapForResource (boolean showError) {
         try {
             BitmapFactory.Options options = new BitmapFactory.Options();
             options.inMutable = true;
-            final Bitmap aux = BitmapFactory.decodeFile(resource.getRelUrl(), options);
-            Point dim = getImageDimension(aux.getWidth(), aux.getHeight());
-            bmCurrent = Bitmap.createScaledBitmap(aux, (int) dim.x, (int) dim.y, false);
+            options.inJustDecodeBounds = true;
+            BitmapFactory.decodeFile(resource.getRelUrl(), options);
+            Point dim = getImageDimension(options.outWidth, options.outHeight);
+            options.inSampleSize = calculateInSampleSize(options, (int) dim.x, (int) dim.y);
+            options.outWidth = (int) dim.x;
+            options.outHeight = (int) dim.y;
+            options.inJustDecodeBounds = false;
+            bmCurrent = BitmapFactory.decodeFile(resource.getRelUrl(), options);
             new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    aux.recycle();
                     System.gc();
                 }
             }).start();
@@ -256,7 +282,7 @@ public class ImageViewActivity extends AppCompatActivity implements View.OnTouch
                                         msrlRefresh.setRefreshing(false);
                                     }
                                 });
-                            } catch (InterruptedException e) {
+                            } catch (Exception e) {
                                 e.printStackTrace();
                                 mutex.release();
                                 loadingImage = false;
@@ -275,7 +301,7 @@ public class ImageViewActivity extends AppCompatActivity implements View.OnTouch
     }
 
     private void resetFilter() {
-        new Thread(new Runnable() {
+         currentThread = new Thread(new Runnable() {
             @Override
             public void run() {
                 if (loadingImage)
@@ -320,7 +346,7 @@ public class ImageViewActivity extends AppCompatActivity implements View.OnTouch
                                 msrlRefresh.setRefreshing(false);
                             }
                         });
-                    } catch (InterruptedException e) {
+                    } catch (Exception e) {
                         e.printStackTrace();
                         mutex.release();
                         loadingImage = false;
@@ -333,13 +359,14 @@ public class ImageViewActivity extends AppCompatActivity implements View.OnTouch
                     }
                 }
             }
-        }).start();
+        });
+        currentThread.start();
     }
 
     private View.OnClickListener undoFilterOnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            new Thread(new Runnable() {
+             currentThread = new Thread(new Runnable() {
                 @Override
                 public void run() {
                     if (loadingImage)
@@ -360,30 +387,33 @@ public class ImageViewActivity extends AppCompatActivity implements View.OnTouch
                                             msrlRefresh.setRefreshing(true);
                                         }
                                     });
-                                    if(loadBitmapForResource(true)) {
+                                    if (loadBitmapForResource(true)) {
                                         final ZoomImageView aux = currentView;
                                         List<SubFilter> subFilters = filter.getSubFilters();
                                         final SubFilter removedSubFilter = subFilters
                                                 .remove(filter.getSubFilters().size() - 1);
                                         filter.clearSubFilters();
                                         filter.addSubFilters(subFilters);
+                                        final String path = resource.getRelUrl();
                                         final Bitmap copy = Bitmap.createBitmap(bmCurrent);
                                         final boolean error = !ApplyFilter(bmCurrent, filter, false);
                                         runOnUiThread(new Runnable() {
                                             @Override
                                             public void run() {
-                                                if (error) {
-                                                    Utils.showSnackBar(R.string.loading_image_error);
-                                                    filter.addSubFilter(removedSubFilter);
-                                                    bmCurrent = copy;
-                                                    loadActionsLayout();
-                                                } else if (!cancelFilter) {
-                                                    aux.setImageBitmap(bmCurrent);
-                                                    Utils.recycleBitmap(copy);
-                                                    loadActionsLayout();
-                                                } else {
-                                                    loadBitmapForResource(false);
-                                                    Utils.recycleBitmap(copy);
+                                                if(path.equals(resource.getRelUrl())) {
+                                                    if (error) {
+                                                        Utils.showSnackBar(R.string.loading_image_error);
+                                                        filter.addSubFilter(removedSubFilter);
+                                                        bmCurrent = copy;
+                                                        loadActionsLayout();
+                                                    } else if (!cancelFilter) {
+                                                        aux.setImageBitmap(bmCurrent);
+                                                        Utils.recycleBitmap(copy);
+                                                        loadActionsLayout();
+                                                    } else {
+                                                        loadBitmapForResource(false);
+                                                        Utils.recycleBitmap(copy);
+                                                    }
                                                 }
                                                 mutex.release();
                                                 loadingImage = false;
@@ -401,7 +431,7 @@ public class ImageViewActivity extends AppCompatActivity implements View.OnTouch
                                             }
                                         });
                                     }
-                                } catch (InterruptedException e) {
+                                } catch (Exception e) {
                                     e.printStackTrace();
                                     mutex.release();
                                     loadingImage = false;
@@ -416,7 +446,8 @@ public class ImageViewActivity extends AppCompatActivity implements View.OnTouch
                         }
                     }
                 }
-            }).start();
+            });
+            currentThread.start();
         }
     };
 
@@ -670,12 +701,19 @@ public class ImageViewActivity extends AppCompatActivity implements View.OnTouch
     @Override
     public void onItemSelected(AdapterView<?> adapterView, final View view, int i, long l) {
         try {
-            resource = (FileResource) directory.getResource(i);
-            currentIndex = i;
-            cancelFilter = cancelReset = true;
             if (resource.isImage()) {
                 if (view != null) {
+                    if (currentThread != null) {
+                        try {
+                            currentThread.interrupt();
+                        } catch (Exception ignored) {
+                            ignored.printStackTrace();
+                        }
+                    }
                     loadingImage = true;
+                    resource = (FileResource) directory.getResource(i);
+                    currentIndex = i;
+                    cancelFilter = cancelReset = true;
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -684,10 +722,10 @@ public class ImageViewActivity extends AppCompatActivity implements View.OnTouch
                     });
                     this.filter.clearSubFilters();
                     layoutActions.clearAnimation();
-                    new Thread(new Runnable() {
+                    currentThread = new Thread(new Runnable() {
                         @Override
                         public void run() {
-                            if(loadBitmapForResource(true)) {
+                            if (loadBitmapForResource(true)) {
                                 final Bitmap bm = bmCurrent;
                                 runOnUiThread(new Runnable() {
                                     @Override
@@ -698,8 +736,7 @@ public class ImageViewActivity extends AppCompatActivity implements View.OnTouch
                                         msrlRefresh.setRefreshing(false);
                                     }
                                 });
-                            }
-                            else {
+                            } else {
                                 loadingImage = false;
                                 runOnUiThread(new Runnable() {
                                     @Override
@@ -709,7 +746,8 @@ public class ImageViewActivity extends AppCompatActivity implements View.OnTouch
                                 });
                             }
                         }
-                    }).start();
+                    });
+                    currentThread.start();
                 }
                 toolbar.setTitle(resource.getName());
                 invalidateOptionsMenu();

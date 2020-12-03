@@ -2,6 +2,7 @@ package jlab.SweetPhotoFilters.Activity;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -273,6 +274,22 @@ public class DirectoryActivity extends AppCompatActivity
                 });
             }
         }).start();
+    }
+
+    @Override
+    public void setImage(final ImageView imageView, final Bitmap image) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                final RequestBuilder<Bitmap> req = Glide.with(imageView).asBitmap().load(image);
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        req.into(imageView);
+                    }
+                });
+            }
+        });
     }
 
     @Override
