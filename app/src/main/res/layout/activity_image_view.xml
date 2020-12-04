@@ -172,6 +172,20 @@
                         android:layout_margin="@dimen/middle_short_margin"/>
 
                     <ImageView
+                        android:id="@+id/ivSharpenFilter"
+                        android:layout_width="60dp"
+                        android:layout_height="60dp"
+                        android:layout_gravity="center_vertical"
+                        android:layout_margin="@dimen/middle_short_margin"/>
+
+                    <ImageView
+                        android:id="@+id/ivUnsharpFilter"
+                        android:layout_width="60dp"
+                        android:layout_height="60dp"
+                        android:layout_gravity="center_vertical"
+                        android:layout_margin="@dimen/middle_short_margin"/>
+
+                    <ImageView
                         android:id="@+id/ivHightSaturationFilter"
                         android:layout_width="60dp"
                         android:layout_height="60dp"
@@ -207,6 +221,13 @@
                         android:layout_margin="@dimen/middle_short_margin"/>
 
                     <ImageView
+                        android:id="@+id/ivSmearFilter"
+                        android:layout_width="60dp"
+                        android:layout_height="60dp"
+                        android:layout_gravity="center_vertical"
+                        android:layout_margin="@dimen/middle_short_margin"/>
+
+                    <ImageView
                         android:id="@+id/ivBlackAndWhiteFilter"
                         android:layout_width="60dp"
                         android:layout_height="60dp"
@@ -221,7 +242,35 @@
                         android:layout_margin="@dimen/middle_short_margin"/>
 
                     <ImageView
+                        android:id="@+id/ivStampFilter"
+                        android:layout_width="60dp"
+                        android:layout_height="60dp"
+                        android:layout_gravity="center_vertical"
+                        android:layout_margin="@dimen/middle_short_margin"/>
+
+                    <ImageView
+                        android:id="@+id/ivThresholdFilter"
+                        android:layout_width="60dp"
+                        android:layout_height="60dp"
+                        android:layout_gravity="center_vertical"
+                        android:layout_margin="@dimen/middle_short_margin"/>
+
+                    <ImageView
+                        android:id="@+id/ivWeaveFilter"
+                        android:layout_width="60dp"
+                        android:layout_height="60dp"
+                        android:layout_gravity="center_vertical"
+                        android:layout_margin="@dimen/middle_short_margin"/>
+
+                    <ImageView
                         android:id="@+id/ivTvFilter"
+                        android:layout_width="60dp"
+                        android:layout_height="60dp"
+                        android:layout_gravity="center_vertical"
+                        android:layout_margin="@dimen/middle_short_margin"/>
+
+                    <ImageView
+                        android:id="@+id/ivOtherFilter"
                         android:layout_width="60dp"
                         android:layout_height="60dp"
                         android:layout_gravity="center_vertical"
@@ -236,6 +285,13 @@
 
                     <ImageView
                         android:id="@+id/ivGammaCorrectionBFilter"
+                        android:layout_width="60dp"
+                        android:layout_height="60dp"
+                        android:layout_gravity="center_vertical"
+                        android:layout_margin="@dimen/middle_short_margin"/>
+
+                    <ImageView
+                        android:id="@+id/ivSolarizeFilter"
                         android:layout_width="60dp"
                         android:layout_height="60dp"
                         android:layout_gravity="center_vertical"

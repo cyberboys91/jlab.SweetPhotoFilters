@@ -41,8 +41,15 @@ import jlab.SweetPhotoFilters.Filter.GammaCorrectionSubFilter;
 import jlab.SweetPhotoFilters.Filter.LightSubFilter;
 import jlab.SweetPhotoFilters.Filter.PixelateFilter;
 import jlab.SweetPhotoFilters.Filter.ORSubFilter;
+import jlab.SweetPhotoFilters.Filter.SharpenSubFilter;
+import jlab.SweetPhotoFilters.Filter.SmearSubFilter;
+import jlab.SweetPhotoFilters.Filter.SolarizeSubFilter;
+import jlab.SweetPhotoFilters.Filter.StampSubFilter;
+import jlab.SweetPhotoFilters.Filter.ThresholdSubFilter;
 import jlab.SweetPhotoFilters.Filter.TvFilter;
 import jlab.SweetPhotoFilters.Filter.SketchFilter;
+import jlab.SweetPhotoFilters.Filter.UnsharpSubFilter;
+import jlab.SweetPhotoFilters.Filter.WeaveSubFilter;
 import jlab.SweetPhotoFilters.Filter.XORSubFilter;
 import jlab.SweetPhotoFilters.Resource.Resource;
 import android.support.v7.app.AlertDialog;
@@ -895,7 +902,7 @@ public class Utils {
     }
 
     public static void ApplyFilter (Filter filter, FilterType type, float ...params) {
-        switch (type){
+        switch (type) {
             case Brightness:
                 filter.addSubFilter(new BrightnessSubFilter((int) params[0]));
                 break;
@@ -934,6 +941,30 @@ public class Utils {
                 break;
             case Tv:
                 filter.addSubFilter(new TvFilter());
+                break;
+            case Weave:
+                filter.addSubFilter(new WeaveSubFilter());
+                break;
+            case Unsharp:
+                filter.addSubFilter(new UnsharpSubFilter());
+                break;
+            case Threshold:
+                filter.addSubFilter(new ThresholdSubFilter());
+                break;
+            case Stamp:
+                filter.addSubFilter(new StampSubFilter());
+                break;
+            case Solarize:
+                filter.addSubFilter(new SolarizeSubFilter());
+                break;
+            case Smear:
+                filter.addSubFilter(new SmearSubFilter());
+                break;
+            case Sharpen:
+                filter.addSubFilter(new SharpenSubFilter());
+                break;
+            case Other:
+                filter.addSubFilter(new SharpenSubFilter());
                 break;
         }
     }

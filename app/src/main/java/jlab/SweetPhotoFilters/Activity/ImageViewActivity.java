@@ -194,7 +194,15 @@ public class ImageViewActivity extends AppCompatActivity implements View.OnTouch
                 ivLightFilter = (ImageView) findViewById(R.id.ivLightFilter),
                 ivPixelateFilter = (ImageView) findViewById(R.id.ivPixelateFilter),
                 ivSketchFilter = (ImageView) findViewById(R.id.ivSketchFilter),
-                ivTvFilter = (ImageView) findViewById(R.id.ivTvFilter);
+                ivTvFilter = (ImageView) findViewById(R.id.ivTvFilter),
+                ivWeaveFilter = (ImageView) findViewById(R.id.ivWeaveFilter),
+                ivUnsharpFilter = (ImageView) findViewById(R.id.ivUnsharpFilter),
+                ivThresholdFilter = (ImageView) findViewById(R.id.ivThresholdFilter),
+                ivStampFilter = (ImageView) findViewById(R.id.ivStampFilter),
+                ivSolarizeFilter = (ImageView) findViewById(R.id.ivSolarizeFilter),
+                ivSmearFilter = (ImageView) findViewById(R.id.ivSmearFilter),
+                ivSharpenFilter = (ImageView) findViewById(R.id.ivSharpenFilter),
+                ivOtherFilter = (ImageView) findViewById(R.id.ivOtherFilter);
 
         ivBrightnessFilter.setImageResource(R.drawable.img_brightness_filter);
         ivHightBrightnessFilter.setImageResource(R.drawable.img_hight_brightness_filter);
@@ -217,6 +225,14 @@ public class ImageViewActivity extends AppCompatActivity implements View.OnTouch
         ivPixelateFilter.setImageResource(R.drawable.img_pixelate_filter);
         ivSketchFilter.setImageResource(R.drawable.img_sketch_filter);
         ivTvFilter.setImageResource(R.drawable.img_tv_filter);
+        ivWeaveFilter.setImageResource(R.drawable.img_weave_filter);
+        ivUnsharpFilter.setImageResource(R.drawable.img_unsharp_filter);
+        ivThresholdFilter.setImageResource(R.drawable.img_threshold_filter);
+        ivStampFilter.setImageResource(R.drawable.img_stamp_filter);
+        ivSolarizeFilter.setImageResource(R.drawable.img_solarize_filter);
+        ivSmearFilter.setImageResource(R.drawable.img_smear_filter);
+        ivOtherFilter.setImageResource(R.drawable.img_sharpen_filter);
+//        ivOtherFilter.setImageResource(R.drawable.img_other_filter);
         ivOriginalFilter.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -244,6 +260,14 @@ public class ImageViewActivity extends AppCompatActivity implements View.OnTouch
         ivPixelateFilter.setOnClickListener(applyFilterAux(FilterType.Pixelate));
         ivSketchFilter.setOnClickListener(applyFilterAux(FilterType.Sketch));
         ivTvFilter.setOnClickListener(applyFilterAux(FilterType.Tv));
+        ivWeaveFilter.setOnClickListener(applyFilterAux(FilterType.Weave));
+        ivUnsharpFilter.setOnClickListener(applyFilterAux(FilterType.Unsharp));
+        ivThresholdFilter.setOnClickListener(applyFilterAux(FilterType.Threshold));
+        ivStampFilter.setOnClickListener(applyFilterAux(FilterType.Stamp));
+        ivSolarizeFilter.setOnClickListener(applyFilterAux(FilterType.Solarize));
+        ivSmearFilter.setOnClickListener(applyFilterAux(FilterType.Smear));
+        ivSharpenFilter.setOnClickListener(applyFilterAux(FilterType.Sharpen));
+        ivOtherFilter.setOnClickListener(applyFilterAux(FilterType.Other));
     }
 
     private View.OnClickListener applyFilterAux(final FilterType filterType,  final float ...params) {
@@ -793,7 +817,8 @@ public class ImageViewActivity extends AppCompatActivity implements View.OnTouch
     }
 
     private void loadActionsLayout() {
-        if (filter.getSubFilters().size() > 0)
+        int size = filter.getSubFilters().size();
+        if (size > 1 || (size == 1 && !loadingImage))
             layoutActions.startAnimation(AnimationUtils.loadAnimation(getBaseContext(), R.anim.alpha_in_out_filter_layout));
         else
             layoutActions.clearAnimation();

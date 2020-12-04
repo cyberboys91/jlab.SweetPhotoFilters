@@ -17,4 +17,5 @@ public enum  FilterType {
     Pixelate,
     Sketch,
     Tv,
+    Weave, Unsharp, Threshold, Stamp, Solarize, Other, Smear, Sharpen,
 }
