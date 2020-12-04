@@ -714,6 +714,7 @@ public class DirectoryActivity extends AppCompatActivity
         intent.putExtra(Utils.HOST_SERVER_KEY, Utils.hostServer);
         intent.putExtra(Utils.PORT_SERVER_KEY, Utils.portServer);
         startActivity(intent);
+        overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
     }
 
     @Override
@@ -794,8 +795,10 @@ public class DirectoryActivity extends AppCompatActivity
         if (this.mdrawer.isDrawerOpen(GravityCompat.START))
             this.mdrawer.closeDrawer(GravityCompat.START);
         else {
-            if (Utils.stackVars.size() == 1)
+            if (Utils.stackVars.size() == 1) {
                 super.onBackPressed();
+                overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+            }
             else {
                 if (!Utils.stackVars.isEmpty())
                     handler.sendEmptyMessage(Utils.SCROLLER_PATH);

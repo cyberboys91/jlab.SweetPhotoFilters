@@ -128,4 +128,5 @@
     <string name="please_wait">Please wait…</string>
     <string name="loading_image_error">Error loading image…</string>
     <string name="error_saving_image">Error saving image…</string>
+    <string name="invalid_image">Invalid image</string>
 </resources>

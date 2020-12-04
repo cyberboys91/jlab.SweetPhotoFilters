@@ -1,12 +1,12 @@
 package jlab.SweetPhotoFilters.Activity;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.View;
+import java.util.ArrayList;
 import android.view.MenuItem;
 import android.content.Intent;
 import android.view.ViewGroup;
@@ -23,6 +23,7 @@ import android.graphics.BitmapFactory;
 import android.support.v7.widget.Toolbar;
 import android.support.annotation.NonNull;
 import android.view.animation.AnimationUtils;
+import com.zomato.photofilters.geometry.Point;
 import jlab.SweetPhotoFilters.Filter.FilterType;
 import jlab.SweetPhotoFilters.Resource.Resource;
 import android.support.v7.app.AppCompatActivity;
@@ -33,16 +34,12 @@ import jlab.SweetPhotoFilters.db.FavoriteDetails;
 import static jlab.SweetPhotoFilters.Utils.mutex;
 import android.support.design.widget.AppBarLayout;
 import jlab.SweetPhotoFilters.Resource.FileResource;
-
-import com.zomato.photofilters.geometry.Point;
 import com.zomato.photofilters.imageprocessors.Filter;
 import jlab.SweetPhotoFilters.Resource.LocalDirectory;
 import static jlab.SweetPhotoFilters.Utils.ApplyFilter;
 import com.zomato.photofilters.imageprocessors.SubFilter;
 import jlab.SweetPhotoFilters.View.ResourceDetailsAdapter;
 import android.support.design.widget.FloatingActionButton;
-import android.widget.Toast;
-
 import jlab.SweetPhotoFilters.View.ImageSwipeRefreshLayout;
 import static jlab.SweetPhotoFilters.Utils.specialDirectories;
 import jlab.SweetPhotoFilters.Resource.LocalStorageDirectories;
@@ -70,7 +67,8 @@ public class ImageViewActivity extends AppCompatActivity implements View.OnTouch
     private LinearLayout layoutFilters, layoutActions;
     private ZoomImageView currentView;
     private Filter filter;
-    private boolean loadingImage, cancelFilter, savingFilter, cancelReset;
+    private boolean loadingImage, cancelFilter, savingFilter,
+            cancelReset, invalidImage, loadingNewImage;
     private ImageSwipeRefreshLayout msrlRefresh;
     private Bitmap bmCurrent;
     private Thread currentThread;
@@ -82,7 +80,7 @@ public class ImageViewActivity extends AppCompatActivity implements View.OnTouch
         this.msrlRefresh = (ImageSwipeRefreshLayout) findViewById(R.id.srlRefresh);
         int tbHeight = getResources().getDimensionPixelSize(R.dimen.image_swipe_margin);
         this.msrlRefresh.setProgressViewOffset(false, tbHeight, tbHeight);
-        this.msrlRefresh.setColorSchemeResources(R.color.green_bright, R.color.green, R.color.green_dark);
+        this.msrlRefresh.setColorSchemeResources(R.color.red, R.color.blue, R.color.green);
         this.barImage = (AppBarLayout) findViewById(R.id.ablImageBar);
         this.gallery = (Gallery) findViewById(R.id.gallery);
         this.layoutFilters = (LinearLayout) findViewById(R.id.llFilters);
@@ -120,6 +118,12 @@ public class ImageViewActivity extends AppCompatActivity implements View.OnTouch
         gallery.setAdapter(adapter);
         gallery.setSelection(currentIndex, true);
         loadFiltersImages();
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
     }
 
     public static int calculateInSampleSize(BitmapFactory.Options options, int reqWidth, int reqHeight) {
@@ -251,6 +255,8 @@ public class ImageViewActivity extends AppCompatActivity implements View.OnTouch
                     public void run() {
                         if (loadingImage)
                             Utils.showSnackBar(R.string.loading_image);
+                        else if(invalidImage)
+                            Utils.showSnackBar(R.string.invalid_image);
                         else {
                             try {
                                 mutex.acquire();
@@ -301,11 +307,13 @@ public class ImageViewActivity extends AppCompatActivity implements View.OnTouch
     }
 
     private void resetFilter() {
-         currentThread = new Thread(new Runnable() {
+        currentThread = new Thread(new Runnable() {
             @Override
             public void run() {
                 if (loadingImage)
                     Utils.showSnackBar(R.string.loading_image);
+                else if(invalidImage)
+                    Utils.showSnackBar(R.string.invalid_image);
                 else {
                     try {
                         mutex.acquire();
@@ -336,8 +344,7 @@ public class ImageViewActivity extends AppCompatActivity implements View.OnTouch
                                 if (!load) {
                                     filter.addSubFilters(subFilters);
                                     loadActionsLayout();
-                                }
-                                else if (!cancelReset)
+                                } else if (!cancelReset)
                                     aux.setImageBitmap(bmCurrent);
                                 else
                                     loadBitmapForResource(false);
@@ -366,11 +373,13 @@ public class ImageViewActivity extends AppCompatActivity implements View.OnTouch
     private View.OnClickListener undoFilterOnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-             currentThread = new Thread(new Runnable() {
+            currentThread = new Thread(new Runnable() {
                 @Override
                 public void run() {
                     if (loadingImage)
                         Utils.showSnackBar(R.string.loading_image);
+                    else if(invalidImage)
+                        Utils.showSnackBar(R.string.invalid_image);
                     else {
                         int countFilters = filter.getSubFilters().size();
                         if (countFilters > 0) {
@@ -400,7 +409,7 @@ public class ImageViewActivity extends AppCompatActivity implements View.OnTouch
                                         runOnUiThread(new Runnable() {
                                             @Override
                                             public void run() {
-                                                if(path.equals(resource.getRelUrl())) {
+                                                if (path.equals(resource.getRelUrl())) {
                                                     if (error) {
                                                         Utils.showSnackBar(R.string.loading_image_error);
                                                         filter.addSubFilter(removedSubFilter);
@@ -420,8 +429,7 @@ public class ImageViewActivity extends AppCompatActivity implements View.OnTouch
                                                 msrlRefresh.setRefreshing(false);
                                             }
                                         });
-                                    }
-                                    else {
+                                    } else {
                                         mutex.release();
                                         loadingImage = false;
                                         runOnUiThread(new Runnable() {
@@ -454,28 +462,29 @@ public class ImageViewActivity extends AppCompatActivity implements View.OnTouch
     private View.OnClickListener saveFilterOnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            if (savingFilter) {
+            if (savingFilter)
                 Utils.showSnackBar(R.string.saving_image_wait);
-                return;
-            }
-            savingFilter = true;
-            final String name = resource.getName();
-            final Bitmap aux = Bitmap.createBitmap(bmCurrent);
-            Utils.showSnackBar(R.string.saving_image);
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    String saveName = saveBitmapToAppFolder(aux, name);
-                    if(saveName != null) {
-                        Utils.showSnackBar(String.format("%s \"%s\"", getString(R.string.save_image_complete),
-                                saveName));
-                        aux.recycle();
+            else if(invalidImage)
+                Utils.showSnackBar(R.string.invalid_image);
+            else {
+                savingFilter = true;
+                final String name = resource.getName();
+                final Bitmap aux = Bitmap.createBitmap(bmCurrent);
+                Utils.showSnackBar(R.string.saving_image);
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        String saveName = saveBitmapToAppFolder(aux, name);
+                        if (saveName != null) {
+                            Utils.showSnackBar(String.format("%s \"%s\"", getString(R.string.save_image_complete),
+                                    saveName));
+                            aux.recycle();
+                        } else
+                            Utils.showSnackBar(R.string.error_saving_image);
+                        savingFilter = false;
                     }
-                    else
-                        Utils.showSnackBar(R.string.error_saving_image);
-                    savingFilter = false;
-                }
-            }).start();
+                }).start();
+            }
         }
     };
 
@@ -699,64 +708,73 @@ public class ImageViewActivity extends AppCompatActivity implements View.OnTouch
     }
 
     @Override
-    public void onItemSelected(AdapterView<?> adapterView, final View view, int i, long l) {
-        try {
-            if (resource.isImage()) {
-                if (view != null) {
-                    if (currentThread != null) {
+    public void onItemSelected(AdapterView<?> adapterView, final View view, final int index, long l) {
+        if (resource.isImage()) {
+            if (view != null) {
+                msrlRefresh.setRefreshing(true);
+                layoutActions.clearAnimation();
+                layoutFilters.clearAnimation();
+                barImage.clearAnimation();
+                loadingNewImage = true;
+                currentIndex = index;
+                if(currentThread != null && currentThread.isAlive()
+                        && !currentThread.isInterrupted())
+                    currentThread.interrupt();
+                currentThread = new Thread(new Runnable() {
+                    @Override
+                    public void run() {
                         try {
-                            currentThread.interrupt();
-                        } catch (Exception ignored) {
-                            ignored.printStackTrace();
+                            mutex.acquire();
+                            if(currentIndex != index)
+                                mutex.release();
+                            else {
+                                loadingNewImage = loadingImage = cancelFilter = cancelReset = true;
+                                resource = (FileResource) directory.getResource(index);
+                                filter.clearSubFilters();
+                                if (loadBitmapForResource(true)) {
+                                    final Bitmap bm = bmCurrent;
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            currentView = view.findViewById(R.id.ivImageContent);
+                                            currentView.setImageBitmap(bm);
+                                            loadingNewImage = invalidImage = loadingImage = false;
+                                            msrlRefresh.setRefreshing(false);
+                                            toolbar.setTitle(resource.getName());
+                                            invalidateOptionsMenu();
+                                            mutex.release();
+                                        }
+                                    });
+                                } else {
+                                    loadingNewImage = loadingImage = false;
+                                    invalidImage = true;
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            msrlRefresh.setRefreshing(false);
+                                        }
+                                    });
+                                    mutex.release();
+                                }
+                            }
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                            loadingNewImage = invalidImage = loadingImage = false;
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    msrlRefresh.setRefreshing(false);
+                                }
+                            });
+                            mutex.release();
                         }
                     }
-                    loadingImage = true;
-                    resource = (FileResource) directory.getResource(i);
-                    currentIndex = i;
-                    cancelFilter = cancelReset = true;
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            msrlRefresh.setRefreshing(true);
-                        }
-                    });
-                    this.filter.clearSubFilters();
-                    layoutActions.clearAnimation();
-                    currentThread = new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (loadBitmapForResource(true)) {
-                                final Bitmap bm = bmCurrent;
-                                runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        currentView = view.findViewById(R.id.ivImageContent);
-                                        currentView.setImageBitmap(bm);
-                                        loadingImage = false;
-                                        msrlRefresh.setRefreshing(false);
-                                    }
-                                });
-                            } else {
-                                loadingImage = false;
-                                runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        msrlRefresh.setRefreshing(false);
-                                    }
-                                });
-                            }
-                        }
-                    });
-                    currentThread.start();
-                }
-                toolbar.setTitle(resource.getName());
-                invalidateOptionsMenu();
-            } else
-                ((ZoomImageView) view.findViewById(R.id.ivImageContent)).setImageResource(R.drawable.img_broken_image);
-        } catch (Exception ignored) {
-            ignored.printStackTrace();
-            if (view != null)
-                ((ZoomImageView) view.findViewById(R.id.ivImageContent)).setImageResource(R.drawable.img_broken_image);
+                });
+                currentThread.start();
+            }
+        } else {
+            invalidImage = true;
+            ((ZoomImageView) view.findViewById(R.id.ivImageContent)).setImageResource(R.drawable.img_broken_image);
         }
     }
 
@@ -767,9 +785,11 @@ public class ImageViewActivity extends AppCompatActivity implements View.OnTouch
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-        barImage.startAnimation(AnimationUtils.loadAnimation(getBaseContext(), R.anim.alpha_in_out));
-        layoutFilters.startAnimation(AnimationUtils.loadAnimation(getBaseContext(), R.anim.alpha_in_out_filter_layout));
-        loadActionsLayout();
+        if(!loadingNewImage) {
+            barImage.startAnimation(AnimationUtils.loadAnimation(getBaseContext(), R.anim.alpha_in_out));
+            layoutFilters.startAnimation(AnimationUtils.loadAnimation(getBaseContext(), R.anim.alpha_in_out_filter_layout));
+            loadActionsLayout();
+        }
     }
 
     private void loadActionsLayout() {

@@ -44,6 +44,7 @@ public class DownloadImageTask {
             @Override
             public void run() {
                 monSetImageIcon.setImage(mResIcon, file.getRelUrl());
+                //monSetImageIcon.setImage(mResIcon, Utils.getThumbnailForUriFile(file.getRelUrl(), file));
                 if (!isAlbum && !file.getFavoriteStateLoad() && mivFavorite != null) {
                     final boolean isFavorite = Utils.isFavorite(file);
                     monSetImageIcon.setImage(mivFavorite, isFavorite
