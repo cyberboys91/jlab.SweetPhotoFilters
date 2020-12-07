@@ -11,10 +11,10 @@ import jlab.SweetPhotoFilters.Utils;
  * Created by Javier on 7/12/2020.
  */
 
-public class HgayanFifteenSubFilter extends HgayanSubFilter {
+public class JlabFifteenSubFilter extends JlabSubFilter {
 
-    public HgayanFifteenSubFilter() {
-        this.tag = "HgayanFifteenSubFilter";
+    public JlabFifteenSubFilter() {
+        this.tag = "JlabFifteenSubFilter";
     }
 
     @Override

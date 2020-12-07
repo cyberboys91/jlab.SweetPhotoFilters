@@ -11,10 +11,10 @@ import android.renderscript.ScriptIntrinsicColorMatrix;
  * Created by Javier on 7/12/2020.
  */
 
-public class HgayanOneSubFilter extends HgayanSubFilter {
+public class JlabOneSubFilter extends JlabSubFilter {
 
-    public HgayanOneSubFilter() {
-        this.tag = "HgayanOneSubFilter";
+    public JlabOneSubFilter() {
+        this.tag = "JlabOneSubFilter";
     }
     @Override
     public Bitmap process(Bitmap inputImage) {

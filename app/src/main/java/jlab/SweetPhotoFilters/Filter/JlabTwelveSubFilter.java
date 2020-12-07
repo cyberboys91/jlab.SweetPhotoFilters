@@ -11,10 +11,10 @@ import jlab.SweetPhotoFilters.Utils;
  * Created by Javier on 7/12/2020.
  */
 
-public class HgayanFourSubFilter extends HgayanSubFilter {
+public class JlabTwelveSubFilter extends JlabSubFilter {
 
-    public HgayanFourSubFilter() {
-        this.tag = "HgayanFourSubFilter";
+    public JlabTwelveSubFilter() {
+        this.tag = "JlabTwelveSubFilter";
     }
 
     @Override
@@ -22,17 +22,17 @@ public class HgayanFourSubFilter extends HgayanSubFilter {
         RenderScript renderScript = RenderScript.create(Utils.currentActivity);
         Allocation inputAllocation = Allocation.createFromBitmap(renderScript, bitmap),
                 outputAllocation=Allocation.createTyped(renderScript,inputAllocation.getType());
-        final ScriptIntrinsicColorMatrix colorMatrix4 = ScriptIntrinsicColorMatrix.create(renderScript, Element.U8_4(renderScript));
-        colorMatrix4.setColorMatrix(new android.renderscript.Matrix4f(new float[]
+        final ScriptIntrinsicColorMatrix colorMatrix12 = ScriptIntrinsicColorMatrix.create(renderScript, Element.U8_4(renderScript));
+        colorMatrix12.setColorMatrix(new android.renderscript.Matrix4f(new float[]
                 {
-                        0.3f, 0f, 0f, 0f,
-                        0f, 0.65f, 0f, 0f,
-                        0f, 0f, 0.49f, 0f,
+                        .309f, .409f, .309f, 0f,
+                        .609f, .309f, .409f, 0f,
+                        0.42f, .42f, .2f, 0f,
                         0f, 0f, 0f, 1f
 
 
                 }));
-        colorMatrix4.forEach(inputAllocation, outputAllocation);
+        colorMatrix12.forEach(inputAllocation, outputAllocation);
         outputAllocation.copyTo(bitmap);
         return bitmap;
     }

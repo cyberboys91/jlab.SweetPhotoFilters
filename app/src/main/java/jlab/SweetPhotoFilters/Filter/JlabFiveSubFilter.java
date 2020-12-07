@@ -11,10 +11,10 @@ import jlab.SweetPhotoFilters.Utils;
  * Created by Javier on 7/12/2020.
  */
 
-public class HgayanSixteenSubFilter extends HgayanSubFilter {
+public class JlabFiveSubFilter extends JlabSubFilter {
 
-    public HgayanSixteenSubFilter() {
-        this.tag = "HgayanSixteenSubFilter";
+    public JlabFiveSubFilter() {
+        this.tag = "JlabFiveSubFilter";
     }
 
     @Override
@@ -22,18 +22,15 @@ public class HgayanSixteenSubFilter extends HgayanSubFilter {
         RenderScript renderScript = RenderScript.create(Utils.currentActivity);
         Allocation inputAllocation = Allocation.createFromBitmap(renderScript, bitmap),
                 outputAllocation=Allocation.createTyped(renderScript,inputAllocation.getType());
-        final ScriptIntrinsicColorMatrix colorMatrix14 = ScriptIntrinsicColorMatrix.create(renderScript, Element.U8_4(renderScript));
-        colorMatrix14.setColorMatrix(new android.renderscript.Matrix4f(new float[]
+        final  ScriptIntrinsicColorMatrix colorMatrix5 = ScriptIntrinsicColorMatrix.create(renderScript, Element.U8_4(renderScript));
+        colorMatrix5.setColorMatrix(new android.renderscript.Matrix4f(new float[]
                 {
-
-                        1.27488526960083f, -0.228511311848763f,   0.441088688151237f,  0,
-                        0.323664244263542f,  0.955140825713134f,  -0.705935755736458f,  0,
-                        -0.698549513864371f, 0.173370486135629f ,  1.16484706758522f  ,0,
-                        0,0,0,1
-
-
+                        -0.359705309629158f, 0.377252728606377f, 0.663841667303255f, 0f,
+                        1.56680818833214f, 0.456668209492391f, 1.12613917506705f, 0f,
+                        -0.147102878702981f, 0.226079061901232f, -0.729980842370303f, 0f,
+                        0f, 0f, 0f, 1f
                 }));
-        colorMatrix14.forEach(inputAllocation, outputAllocation);
+        colorMatrix5.forEach(inputAllocation, outputAllocation);
         outputAllocation.copyTo(bitmap);
         return bitmap;
     }

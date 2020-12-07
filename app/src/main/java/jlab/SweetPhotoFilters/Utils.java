@@ -46,7 +46,6 @@ import jlab.SweetPhotoFilters.Resource.FileResource;
 import com.zomato.photofilters.imageprocessors.Filter;
 import jlab.SweetPhotoFilters.Resource.LocalStorageDirectories;
 import com.zomato.photofilters.imageprocessors.subfilters.ContrastSubFilter;
-import com.zomato.photofilters.imageprocessors.subfilters.VignetteSubFilter;
 import com.zomato.photofilters.imageprocessors.subfilters.BrightnessSubFilter;
 import com.zomato.photofilters.imageprocessors.subfilters.SaturationSubFilter;
 import com.zomato.photofilters.imageprocessors.subfilters.ColorOverlaySubFilter;
@@ -895,7 +894,7 @@ public class Utils {
                 filter.addSubFilter(new SaturationSubFilter(params[0]));
                 break;
             case Vignette:
-                filter.addSubFilter(new VignetteSubFilter(currentActivity, (int) params[0]));
+                filter.addSubFilter(new VignetteSubFilter());
                 break;
             case AverageSmooth:
                 filter.addSubFilter(new AverageSmoothSubFilter((int) params[0]));
@@ -1012,55 +1011,64 @@ public class Utils {
                 filter.addSubFilter(new BumpSubFilter());
                 break;
             case HgayanOne:
-                filter.addSubFilter(new HgayanOneSubFilter());
+                filter.addSubFilter(new JlabOneSubFilter());
                 break;
             case HgayanTwo:
-                filter.addSubFilter(new HgayanTwoSubFilter());
+                filter.addSubFilter(new JlabTwoSubFilter());
                 break;
             case HgayanThree:
-                filter.addSubFilter(new HgayanThreeSubFilter());
+                filter.addSubFilter(new JlabThreeSubFilter());
                 break;
             case HgayanFour:
-                filter.addSubFilter(new HgayanFourSubFilter());
+                filter.addSubFilter(new JlabFourSubFilter());
                 break;
             case HgayanFive:
-                filter.addSubFilter(new HgayanFiveSubFilter());
+                filter.addSubFilter(new JlabFiveSubFilter());
                 break;
             case HgayanSix:
-                filter.addSubFilter(new HgayanSixSubFilter());
+                filter.addSubFilter(new JlabSixSubFilter());
                 break;
             case HgayanSeven:
-                filter.addSubFilter(new HgayanSevenSubFilter());
+                filter.addSubFilter(new JlabSevenSubFilter());
                 break;
             case HgayanEight:
-                filter.addSubFilter(new HgayanEightSubFilter());
+                filter.addSubFilter(new JlabEightSubFilter());
                 break;
             case HgayanNine:
-                filter.addSubFilter(new HgayanNineSubFilter());
+                filter.addSubFilter(new JlabNineSubFilter());
                 break;
             case HgayanTen:
-                filter.addSubFilter(new HgayanTenSubFilter());
+                filter.addSubFilter(new JlabTenSubFilter());
                 break;
             case HgayanEleven:
-                filter.addSubFilter(new HgayanElevenSubFilter());
+                filter.addSubFilter(new JlabElevenSubFilter());
                 break;
             case HgayanTwelve:
-                filter.addSubFilter(new HgayanTwelveSubFilter());
+                filter.addSubFilter(new JlabTwelveSubFilter());
                 break;
             case HgayanThirteen:
-                filter.addSubFilter(new HgayanThirteenSubFilter());
+                filter.addSubFilter(new JlabThirteenSubFilter());
                 break;
             case HgayanFourteen:
-                filter.addSubFilter(new HgayanFourteenSubFilter());
+                filter.addSubFilter(new JlabFourteenSubFilter());
                 break;
             case HgayanFifteen:
-                filter.addSubFilter(new HgayanFifteenSubFilter());
+                filter.addSubFilter(new JlabFifteenSubFilter());
                 break;
             case HgayanSixteen:
-                filter.addSubFilter(new HgayanSixteenSubFilter());
+                filter.addSubFilter(new JlabSixteenSubFilter());
+                break;
+            case Vintage:
+                filter.addSubFilter(new VintageSubFilter());
+                break;
+            case Sepia:
+                filter.addSubFilter(new SepiaSubFilter());
+                break;
+            case Brownish:
+                filter.addSubFilter(new BrownishSubFilter());
                 break;
             case Other:
-                filter.addSubFilter(new HgayanSixteenSubFilter());
+                filter.addSubFilter(new MirrorsGlassSubFilter());
                 break;
         }
     }

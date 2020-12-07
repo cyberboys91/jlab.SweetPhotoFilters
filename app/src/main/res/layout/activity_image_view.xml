@@ -99,12 +99,12 @@
                     android:paddingStart="@dimen/short_margin"
                     android:visibility="invisible">
 
-                    <!--<ImageView-->
-                        <!--android:id="@+id/ivOtherFilter"-->
-                        <!--android:layout_width="60dp"-->
-                        <!--android:layout_height="60dp"-->
-                        <!--android:layout_gravity="center_vertical"-->
-                        <!--android:layout_margin="@dimen/min_margin"/>-->
+                    <ImageView
+                        android:id="@+id/ivOtherFilter"
+                        android:layout_width="60dp"
+                        android:layout_height="60dp"
+                        android:layout_gravity="center_vertical"
+                        android:layout_margin="@dimen/min_margin"/>
 
                     <ImageView
                         android:id="@+id/ivHightBrightnessFilter"
@@ -171,20 +171,20 @@
                         android:src="@drawable/img_low_brightness_filter"/>
 
                     <ImageView
-                        android:id="@+id/ivExposeFilter"
-                        android:layout_width="60dp"
-                        android:layout_height="60dp"
-                        android:layout_gravity="center_vertical"
-                        android:layout_margin="@dimen/min_margin"
-                        android:src="@drawable/img_expose_filter"/>
-
-                    <ImageView
                         android:id="@+id/ivColorOverlayFilter"
                         android:layout_width="60dp"
                         android:layout_height="60dp"
                         android:layout_gravity="center_vertical"
                         android:layout_margin="@dimen/min_margin"
                         android:src="@drawable/img_color_overlay_filter"/>
+
+                    <ImageView
+                        android:id="@+id/ivVintageFilter"
+                        android:layout_width="60dp"
+                        android:layout_height="60dp"
+                        android:layout_gravity="center_vertical"
+                        android:layout_margin="@dimen/min_margin"
+                        android:src="@drawable/img_vintage_filter"/>
 
                     <ImageView
                         android:id="@+id/ivHgayanSixteenFilter"
@@ -323,60 +323,68 @@
                         android:src="@drawable/img_vignette_filter"/>
 
                     <ImageView
-                        android:id="@+id/ivFlipFilter"
+                        android:id="@+id/ivExposeFilter"
                         android:layout_width="60dp"
                         android:layout_height="60dp"
                         android:layout_gravity="center_vertical"
                         android:layout_margin="@dimen/min_margin"
-                        android:src="@drawable/img_flip_filter"/>
+                        android:src="@drawable/img_expose_filter"/>
 
-                    <ImageView
-                        android:id="@+id/ivOffsetFilter"
-                        android:layout_width="60dp"
-                        android:layout_height="60dp"
-                        android:layout_gravity="center_vertical"
-                        android:layout_margin="@dimen/min_margin"
-                        android:src="@drawable/img_offset_filter"/>
+                    <!--<ImageView-->
+                        <!--android:id="@+id/ivFlipFilter"-->
+                        <!--android:layout_width="60dp"-->
+                        <!--android:layout_height="60dp"-->
+                        <!--android:layout_gravity="center_vertical"-->
+                        <!--android:layout_margin="@dimen/min_margin"-->
+                        <!--android:src="@drawable/img_flip_filter"/>-->
 
-                    <ImageView
-                        android:id="@+id/ivWeaveFilter"
-                        android:layout_width="60dp"
-                        android:layout_height="60dp"
-                        android:layout_gravity="center_vertical"
-                        android:layout_margin="@dimen/min_margin"
-                        android:src="@drawable/img_weave_filter"/>
+                    <!--<ImageView-->
+                        <!--android:id="@+id/ivOffsetFilter"-->
+                        <!--android:layout_width="60dp"-->
+                        <!--android:layout_height="60dp"-->
+                        <!--android:layout_gravity="center_vertical"-->
+                        <!--android:layout_margin="@dimen/min_margin"-->
+                        <!--android:src="@drawable/img_offset_filter"/>-->
 
-                    <ImageView
-                        android:id="@+id/ivColorHalftoneFilter"
-                        android:layout_width="60dp"
-                        android:layout_height="60dp"
-                        android:layout_gravity="center_vertical"
-                        android:layout_margin="@dimen/min_margin"
-                        android:src="@drawable/img_color_halftone_filter"/>
+                    <!--<ImageView-->
+                        <!--android:id="@+id/ivWeaveFilter"-->
+                        <!--android:layout_width="60dp"-->
+                        <!--android:layout_height="60dp"-->
+                        <!--android:layout_gravity="center_vertical"-->
+                        <!--android:layout_margin="@dimen/min_margin"-->
+                        <!--android:src="@drawable/img_weave_filter"/>-->
 
-                    <ImageView
-                        android:id="@+id/ivCrystallizeFilter"
-                        android:layout_width="60dp"
-                        android:layout_height="60dp"
-                        android:layout_gravity="center_vertical"
-                        android:layout_margin="@dimen/min_margin"
-                        android:src="@drawable/img_crystallize_filter"/>
+                    <!--<ImageView-->
+                        <!--android:id="@+id/ivColorHalftoneFilter"-->
+                        <!--android:layout_width="60dp"-->
+                        <!--android:layout_height="60dp"-->
+                        <!--android:layout_gravity="center_vertical"-->
+                        <!--android:layout_margin="@dimen/min_margin"-->
+                        <!--android:src="@drawable/img_color_halftone_filter"/>-->
 
-                    <ImageView
-                        android:id="@+id/ivPointillizeFilter"
-                        android:layout_width="60dp"
-                        android:layout_height="60dp"
-                        android:layout_gravity="center_vertical"
-                        android:layout_margin="@dimen/min_margin"
-                        android:src="@drawable/img_pointillize_filter"/>
+                    <!--<ImageView-->
+                        <!--android:id="@+id/ivCrystallizeFilter"-->
+                        <!--android:layout_width="60dp"-->
+                        <!--android:layout_height="60dp"-->
+                        <!--android:layout_gravity="center_vertical"-->
+                        <!--android:layout_margin="@dimen/min_margin"-->
+                        <!--android:src="@drawable/img_crystallize_filter"/>-->
 
-                    <ImageView
-                        android:id="@+id/ivTvFilter"
-                        android:layout_width="60dp"
-                        android:layout_height="60dp"
-                        android:layout_gravity="center_vertical"
-                        android:layout_margin="@dimen/min_margin"
-                        android:src="@drawable/img_tv_filter"/>
+                    <!--<ImageView-->
+                        <!--android:id="@+id/ivPointillizeFilter"-->
+                        <!--android:layout_width="60dp"-->
+                        <!--android:layout_height="60dp"-->
+                        <!--android:layout_gravity="center_vertical"-->
+                        <!--android:layout_margin="@dimen/min_margin"-->
+                        <!--android:src="@drawable/img_pointillize_filter"/>-->
+
+                    <!--<ImageView-->
+                        <!--android:id="@+id/ivTvFilter"-->
+                        <!--android:layout_width="60dp"-->
+                        <!--android:layout_height="60dp"-->
+                        <!--android:layout_gravity="center_vertical"-->
+                        <!--android:layout_margin="@dimen/min_margin"-->
+                        <!--android:src="@drawable/img_tv_filter"/>-->
 
                     <ImageView
                         android:id="@+id/ivHgayanSixFilter"
@@ -385,6 +393,14 @@
                         android:layout_gravity="center_vertical"
                         android:layout_margin="@dimen/min_margin"
                         android:src="@drawable/img_hgayan_six_filter"/>
+
+                    <ImageView
+                        android:id="@+id/ivBrownishFilter"
+                        android:layout_width="60dp"
+                        android:layout_height="60dp"
+                        android:layout_gravity="center_vertical"
+                        android:layout_margin="@dimen/min_margin"
+                        android:src="@drawable/img_brownish_filter"/>
 
                     <ImageView
                         android:id="@+id/ivMaskFilter"
@@ -418,6 +434,14 @@
                         android:layout_gravity="center_vertical"
                         android:layout_margin="@dimen/min_margin"
                         android:src="@drawable/img_hgayan_twelve_filter"/>
+
+                    <ImageView
+                        android:id="@+id/ivSepiaFilter"
+                        android:layout_width="60dp"
+                        android:layout_height="60dp"
+                        android:layout_gravity="center_vertical"
+                        android:layout_margin="@dimen/min_margin"
+                        android:src="@drawable/img_sepia_filter"/>
 
                     <ImageView
                         android:id="@+id/ivLowSaturationFilter"

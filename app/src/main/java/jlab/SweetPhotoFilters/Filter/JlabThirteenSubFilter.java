@@ -4,17 +4,17 @@ import android.graphics.Bitmap;
 import android.renderscript.Allocation;
 import android.renderscript.Element;
 import android.renderscript.RenderScript;
-import android.renderscript.ScriptIntrinsicColorMatrix;
+import android.renderscript.ScriptIntrinsicConvolve3x3;
 import jlab.SweetPhotoFilters.Utils;
 
 /**
  * Created by Javier on 7/12/2020.
  */
 
-public class HgayanNineSubFilter extends HgayanSubFilter {
+public class JlabThirteenSubFilter extends JlabSubFilter {
 
-    public HgayanNineSubFilter() {
-        this.tag = "HgayanNineSubFilter";
+    public JlabThirteenSubFilter() {
+        this.tag = "JlabThirteenSubFilter";
     }
 
     @Override
@@ -22,15 +22,15 @@ public class HgayanNineSubFilter extends HgayanSubFilter {
         RenderScript renderScript = RenderScript.create(Utils.currentActivity);
         Allocation inputAllocation = Allocation.createFromBitmap(renderScript, bitmap),
                 outputAllocation=Allocation.createTyped(renderScript,inputAllocation.getType());
-        final  ScriptIntrinsicColorMatrix colorMatrix9 = ScriptIntrinsicColorMatrix.create(renderScript, Element.U8_4(renderScript));
-        colorMatrix9.setColorMatrix(new android.renderscript.Matrix4f(new float[]
+        final ScriptIntrinsicConvolve3x3 convolve1 = ScriptIntrinsicConvolve3x3.create(renderScript, Element.U8_4(renderScript));
+        convolve1.setInput(inputAllocation);
+        convolve1.setCoefficients(new float[]
                 {
-                        -2f, -1f, 1f, -2f,
-                        0f, -2f, 0f, 1f,
-                        0f, 0f, -1f, 1f,
-                        0f, 0f, 0f, 1f
-                }));
-        colorMatrix9.forEach(inputAllocation, outputAllocation);
+                        -2, -1, 0,
+                        -1, 1, 1,
+                        0, 1, 2
+                });
+        convolve1.forEach(outputAllocation);
         outputAllocation.copyTo(bitmap);
         return bitmap;
     }

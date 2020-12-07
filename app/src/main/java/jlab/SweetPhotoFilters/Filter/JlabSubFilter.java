@@ -7,8 +7,8 @@ import com.zomato.photofilters.imageprocessors.SubFilter;
  * Created by Javier on 7/12/2020.
  */
 
-public class HgayanSubFilter implements SubFilter {
-    protected String tag = "HgayanSubFilter";
+public class JlabSubFilter implements SubFilter {
+    protected String tag = "JlabSubFilter";
     @Override
     public Bitmap process(Bitmap inputImage) {
         return null;

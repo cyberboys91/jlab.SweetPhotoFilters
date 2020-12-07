@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 import android.graphics.Bitmap;
 import jlab.SweetPhotoFilters.R;
 import android.view.MotionEvent;
+import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.AdapterView;
 import android.widget.LinearLayout;
@@ -69,6 +70,7 @@ public class ImageViewActivity extends AppCompatActivity implements View.OnTouch
     private LayoutInflater mlInflater;
     private ResourceDetailsAdapter adapter;
     private LinearLayout layoutFilters, layoutActions;
+    private HorizontalScrollView hsvFilters;
     private ZoomImageView currentView;
     private Filter filter;
     private boolean loadingImage, savingFilter, invalidImage;
@@ -88,6 +90,7 @@ public class ImageViewActivity extends AppCompatActivity implements View.OnTouch
         this.barImage = (AppBarLayout) findViewById(R.id.ablImageBar);
         this.gallery = (ImageGallery) findViewById(R.id.gallery);
         this.layoutFilters = (LinearLayout) findViewById(R.id.llFilters);
+        this.hsvFilters = (HorizontalScrollView) findViewById(R.id.hsvFilters);
         this.layoutActions = (LinearLayout) findViewById(R.id.llActionButtons);
         FloatingActionButton fbSave = (FloatingActionButton) findViewById(R.id.fbSaveFilter),
                 fbCancel = (FloatingActionButton) findViewById(R.id.fbCancelFilter),
@@ -125,6 +128,14 @@ public class ImageViewActivity extends AppCompatActivity implements View.OnTouch
             @Override
             public boolean loadImage() {
                 return loadingImage;
+            }
+        });
+        hsvFilters.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if(event.getAction() == MotionEvent.ACTION_MOVE)
+                    layoutFilters.startAnimation(AnimationUtils.loadAnimation(getBaseContext(), R.anim.alpha_in_out_layout));
+                return false;
             }
         });
         loadFiltersImages();
@@ -203,8 +214,8 @@ public class ImageViewActivity extends AppCompatActivity implements View.OnTouch
                 ivLightFilter = (ImageView) findViewById(R.id.ivLightFilter),
                 ivPixelateFilter = (ImageView) findViewById(R.id.ivPixelateFilter),
                 ivSketchFilter = (ImageView) findViewById(R.id.ivSketchFilter),
-                ivTvFilter = (ImageView) findViewById(R.id.ivTvFilter),
-                ivWeaveFilter = (ImageView) findViewById(R.id.ivWeaveFilter),
+//                ivTvFilter = (ImageView) findViewById(R.id.ivTvFilter),
+//                ivWeaveFilter = (ImageView) findViewById(R.id.ivWeaveFilter),
                 ivUnsharpFilter = (ImageView) findViewById(R.id.ivUnsharpFilter),
                 ivThresholdFilter = (ImageView) findViewById(R.id.ivThresholdFilter),
                 ivStampFilter = (ImageView) findViewById(R.id.ivStampFilter),
@@ -214,11 +225,11 @@ public class ImageViewActivity extends AppCompatActivity implements View.OnTouch
                 ivRippleFilter = (ImageView) findViewById(R.id.ivRippleFilter),
                 ivRescaleFilter = (ImageView) findViewById(R.id.ivRescaleFilter),
                 ivQuantizeFilter = (ImageView) findViewById(R.id.ivQuantizeFilter),
-//                ivOtherFilter = (ImageView) findViewById(R.id.ivOtherFilter),
+                ivOtherFilter = (ImageView) findViewById(R.id.ivOtherFilter),
                 ivPosterizeFilter = (ImageView) findViewById(R.id.ivPosterizeFilter),
                 ivOilFilter = (ImageView) findViewById(R.id.ivOilFilter),
-                ivPointillizeFilter = (ImageView) findViewById(R.id.ivPointillizeFilter),
-                ivOffsetFilter = (ImageView) findViewById(R.id.ivOffsetFilter),
+//                ivPointillizeFilter = (ImageView) findViewById(R.id.ivPointillizeFilter),
+//                ivOffsetFilter = (ImageView) findViewById(R.id.ivOffsetFilter),
                 ivNoiseFilter = (ImageView) findViewById(R.id.ivNoiseFilter),
                 ivMinimumFilter = (ImageView) findViewById(R.id.ivMinimumFilter),
                 ivMaskFilter = (ImageView) findViewById(R.id.ivMaskFilter),
@@ -226,14 +237,14 @@ public class ImageViewActivity extends AppCompatActivity implements View.OnTouch
                 ivInvertFilter = (ImageView) findViewById(R.id.ivInvertFilter),
                 ivGaussianFilter = (ImageView) findViewById(R.id.ivGaussianFilter),
                 ivExposeFilter = (ImageView) findViewById(R.id.ivExposeFilter),
-                ivFlipFilter = (ImageView) findViewById(R.id.ivFlipFilter),
+//                ivFlipFilter = (ImageView) findViewById(R.id.ivFlipFilter),
                 ivEmbossFilter = (ImageView) findViewById(R.id.ivEmbossFilter),
                 ivEdgeFilter = (ImageView) findViewById(R.id.ivEdgeFilter),
                 ivDiffuseFilter = (ImageView) findViewById(R.id.ivDiffuseFilter),
-                ivCrystallizeFilter = (ImageView) findViewById(R.id.ivCrystallizeFilter),
+//                ivCrystallizeFilter = (ImageView) findViewById(R.id.ivCrystallizeFilter),
                 ivDisplaceFilter = (ImageView) findViewById(R.id.ivDisplaceFilter),
                 ivContourFilter = (ImageView) findViewById(R.id.ivContourFilter),
-                ivColorHalftoneFilter = (ImageView) findViewById(R.id.ivColorHalftoneFilter),
+//                ivColorHalftoneFilter = (ImageView) findViewById(R.id.ivColorHalftoneFilter),
                 ivBumpFilter = (ImageView) findViewById(R.id.ivBumpFilter),
                 ivHgayanOneFilter = (ImageView) findViewById(R.id.ivHgayanOneFilter),
 //                ivHgayanTwoFilter = (ImageView) findViewById(R.id.ivHgayanTwoFilter),
@@ -249,7 +260,10 @@ public class ImageViewActivity extends AppCompatActivity implements View.OnTouch
                 ivHgayanTwelveFilter = (ImageView) findViewById(R.id.ivHgayanTwelveFilter),
                 ivHgayanFourteenFilter = (ImageView) findViewById(R.id.ivHgayanFourteenFilter),
                 ivHgayanFifteenFilter = (ImageView) findViewById(R.id.ivHgayanFifteenFilter),
-                ivHgayanSixteenFilter = (ImageView) findViewById(R.id.ivHgayanSixteenFilter);
+                ivHgayanSixteenFilter = (ImageView) findViewById(R.id.ivHgayanSixteenFilter),
+                ivVintageFilter = (ImageView) findViewById(R.id.ivVintageFilter),
+                ivSepiaFilter = (ImageView) findViewById(R.id.ivSepiaFilter),
+                ivBrownishFilter = (ImageView) findViewById(R.id.ivBrownishFilter);
 
         ivBrightnessFilter.setOnClickListener(applyFilterAux(FilterType.Brightness, 60));
         ivHightBrightnessFilter.setOnClickListener(applyFilterAux(FilterType.Brightness, 90));
@@ -271,8 +285,8 @@ public class ImageViewActivity extends AppCompatActivity implements View.OnTouch
         ivLightFilter.setOnClickListener(applyFilterAux(FilterType.Light));
         ivPixelateFilter.setOnClickListener(applyFilterAux(FilterType.Pixelate));
         ivSketchFilter.setOnClickListener(applyFilterAux(FilterType.Sketch));
-        ivTvFilter.setOnClickListener(applyFilterAux(FilterType.Tv));
-        ivWeaveFilter.setOnClickListener(applyFilterAux(FilterType.Weave));
+//        ivTvFilter.setOnClickListener(applyFilterAux(FilterType.Tv));
+//        ivWeaveFilter.setOnClickListener(applyFilterAux(FilterType.Weave));
         ivUnsharpFilter.setOnClickListener(applyFilterAux(FilterType.Unsharp));
         ivThresholdFilter.setOnClickListener(applyFilterAux(FilterType.Threshold));
         ivStampFilter.setOnClickListener(applyFilterAux(FilterType.Stamp));
@@ -283,24 +297,24 @@ public class ImageViewActivity extends AppCompatActivity implements View.OnTouch
         ivRescaleFilter.setOnClickListener(applyFilterAux(FilterType.Rescale));
         ivQuantizeFilter.setOnClickListener(applyFilterAux(FilterType.Quantize, 50));
         ivPosterizeFilter.setOnClickListener(applyFilterAux(FilterType.Posterize));
-        ivPointillizeFilter.setOnClickListener(applyFilterAux(FilterType.Pointillize));
+//        ivPointillizeFilter.setOnClickListener(applyFilterAux(FilterType.Pointillize));
         ivOilFilter.setOnClickListener(applyFilterAux(FilterType.Oil));
-        ivOffsetFilter.setOnClickListener(applyFilterAux(FilterType.Offset));
+//        ivOffsetFilter.setOnClickListener(applyFilterAux(FilterType.Offset));
         ivNoiseFilter.setOnClickListener(applyFilterAux(FilterType.Noise));
         ivMinimumFilter.setOnClickListener(applyFilterAux(FilterType.Minimum));
         ivMaskFilter.setOnClickListener(applyFilterAux(FilterType.Mask));
         ivInvertFilter.setOnClickListener(applyFilterAux(FilterType.Invert));
         ivMarbleFilter.setOnClickListener(applyFilterAux(FilterType.Marble));
         ivGaussianFilter.setOnClickListener(applyFilterAux(FilterType.Gaussian));
-        ivFlipFilter.setOnClickListener(applyFilterAux(FilterType.Flip));
+//        ivFlipFilter.setOnClickListener(applyFilterAux(FilterType.Flip));
         ivExposeFilter.setOnClickListener(applyFilterAux(FilterType.Expose));
         ivEmbossFilter.setOnClickListener(applyFilterAux(FilterType.Emboss));
         ivEdgeFilter.setOnClickListener(applyFilterAux(FilterType.Edge));
         ivDisplaceFilter.setOnClickListener(applyFilterAux(FilterType.Displace));
         ivDiffuseFilter.setOnClickListener(applyFilterAux(FilterType.Diffuse));
-        ivCrystallizeFilter.setOnClickListener(applyFilterAux(FilterType.Crystallize));
+//        ivCrystallizeFilter.setOnClickListener(applyFilterAux(FilterType.Crystallize));
         ivContourFilter.setOnClickListener(applyFilterAux(FilterType.Contour));
-        ivColorHalftoneFilter.setOnClickListener(applyFilterAux(FilterType.ColorHalftone));
+//        ivColorHalftoneFilter.setOnClickListener(applyFilterAux(FilterType.ColorHalftone));
         ivBumpFilter.setOnClickListener(applyFilterAux(FilterType.Bump));
         ivHgayanOneFilter.setOnClickListener(applyFilterAux(FilterType.HgayanOne));
         ivHgayanThreeFilter.setOnClickListener(applyFilterAux(FilterType.HgayanThree));
@@ -315,7 +329,10 @@ public class ImageViewActivity extends AppCompatActivity implements View.OnTouch
         ivHgayanFourteenFilter.setOnClickListener(applyFilterAux(FilterType.HgayanFourteen));
         ivHgayanFifteenFilter.setOnClickListener(applyFilterAux(FilterType.HgayanFifteen));
         ivHgayanSixteenFilter.setOnClickListener(applyFilterAux(FilterType.HgayanSixteen));
-//        ivOtherFilter.setOnClickListener(applyFilterAux(FilterType.Other));
+        ivVintageFilter.setOnClickListener(applyFilterAux(FilterType.Vintage));
+        ivSepiaFilter.setOnClickListener(applyFilterAux(FilterType.Sepia));
+        ivBrownishFilter.setOnClickListener(applyFilterAux(FilterType.Brownish));
+        ivOtherFilter.setOnClickListener(applyFilterAux(FilterType.Other));
     }
 
     private View.OnClickListener applyFilterAux(final FilterType filterType,  final float ...params) {

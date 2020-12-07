@@ -11,10 +11,10 @@ import jlab.SweetPhotoFilters.Utils;
  * Created by Javier on 7/12/2020.
  */
 
-public class HgayanThirteenSubFilter extends HgayanSubFilter {
+public class JlabFourteenSubFilter extends JlabSubFilter {
 
-    public HgayanThirteenSubFilter() {
-        this.tag = "HgayanThirteenSubFilter";
+    public JlabFourteenSubFilter() {
+        this.tag = "JlabFourteenSubFilter";
     }
 
     @Override
@@ -22,15 +22,14 @@ public class HgayanThirteenSubFilter extends HgayanSubFilter {
         RenderScript renderScript = RenderScript.create(Utils.currentActivity);
         Allocation inputAllocation = Allocation.createFromBitmap(renderScript, bitmap),
                 outputAllocation=Allocation.createTyped(renderScript,inputAllocation.getType());
-        final ScriptIntrinsicConvolve3x3 convolve1 = ScriptIntrinsicConvolve3x3.create(renderScript, Element.U8_4(renderScript));
-        convolve1.setInput(inputAllocation);
-        convolve1.setCoefficients(new float[]
+        final ScriptIntrinsicConvolve3x3 convolve2 = ScriptIntrinsicConvolve3x3.create(renderScript, Element.U8_4(renderScript));
+        convolve2.setInput(inputAllocation);
+        convolve2.setCoefficients(new float[]
                 {
-                        -2, -1, 0,
-                        -1, 1, 1,
-                        0, 1, 2
+                        .2f, .3f, .2f, .1f, .1f, .1f, .2f, .3f, .2f,
+
                 });
-        convolve1.forEach(outputAllocation);
+        convolve2.forEach(outputAllocation);
         outputAllocation.copyTo(bitmap);
         return bitmap;
     }
