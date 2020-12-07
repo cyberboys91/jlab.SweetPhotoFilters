@@ -13,7 +13,7 @@ public class DownloadImageTask {
     private ImageView mResIcon, mivFavorite;
     public static OnSetImageIconUIThread monSetImageIcon = new OnSetImageIconUIThread() {
         @Override
-        public void setImage(ImageView imageView, String path) {
+        public void setImage(ImageView imageView, FileResource file) {
 
         }
 
@@ -43,7 +43,7 @@ public class DownloadImageTask {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                monSetImageIcon.setImage(mResIcon, file.getRelUrl());
+                monSetImageIcon.setImage(mResIcon, file);
                 //monSetImageIcon.setImage(mResIcon, Utils.getThumbnailForUriFile(file.getRelUrl(), file));
                 if (!isAlbum && !file.getFavoriteStateLoad() && mivFavorite != null) {
                     final boolean isFavorite = Utils.isFavorite(file);
@@ -84,7 +84,7 @@ public class DownloadImageTask {
 
     public interface OnSetImageIconUIThread
     {
-        void setImage(ImageView imageView, String path);
+        void setImage(ImageView imageView, FileResource file);
         void setImage(ImageView imageView, Bitmap image);
         void setImage(ImageView imageView, int idRes);
         void runOnUserInterfaceThread(Runnable runnable);

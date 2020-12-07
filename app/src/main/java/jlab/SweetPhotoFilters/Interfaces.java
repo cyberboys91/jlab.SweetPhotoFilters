@@ -168,4 +168,8 @@ public class Interfaces {
     public interface ISelectListener {
         boolean select(String mimetype, String name, String path);
     }
+
+    public interface ILoadImageListener {
+        boolean loadImage();
+    }
 }

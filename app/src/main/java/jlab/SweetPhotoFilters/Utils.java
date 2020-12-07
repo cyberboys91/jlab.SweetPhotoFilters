@@ -1,20 +1,15 @@
 package jlab.SweetPhotoFilters;
 
 import java.io.File;
-
-import android.graphics.Point;
-import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Parcel;
-import android.support.v4.provider.DocumentFile;
 import android.view.View;
-
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import android.app.Activity;
 import android.os.Parcelable;
+import android.graphics.Point;
 import android.content.Intent;
 import android.os.Environment;
 import java.text.DecimalFormat;
@@ -22,8 +17,10 @@ import android.widget.TextView;
 import android.graphics.Bitmap;
 import android.database.Cursor;
 import android.content.Context;
+import java.io.FileOutputStream;
 import android.widget.ImageView;
 import android.app.Notification;
+import android.media.MediaPlayer;
 import android.util.DisplayMetrics;
 import android.provider.MediaStore;
 import android.media.ThumbnailUtils;
@@ -33,43 +30,26 @@ import android.content.pm.PackageInfo;
 import android.graphics.BitmapFactory;
 import android.content.DialogInterface;
 import android.content.ContentResolver;
+import jlab.SweetPhotoFilters.Filter.*;
 import android.content.pm.PackageManager;
-
-import jlab.SweetPhotoFilters.Filter.AverageSmoothSubFilter;
-import jlab.SweetPhotoFilters.Filter.FilterType;
-import jlab.SweetPhotoFilters.Filter.GammaCorrectionSubFilter;
-import jlab.SweetPhotoFilters.Filter.LightSubFilter;
-import jlab.SweetPhotoFilters.Filter.PixelateFilter;
-import jlab.SweetPhotoFilters.Filter.ORSubFilter;
-import jlab.SweetPhotoFilters.Filter.SharpenSubFilter;
-import jlab.SweetPhotoFilters.Filter.SmearSubFilter;
-import jlab.SweetPhotoFilters.Filter.SolarizeSubFilter;
-import jlab.SweetPhotoFilters.Filter.StampSubFilter;
-import jlab.SweetPhotoFilters.Filter.ThresholdSubFilter;
-import jlab.SweetPhotoFilters.Filter.TvFilter;
-import jlab.SweetPhotoFilters.Filter.SketchFilter;
-import jlab.SweetPhotoFilters.Filter.UnsharpSubFilter;
-import jlab.SweetPhotoFilters.Filter.WeaveSubFilter;
-import jlab.SweetPhotoFilters.Filter.XORSubFilter;
-import jlab.SweetPhotoFilters.Resource.Resource;
 import android.support.v7.app.AlertDialog;
+import android.media.MediaScannerConnection;
+import android.media.MediaMetadataRetriever;
+import android.support.design.widget.Snackbar;
+import android.support.v4.provider.DocumentFile;
+import android.graphics.drawable.BitmapDrawable;
+import jlab.SweetPhotoFilters.Resource.Resource;
 import jlab.SweetPhotoFilters.Resource.Directory;
 import jlab.SweetPhotoFilters.db.FavoriteDetails;
 import jlab.SweetPhotoFilters.db.FavoriteDbManager;
-import android.media.MediaScannerConnection;
-import android.media.MediaMetadataRetriever;
 import jlab.SweetPhotoFilters.Resource.FileResource;
-import android.support.design.widget.Snackbar;
-import android.graphics.drawable.BitmapDrawable;
-
 import com.zomato.photofilters.imageprocessors.Filter;
-import com.zomato.photofilters.imageprocessors.subfilters.BrightnessSubFilter;
-import com.zomato.photofilters.imageprocessors.subfilters.ColorOverlaySubFilter;
-import com.zomato.photofilters.imageprocessors.subfilters.ContrastSubFilter;
-import com.zomato.photofilters.imageprocessors.subfilters.SaturationSubFilter;
-import com.zomato.photofilters.imageprocessors.subfilters.VignetteSubFilter;
-
 import jlab.SweetPhotoFilters.Resource.LocalStorageDirectories;
+import com.zomato.photofilters.imageprocessors.subfilters.ContrastSubFilter;
+import com.zomato.photofilters.imageprocessors.subfilters.VignetteSubFilter;
+import com.zomato.photofilters.imageprocessors.subfilters.BrightnessSubFilter;
+import com.zomato.photofilters.imageprocessors.subfilters.SaturationSubFilter;
+import com.zomato.photofilters.imageprocessors.subfilters.ColorOverlaySubFilter;
 
 public class Utils {
     public static ArrayList<Variables> stackVars = new ArrayList<>();
@@ -164,7 +144,6 @@ public class Utils {
             return MediaStore.Images.Thumbnails.getThumbnail(resolver, id, getColumnMicroKind(), null);
         }
     };
-    public static Semaphore mutex = new Semaphore(1);
 
     public static String getSizeString(double mSize, int dec) {
         String type = "bytes";
@@ -934,19 +913,19 @@ public class Utils {
                 filter.addSubFilter(new LightSubFilter());
                 break;
             case Pixelate:
-                filter.addSubFilter(new PixelateFilter());
+                filter.addSubFilter(new PixelateSubFilter());
                 break;
             case Sketch:
-                filter.addSubFilter(new SketchFilter());
+                filter.addSubFilter(new SketchSubFilter());
                 break;
             case Tv:
-                filter.addSubFilter(new TvFilter());
+                filter.addSubFilter(new TvSubFilter());
                 break;
             case Weave:
                 filter.addSubFilter(new WeaveSubFilter());
                 break;
             case Unsharp:
-                filter.addSubFilter(new UnsharpSubFilter());
+                filter.addSubFilter(new UnsharpSubSubFilter());
                 break;
             case Threshold:
                 filter.addSubFilter(new ThresholdSubFilter());
@@ -963,8 +942,76 @@ public class Utils {
             case Sharpen:
                 filter.addSubFilter(new SharpenSubFilter());
                 break;
+            case Ripple:
+                filter.addSubFilter(new RippleSubFilter());
+                break;
+            case Rescale:
+                filter.addSubFilter(new RescaleSubFilter(1.3f));
+                break;
+            case Quantize:
+                filter.addSubFilter(new QuantizeSubFilter((int) params[0]));
+                break;
+            case Posterize:
+                filter.addSubFilter(new PosterizeSubFilter());
+                break;
+            case Pointillize:
+                filter.addSubFilter(new PointillizeSubFilter());
+                break;
+            case Oil:
+                filter.addSubFilter(new OilSubFilter());
+                break;
+            case Offset:
+                filter.addSubFilter(new OffsetSubFilter());
+                break;
+            case Noise:
+                filter.addSubFilter(new NoiseSubFilter());
+                break;
+            case Minimum:
+                filter.addSubFilter(new MinimumSubFilter());
+                break;
+            case Mask:
+                filter.addSubFilter(new MaskSubFilter());
+                break;
+            case Marble:
+                filter.addSubFilter(new MarbleSubFilter());
+                break;
+            case Invert:
+                filter.addSubFilter(new InvertSubFilter());
+                break;
+            case Gaussian:
+                filter.addSubFilter(new GaussianSubFilter(5));
+                break;
+            case Flip:
+                filter.addSubFilter(new FlipSubFilter(FlipSubFilter.FLIP_180));
+                break;
+            case Expose:
+                filter.addSubFilter(new ExposureSubFilter());
+                break;
+            case Emboss:
+                filter.addSubFilter(new EmbossSubFilter());
+                break;
+            case Edge:
+                filter.addSubFilter(new EdgeSubFilter());
+                break;
+            case Displace:
+                filter.addSubFilter(new DisplaceSubFilter());
+                break;
+            case Diffuse:
+                filter.addSubFilter(new DiffuseSubFilter());
+                break;
+            case Crystallize:
+                filter.addSubFilter(new CrystallizeSubFilter());
+                break;
+            case Contour:
+                filter.addSubFilter(new ContourSubFilter());
+                break;
+            case ColorHalftone:
+                filter.addSubFilter(new ColorHalftoneSubFilter());
+                break;
+            case Bump:
+                filter.addSubFilter(new BumpSubFilter());
+                break;
             case Other:
-                filter.addSubFilter(new SharpenSubFilter());
                 break;
         }
     }

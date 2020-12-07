@@ -32,7 +32,7 @@ public class SmartBlurFilter extends Filter {
 		width = w;
 		height = h;
 		int[] outPixels = new int[width * height];
-		Kernel kernel = GaussianFilter.makeKernel(hRadius);
+		Kernel kernel = GaussianSubFilter.makeKernel(hRadius);
 		thresholdBlur(kernel, src, outPixels, width, height, true);
 		thresholdBlur(kernel, outPixels, src, height, width, true);
 

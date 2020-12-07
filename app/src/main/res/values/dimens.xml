@@ -4,7 +4,7 @@
     <dimen name="margin_right_fbNewFileOrFolder">22dp</dimen>
     <dimen name="margin_right_tvFButton">60dp</dimen>
     <dimen name="short_margin">5dp</dimen>
-    <dimen name="middle_short_margin">2.5dp</dimen>
+    <dimen name="min_margin">.5dp</dimen>
     <dimen name="navigation_button_path_left">60dp</dimen>
     <dimen name="navigation_button_path_right">20dp</dimen>
     <dimen name="navigation_button_path">80dp</dimen>
@@ -28,5 +28,5 @@
     <dimen name="margin_bottom_tvNewFile">130dp</dimen>
     <dimen name="margin_bottom_tvNewFolder">80dp</dimen>
     <dimen name="media_textview_size">35dp</dimen>
-    <dimen name="filter_height">80dp</dimen>
+    <dimen name="filter_height">70dp</dimen>
 </resources>

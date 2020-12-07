@@ -146,7 +146,7 @@ public class DoGFilter extends Filter{
         }
 
         if (invert)
-            image2 = new InvertFilter().filter(image2, width, height);
+            image2 = new InvertSubFilter().filter(image2, width, height);
 
         return image2;
     }

@@ -153,7 +153,7 @@ public class StampSubFilter extends PointFilter {
 	@Override
 	public int[] filter(int[] src, int w, int h) {
 		int dst[] = new int[w * h];
-		dst = new GaussianFilter((int) radius).filter(src, w, h);
+		dst = new GaussianSubFilter((int) radius).filter(src, w, h);
 		lowerThreshold3 = 255 * 3 * (threshold - softness * 0.5f);
 		upperThreshold3 = 255 * 3 * (threshold + softness * 0.5f);
 		return super.filter(dst, w, h);

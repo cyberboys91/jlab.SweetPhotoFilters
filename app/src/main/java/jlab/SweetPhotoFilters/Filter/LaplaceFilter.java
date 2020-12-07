@@ -34,8 +34,8 @@ public class LaplaceFilter extends Filter {
 
     @Override
     public int[] filter(int[] src, int w, int h) {
-        int width = w;
-        int height = h;
+        width = w;
+        height = h;
 
         int[] dst = new int[w * h];
 

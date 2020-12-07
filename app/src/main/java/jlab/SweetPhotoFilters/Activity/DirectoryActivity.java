@@ -31,6 +31,7 @@ import android.util.DisplayMetrics;
 import android.app.DownloadManager;
 import jlab.SweetPhotoFilters.Resource.*;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.concurrent.Semaphore;
 import android.content.DialogInterface;
@@ -56,10 +57,15 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.design.widget.NavigationView;
 
 import static jlab.SweetPhotoFilters.Utils.specialDirectories;
+import static jlab.SweetPhotoFilters.Utils.stackVars;
+
 import android.support.design.widget.FloatingActionButton;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestBuilder;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.RequestOptions;
+import com.bumptech.glide.signature.MediaStoreSignature;
 
 public class DirectoryActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, Interfaces.ILoadThumbnailForFile,
@@ -198,7 +204,7 @@ public class DirectoryActivity extends AppCompatActivity
 
     @Override
     public Directory getDirectory(String name, String relUrl) {
-        int size = Utils.stackVars.size();
+        int size = stackVars.size();
         Directory dir;
         if (name.equals(Utils.NAME_SEARCH)) {
             showOrHideSearchFButton(false);
@@ -261,11 +267,14 @@ public class DirectoryActivity extends AppCompatActivity
     }
 
     @Override
-    public void setImage(final ImageView imageView, final String path) {
+    public void setImage(final ImageView imageView, final FileResource file) {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                final RequestBuilder<Drawable> req = Glide.with(imageView).load(path);
+                final RequestBuilder<Drawable> req = Glide.with(imageView).load(file.getRelUrl()).apply(
+                        new RequestOptions().signature(new MediaStoreSignature(file.getMimeType(),
+                                file.getModificationDate(), 0))
+                );
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -349,10 +358,10 @@ public class DirectoryActivity extends AppCompatActivity
             public boolean onQueryTextChange(String newPattern) {
                 if (!newPattern.equals("") || getDirectory() instanceof SearchDirectory) {
                     try {
-                        int indexLast = Utils.stackVars.size() - 1;
+                        int indexLast = stackVars.size() - 1;
                         if (getDirectory() instanceof SearchDirectory) {
-                            Utils.Variables var1 = Utils.stackVars.get(indexLast - 1),
-                                    var2 = Utils.stackVars.get(indexLast);
+                            Utils.Variables var1 = stackVars.get(indexLast - 1),
+                                    var2 = stackVars.get(indexLast);
                             if (var2.NameDirectory.equals(Utils.NAME_SEARCH))
                                 var2.RelUrlDirectory = String.format("%s?%s=%s&%s=%s&%s=%s", Utils.RELURL_SEARCH,
                                         Utils.NAME_KEY, var1.NameDirectory, Utils.PATH_KEY,
@@ -360,16 +369,16 @@ public class DirectoryActivity extends AppCompatActivity
                                         Utils.PATTERN_KEY, Resource.strEncode(newPattern.toLowerCase()));
                             ((SearchDirectory) getDirectory()).resetPattern(newPattern.toLowerCase(), handler);
                         } else {
-                            if (indexLast > 0 && Utils.stackVars.get(indexLast).NameDirectory.equals(Utils.NAME_SEARCH)) {
-                                Utils.stackVars.remove(indexLast);
+                            if (indexLast > 0 && stackVars.get(indexLast).NameDirectory.equals(Utils.NAME_SEARCH)) {
+                                stackVars.remove(indexLast);
                                 indexLast--;
                             }
-                            Utils.Variables var = Utils.stackVars.get(indexLast);
+                            Utils.Variables var = stackVars.get(indexLast);
                             String searchRelUrl = String.format("%s?%s=%s&%s=%s&%s=%s", Utils.RELURL_SEARCH,
                                     Utils.NAME_KEY, var.NameDirectory, Utils.PATH_KEY,
                                     Resource.strEncode(var.RelUrlDirectory), Utils.PATTERN_KEY,
                                     Resource.strEncode(newPattern.toLowerCase()));
-                            Utils.stackVars.add(new Utils.Variables(searchRelUrl, Utils.NAME_SEARCH, 0));
+                            stackVars.add(new Utils.Variables(searchRelUrl, Utils.NAME_SEARCH, 0));
                             msrlRefresh.setRefreshing(false);
                             loadDirectory();
                         }
@@ -404,7 +413,7 @@ public class DirectoryActivity extends AppCompatActivity
         Directory result = null;
         int theme = R.style.AppDefaultTheme, pathColor = R.color.accent, barColor = R.color.primary,
                 progressDrawable = R.drawable.progressbar_primary, statusBarColor = R.color.primary_dark;
-        if (Utils.stackVars.size() == 1) {
+        if (stackVars.size() == 1) {
             if (name.equals(getString(R.string.downloads_folder))) {
                 result = specialDirectories.getDownloadDirectory();
                 mnavMenuExplorer.setCheckedItem(R.id.navDownloadVideos);
@@ -664,9 +673,9 @@ public class DirectoryActivity extends AppCompatActivity
             updateLocalStorageDescription(false);
         mlcResourcesDir.loadContent();
         this.msrlRefresh.setRefreshing(false);
-        int size = Utils.stackVars.size();
+        int size = stackVars.size();
         this.handler.removeMessages(Utils.LOADING_VISIBLE);
-        final int pos = size == 0 ? 0 : Utils.stackVars.get(size - 1).BeginPosition;
+        final int pos = size == 0 ? 0 : stackVars.get(size - 1).BeginPosition;
         mlcResourcesDir.setSelection(pos);
         if (!Utils.lostConnection && mlcResourcesDir.isEmpty()) {
             this.mtvEmptyFolder.setText(R.string.empty_folder);
@@ -720,7 +729,7 @@ public class DirectoryActivity extends AppCompatActivity
     @Override
     protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putParcelableArrayList(STACK_VARS_KEY, Utils.stackVars);
+        outState.putParcelableArrayList(STACK_VARS_KEY, stackVars);
         outState.putString(Utils.HOST_SERVER_KEY, Utils.hostServer);
         outState.putString(Utils.PORT_SERVER_KEY, Utils.portServer);
         outState.putString(NAME_DOWNLOAD_DIR_KEY, Utils.pathStorageDownload);
@@ -795,12 +804,12 @@ public class DirectoryActivity extends AppCompatActivity
         if (this.mdrawer.isDrawerOpen(GravityCompat.START))
             this.mdrawer.closeDrawer(GravityCompat.START);
         else {
-            if (Utils.stackVars.size() == 1) {
+            if (stackVars.size() == 1) {
                 super.onBackPressed();
                 overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
             }
             else {
-                if (!Utils.stackVars.isEmpty())
+                if (!stackVars.isEmpty())
                     handler.sendEmptyMessage(Utils.SCROLLER_PATH);
                 mlcResourcesDir.loadParentDirectory();
             }
@@ -808,8 +817,8 @@ public class DirectoryActivity extends AppCompatActivity
     }
 
     private void updateBeginPosition(int position) {
-        if (!Utils.stackVars.isEmpty())
-            Utils.stackVars.get(Utils.stackVars.size() - 1).BeginPosition = position;
+        if (!stackVars.isEmpty())
+            stackVars.get(stackVars.size() - 1).BeginPosition = position;
     }
 
     private void lostConnection() {
@@ -820,7 +829,7 @@ public class DirectoryActivity extends AppCompatActivity
 
     private void loadFromBundle(Bundle savedInstanceState) {
         if (savedInstanceState != null && savedInstanceState.containsKey(STACK_VARS_KEY)) {
-            Utils.stackVars = savedInstanceState.getParcelableArrayList(STACK_VARS_KEY);
+            stackVars = savedInstanceState.getParcelableArrayList(STACK_VARS_KEY);
             Utils.hostServer = savedInstanceState.getString(Utils.HOST_SERVER_KEY);
             Utils.portServer = savedInstanceState.getString(Utils.PORT_SERVER_KEY);
             Utils.urlServer = String.format("http://%s:%s", Utils.hostServer, Utils.portServer);
@@ -905,27 +914,27 @@ public class DirectoryActivity extends AppCompatActivity
             nameDirSpecial = getString(R.string.all_images);
 
         isRemoteDirectory = false;
-        Utils.stackVars.clear();
+        stackVars.clear();
         if (id == R.id.navImages) {
-            Utils.stackVars.add(new Utils.Variables(Utils.RELURL_SPECIAL_DIR, nameDirSpecial, 0));
+            stackVars.add(new Utils.Variables(Utils.RELURL_SPECIAL_DIR, nameDirSpecial, 0));
             this.toolbar.setTitle(R.string.all_images);
         }
         else if(id == R.id.navCameraVideos) {
-            Utils.stackVars.add(new Utils.Variables(Utils.RELURL_SPECIAL_DIR, getString(R.string.camera_folder), 0));
+            stackVars.add(new Utils.Variables(Utils.RELURL_SPECIAL_DIR, getString(R.string.camera_folder), 0));
             this.toolbar.setTitle(R.string.camera_folder);
         }
         else if(id == R.id.navDownloadVideos) {
-            Utils.stackVars.add(new Utils.Variables(Utils.RELURL_SPECIAL_DIR, getString(R.string.downloads_folder), 0));
+            stackVars.add(new Utils.Variables(Utils.RELURL_SPECIAL_DIR, getString(R.string.downloads_folder), 0));
             this.toolbar.setTitle(R.string.downloads_folder);
         }
         else if(id == R.id.navFavoriteVideos)
         {
-            Utils.stackVars.add(new Utils.Variables(Utils.RELURL_SPECIAL_DIR, getString(R.string.favorite_folder), 0));
+            stackVars.add(new Utils.Variables(Utils.RELURL_SPECIAL_DIR, getString(R.string.favorite_folder), 0));
             this.toolbar.setTitle(R.string.favorite_folder);
         }
         else if(id == R.id.navAlbumsVideos)
         {
-            Utils.stackVars.add(new Utils.Variables(Utils.RELURL_SPECIAL_DIR, getString(R.string.albums_folder), 0));
+            stackVars.add(new Utils.Variables(Utils.RELURL_SPECIAL_DIR, getString(R.string.albums_folder), 0));
             this.toolbar.setTitle(R.string.albums_folder);
         }
         this.mdrawer.closeDrawer(GravityCompat.START);

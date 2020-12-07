@@ -23,8 +23,8 @@ import jlab.SweetPhotoFilters.Filter.math.ImageMath;
  */
 public class GainFilter extends TransferFilter {
 
-	private float gain = 0.5f;
-	private float bias = 0.5f;
+	private float gain = 1.5f;
+	private float bias = 1.5f;
 
 	protected float transferFunction(float f) {
 		f = ImageMath.gain(f, gain);

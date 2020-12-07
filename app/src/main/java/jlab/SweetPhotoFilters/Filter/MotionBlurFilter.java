@@ -177,10 +177,8 @@ public class MotionBlurFilter extends Filter {
 
 	@Override
 	public int[] filter(int[] src, int w, int h) {
-		int width = w;
-		int height = h;
-
-		int[] inPixels = src;
+		width = w;
+		height = h;
 		int[] outPixels = new int[width * height];
 
 		//float sinAngle = (float)Math.sin(angle);
@@ -200,7 +198,7 @@ public class MotionBlurFilter extends Filter {
 		float[] p = new float[2];
 
 		if (premultiplyAlpha)
-			ImageMath.premultiply(inPixels, 0, inPixels.length);
+			ImageMath.premultiply(src, 0, src.length);
 
 		for (int y = 0; y < height; y++) {
 			for (int x = 0; x < width; x++) {
@@ -240,26 +238,26 @@ public class MotionBlurFilter extends Filter {
 					}
 
 					count++;
-					int rgb = inPixels[newY * width + newX];
+					int rgb = src[newY * width + newX];
 					a += (rgb >> 24) & 0xff;
 					r += (rgb >> 16) & 0xff;
 					g += (rgb >> 8) & 0xff;
 					b += rgb & 0xff;
 				}
 				if (count == 0) {
-					outPixels[index] = inPixels[index];
+					outPixels[index] = src[index];
 				} else {
-					a = PixelUtils.clamp((int) (a / count));
-					r = PixelUtils.clamp((int) (r / count));
-					g = PixelUtils.clamp((int) (g / count));
-					b = PixelUtils.clamp((int) (b / count));
+					a = PixelUtils.clamp((a / count));
+					r = PixelUtils.clamp((r / count));
+					g = PixelUtils.clamp((g / count));
+					b = PixelUtils.clamp((b / count));
 					outPixels[index] = (a << 24) | (r << 16) | (g << 8) | b;
 				}
 				index++;
 			}
 		}
 		if (premultiplyAlpha) {
-			ImageMath.unpremultiply(outPixels, 0, inPixels.length);
+			ImageMath.unpremultiply(outPixels, 0, src.length);
 		}
 		return outPixels;
 	}

@@ -17,5 +17,5 @@ public enum  FilterType {
     Pixelate,
     Sketch,
     Tv,
-    Weave, Unsharp, Threshold, Stamp, Solarize, Other, Smear, Sharpen,
+    Weave, Unsharp, Threshold, Stamp, Solarize, Other, Smear, Sharpen, Ripple, Rescale, Quantize, Posterize, Pointillize, Oil, Offset, Noise, Minimum, Mask, Marble, Invert, Gaussian, Flip, Expose, Emboss, Edge, Displace, Diffuse, Crystallize, Contour, ColorHalftone, Bump,
 }

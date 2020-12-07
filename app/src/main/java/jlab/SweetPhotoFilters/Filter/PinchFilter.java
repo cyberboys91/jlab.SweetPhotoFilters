@@ -35,7 +35,8 @@ public class PinchFilter extends TransformFilter {
 	private float width;
 	private float height;
 
-	public PinchFilter() {
+	public PinchFilter(int radius) {
+		this.radius = radius;
 	}
 
 	/**

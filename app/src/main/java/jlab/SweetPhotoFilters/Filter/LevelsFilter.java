@@ -26,10 +26,10 @@ import jlab.SweetPhotoFilters.Filter.util.PixelUtils;
 public class LevelsFilter extends WholeImageFilter {
 
 	private int[][] lut;
-	private float lowLevel = 0;
-	private float highLevel = 1;
-	private float lowOutputLevel = 0;
-	private float highOutputLevel = 1;
+	private float lowLevel = 10;
+	private float highLevel = 20;
+	private float lowOutputLevel = 10;
+	private float highOutputLevel = 20;
 
 	public LevelsFilter() {
 	}
