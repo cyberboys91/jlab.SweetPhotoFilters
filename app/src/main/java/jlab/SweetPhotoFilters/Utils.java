@@ -1011,7 +1011,56 @@ public class Utils {
             case Bump:
                 filter.addSubFilter(new BumpSubFilter());
                 break;
+            case HgayanOne:
+                filter.addSubFilter(new HgayanOneSubFilter());
+                break;
+            case HgayanTwo:
+                filter.addSubFilter(new HgayanTwoSubFilter());
+                break;
+            case HgayanThree:
+                filter.addSubFilter(new HgayanThreeSubFilter());
+                break;
+            case HgayanFour:
+                filter.addSubFilter(new HgayanFourSubFilter());
+                break;
+            case HgayanFive:
+                filter.addSubFilter(new HgayanFiveSubFilter());
+                break;
+            case HgayanSix:
+                filter.addSubFilter(new HgayanSixSubFilter());
+                break;
+            case HgayanSeven:
+                filter.addSubFilter(new HgayanSevenSubFilter());
+                break;
+            case HgayanEight:
+                filter.addSubFilter(new HgayanEightSubFilter());
+                break;
+            case HgayanNine:
+                filter.addSubFilter(new HgayanNineSubFilter());
+                break;
+            case HgayanTen:
+                filter.addSubFilter(new HgayanTenSubFilter());
+                break;
+            case HgayanEleven:
+                filter.addSubFilter(new HgayanElevenSubFilter());
+                break;
+            case HgayanTwelve:
+                filter.addSubFilter(new HgayanTwelveSubFilter());
+                break;
+            case HgayanThirteen:
+                filter.addSubFilter(new HgayanThirteenSubFilter());
+                break;
+            case HgayanFourteen:
+                filter.addSubFilter(new HgayanFourteenSubFilter());
+                break;
+            case HgayanFifteen:
+                filter.addSubFilter(new HgayanFifteenSubFilter());
+                break;
+            case HgayanSixteen:
+                filter.addSubFilter(new HgayanSixteenSubFilter());
+                break;
             case Other:
+                filter.addSubFilter(new HgayanSixteenSubFilter());
                 break;
         }
     }

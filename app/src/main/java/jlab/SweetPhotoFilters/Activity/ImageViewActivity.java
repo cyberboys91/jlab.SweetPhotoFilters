@@ -234,7 +234,22 @@ public class ImageViewActivity extends AppCompatActivity implements View.OnTouch
                 ivDisplaceFilter = (ImageView) findViewById(R.id.ivDisplaceFilter),
                 ivContourFilter = (ImageView) findViewById(R.id.ivContourFilter),
                 ivColorHalftoneFilter = (ImageView) findViewById(R.id.ivColorHalftoneFilter),
-                ivBumpFilter = (ImageView) findViewById(R.id.ivBumpFilter);
+                ivBumpFilter = (ImageView) findViewById(R.id.ivBumpFilter),
+                ivHgayanOneFilter = (ImageView) findViewById(R.id.ivHgayanOneFilter),
+//                ivHgayanTwoFilter = (ImageView) findViewById(R.id.ivHgayanTwoFilter),
+                ivHgayanThreeFilter = (ImageView) findViewById(R.id.ivHgayanThreeFilter),
+                ivHgayanFourFilter = (ImageView) findViewById(R.id.ivHgayanFourFilter),
+                ivHgayanFiveFilter = (ImageView) findViewById(R.id.ivHgayanFiveFilter),
+                ivHgayanSixFilter = (ImageView) findViewById(R.id.ivHgayanSixFilter),
+                ivHgayanSevenFilter = (ImageView) findViewById(R.id.ivHgayanSevenFilter),
+                ivHgayanEightFilter = (ImageView) findViewById(R.id.ivHgayanEightFilter),
+//                ivHgayanNineFilter = (ImageView) findViewById(R.id.ivHgayanNineFilter),
+                ivHgayanTenFilter = (ImageView) findViewById(R.id.ivHgayanTenFilter),
+                ivHgayanElevenFilter = (ImageView) findViewById(R.id.ivHgayanElevenFilter),
+                ivHgayanTwelveFilter = (ImageView) findViewById(R.id.ivHgayanTwelveFilter),
+                ivHgayanFourteenFilter = (ImageView) findViewById(R.id.ivHgayanFourteenFilter),
+                ivHgayanFifteenFilter = (ImageView) findViewById(R.id.ivHgayanFifteenFilter),
+                ivHgayanSixteenFilter = (ImageView) findViewById(R.id.ivHgayanSixteenFilter);
 
         ivBrightnessFilter.setOnClickListener(applyFilterAux(FilterType.Brightness, 60));
         ivHightBrightnessFilter.setOnClickListener(applyFilterAux(FilterType.Brightness, 90));
@@ -287,6 +302,19 @@ public class ImageViewActivity extends AppCompatActivity implements View.OnTouch
         ivContourFilter.setOnClickListener(applyFilterAux(FilterType.Contour));
         ivColorHalftoneFilter.setOnClickListener(applyFilterAux(FilterType.ColorHalftone));
         ivBumpFilter.setOnClickListener(applyFilterAux(FilterType.Bump));
+        ivHgayanOneFilter.setOnClickListener(applyFilterAux(FilterType.HgayanOne));
+        ivHgayanThreeFilter.setOnClickListener(applyFilterAux(FilterType.HgayanThree));
+        ivHgayanFourFilter.setOnClickListener(applyFilterAux(FilterType.HgayanFour));
+        ivHgayanFiveFilter.setOnClickListener(applyFilterAux(FilterType.HgayanFive));
+        ivHgayanSixFilter.setOnClickListener(applyFilterAux(FilterType.HgayanSix));
+        ivHgayanSevenFilter.setOnClickListener(applyFilterAux(FilterType.HgayanSeven));
+        ivHgayanEightFilter.setOnClickListener(applyFilterAux(FilterType.HgayanEight));
+        ivHgayanTenFilter.setOnClickListener(applyFilterAux(FilterType.HgayanTen));
+        ivHgayanElevenFilter.setOnClickListener(applyFilterAux(FilterType.HgayanEleven));
+        ivHgayanTwelveFilter.setOnClickListener(applyFilterAux(FilterType.HgayanTwelve));
+        ivHgayanFourteenFilter.setOnClickListener(applyFilterAux(FilterType.HgayanFourteen));
+        ivHgayanFifteenFilter.setOnClickListener(applyFilterAux(FilterType.HgayanFifteen));
+        ivHgayanSixteenFilter.setOnClickListener(applyFilterAux(FilterType.HgayanSixteen));
 //        ivOtherFilter.setOnClickListener(applyFilterAux(FilterType.Other));
     }
 
