@@ -7,24 +7,23 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.View;
 import java.util.ArrayList;
-import java.util.concurrent.Semaphore;
-
 import android.view.MenuItem;
 import android.content.Intent;
 import android.view.ViewGroup;
 import android.graphics.Bitmap;
 import jlab.SweetPhotoFilters.R;
 import android.view.MotionEvent;
-import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.AdapterView;
 import android.widget.LinearLayout;
 import android.view.LayoutInflater;
 import jlab.SweetPhotoFilters.Utils;
 import android.graphics.BitmapFactory;
+import java.util.concurrent.Semaphore;
 import jlab.SweetPhotoFilters.Interfaces;
 import android.support.v7.widget.Toolbar;
 import android.support.annotation.NonNull;
+import android.widget.HorizontalScrollView;
 import android.view.animation.AnimationUtils;
 import com.zomato.photofilters.geometry.Point;
 import jlab.SweetPhotoFilters.Filter.FilterType;
@@ -36,20 +35,33 @@ import jlab.SweetPhotoFilters.View.ZoomImageView;
 import jlab.SweetPhotoFilters.Resource.LocalFile;
 import jlab.SweetPhotoFilters.db.FavoriteDetails;
 import android.support.design.widget.AppBarLayout;
+
+import static jlab.SweetPhotoFilters.Activity.DirectoryActivity.STACK_VARS_KEY;
+import static jlab.SweetPhotoFilters.Utils.isEqual;
+import static jlab.SweetPhotoFilters.Utils.rateApp;
 import jlab.SweetPhotoFilters.Resource.FileResource;
+import static jlab.SweetPhotoFilters.Utils.stackVars;
+import static jlab.SweetPhotoFilters.Utils.isFavorite;
 import com.zomato.photofilters.imageprocessors.Filter;
 import jlab.SweetPhotoFilters.Resource.LocalDirectory;
 import static jlab.SweetPhotoFilters.Utils.ApplyFilter;
+import static jlab.SweetPhotoFilters.Utils.showSnackBar;
+import static jlab.SweetPhotoFilters.Utils.recycleBitmap;
+import static jlab.SweetPhotoFilters.Utils.DIRECTORY_KEY;
 import com.zomato.photofilters.imageprocessors.SubFilter;
 import jlab.SweetPhotoFilters.View.ResourceDetailsAdapter;
 import android.support.design.widget.FloatingActionButton;
+import static jlab.SweetPhotoFilters.Utils.showAboutDialog;
 import jlab.SweetPhotoFilters.View.ImageSwipeRefreshLayout;
+import static jlab.SweetPhotoFilters.Utils.saveFavoriteData;
+import static jlab.SweetPhotoFilters.Utils.INDEX_CURRENT_KEY;
+import static jlab.SweetPhotoFilters.Utils.RESOURCE_PATH_KEY;
+import static jlab.SweetPhotoFilters.Utils.deleteFavoriteData;
 import static jlab.SweetPhotoFilters.Utils.specialDirectories;
 import jlab.SweetPhotoFilters.Resource.LocalStorageDirectories;
 import jlab.SweetPhotoFilters.Activity.Fragment.DetailsFragment;
 import static jlab.SweetPhotoFilters.Utils.saveBitmapToAppFolder;
-import static jlab.SweetPhotoFilters.Utils.stackVars;
-
+import static jlab.SweetPhotoFilters.Utils.RESOURCE_FOR_DETAILS_KEY;
 import jlab.SweetPhotoFilters.View.ResourceDetailsAdapter.OnGetSetViewListener;
 
 /*
@@ -59,8 +71,7 @@ import jlab.SweetPhotoFilters.View.ResourceDetailsAdapter.OnGetSetViewListener;
 public class ImageViewActivity extends AppCompatActivity implements View.OnTouchListener, OnGetSetViewListener,
         AdapterView.OnItemSelectedListener, AdapterView.OnItemClickListener {
 
-    private static final short MAX_WIDTH_SUPPORT = 1080
-            , MAX_HEIGHT_SUPPORT = 1080;
+    private static final short MAX_WIDTH_SUPPORT = 1080, MAX_HEIGHT_SUPPORT = 1080;
     private FileResource resource;
     private Toolbar toolbar;
     private AppBarLayout barImage;
@@ -68,9 +79,7 @@ public class ImageViewActivity extends AppCompatActivity implements View.OnTouch
     private int currentIndex = 0;
     private Directory directory;
     private LayoutInflater mlInflater;
-    private ResourceDetailsAdapter adapter;
     private LinearLayout layoutFilters, layoutActions;
-    private HorizontalScrollView hsvFilters;
     private ZoomImageView currentView;
     private Filter filter;
     private boolean loadingImage, savingFilter, invalidImage;
@@ -78,6 +87,7 @@ public class ImageViewActivity extends AppCompatActivity implements View.OnTouch
     private Bitmap bmCurrent;
     public Semaphore mutex = new Semaphore(1);
     public Semaphore mutexSave = new Semaphore(1);
+    private FloatingActionButton fbSave, fbCancel, fbUndo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,11 +100,11 @@ public class ImageViewActivity extends AppCompatActivity implements View.OnTouch
         this.barImage = (AppBarLayout) findViewById(R.id.ablImageBar);
         this.gallery = (ImageGallery) findViewById(R.id.gallery);
         this.layoutFilters = (LinearLayout) findViewById(R.id.llFilters);
-        this.hsvFilters = (HorizontalScrollView) findViewById(R.id.hsvFilters);
+        HorizontalScrollView hsvFilters = (HorizontalScrollView) findViewById(R.id.hsvFilters);
         this.layoutActions = (LinearLayout) findViewById(R.id.llActionButtons);
-        FloatingActionButton fbSave = (FloatingActionButton) findViewById(R.id.fbSaveFilter),
-                fbCancel = (FloatingActionButton) findViewById(R.id.fbCancelFilter),
-                fbUndo = (FloatingActionButton) findViewById(R.id.fbUndoFilter);
+        fbSave = (FloatingActionButton) findViewById(R.id.fbSaveFilter);
+        fbCancel = (FloatingActionButton) findViewById(R.id.fbCancelFilter);
+        fbUndo = (FloatingActionButton) findViewById(R.id.fbUndoFilter);
         fbSave.setOnClickListener(saveFilterOnClick);
         fbCancel.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -107,17 +117,17 @@ public class ImageViewActivity extends AppCompatActivity implements View.OnTouch
         this.filter = new Filter();
         Utils.currentActivity = this;
         Utils.viewForSnack = gallery;
-        Uri uri = savedInstanceState != null && savedInstanceState.containsKey(Utils.RESOURCE_PATH_KEY)
-                ? Uri.parse(savedInstanceState.getString(Utils.RESOURCE_PATH_KEY))
+        Uri uri = savedInstanceState != null && savedInstanceState.containsKey(RESOURCE_PATH_KEY)
+                ? Uri.parse(savedInstanceState.getString(RESOURCE_PATH_KEY))
                 : getIntent().getData();
         loadResource(uri);
         this.toolbar = (Toolbar) findViewById(R.id.toolbar);
         this.toolbar.setTitleTextAppearance(this, R.style.ToolBarApparence);
         this.toolbar.setTitle(resource.getName());
         setSupportActionBar(toolbar);
-        loadDirectory(savedInstanceState != null && savedInstanceState.containsKey(Utils.DIRECTORY_KEY)
+        loadFromBundle(savedInstanceState != null && savedInstanceState.containsKey(DIRECTORY_KEY)
                 ? savedInstanceState : getIntent().getExtras());
-        adapter = new ResourceDetailsAdapter();
+        ResourceDetailsAdapter adapter = new ResourceDetailsAdapter();
         adapter.addAll(directory.getContent());
         adapter.setonGetSetViewListener(this);
         gallery.setOnItemSelectedListener(this);
@@ -133,8 +143,16 @@ public class ImageViewActivity extends AppCompatActivity implements View.OnTouch
         hsvFilters.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                if(event.getAction() == MotionEvent.ACTION_MOVE)
-                    layoutFilters.startAnimation(AnimationUtils.loadAnimation(getBaseContext(), R.anim.alpha_in_out_layout));
+                if (event.getAction() == MotionEvent.ACTION_MOVE)
+                    layoutFilters.startAnimation(AnimationUtils.loadAnimation(getBaseContext(), R.anim.alpha_out_layout));
+                return false;
+            }
+        });
+        toolbar.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if (event.getAction() == MotionEvent.ACTION_MOVE)
+                    barImage.startAnimation(AnimationUtils.loadAnimation(getBaseContext(), R.anim.alpha_out_layout));
                 return false;
             }
         });
@@ -166,7 +184,7 @@ public class ImageViewActivity extends AppCompatActivity implements View.OnTouch
         return inSampleSize;
     }
 
-    private boolean loadBitmapForResource (boolean showError) {
+    private boolean loadBitmapForResource(boolean showError) {
         try {
             BitmapFactory.Options options = new BitmapFactory.Options();
             options.inMutable = true;
@@ -188,7 +206,7 @@ public class ImageViewActivity extends AppCompatActivity implements View.OnTouch
         } catch (Exception | OutOfMemoryError ignored) {
             ignored.printStackTrace();
             if (showError)
-                Utils.showSnackBar(R.string.loading_image_error);
+                showSnackBar(R.string.loading_image_error);
             return false;
         }
     }
@@ -335,7 +353,7 @@ public class ImageViewActivity extends AppCompatActivity implements View.OnTouch
         ivOtherFilter.setOnClickListener(applyFilterAux(FilterType.Other));
     }
 
-    private View.OnClickListener applyFilterAux(final FilterType filterType,  final float ...params) {
+    private View.OnClickListener applyFilterAux(final FilterType filterType, final float... params) {
         return new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -343,9 +361,9 @@ public class ImageViewActivity extends AppCompatActivity implements View.OnTouch
                     @Override
                     public void run() {
                         if (loadingImage)
-                            Utils.showSnackBar(R.string.loading_image);
-                        else if(invalidImage)
-                            Utils.showSnackBar(R.string.invalid_image);
+                            showSnackBar(R.string.loading_image);
+                        else if (invalidImage)
+                            showSnackBar(R.string.invalid_image);
                         else {
                             try {
                                 mutex.acquire();
@@ -363,12 +381,12 @@ public class ImageViewActivity extends AppCompatActivity implements View.OnTouch
                                     @Override
                                     public void run() {
                                         if (error) {
-                                            Utils.showSnackBar(R.string.loading_image_error);
+                                            showSnackBar(R.string.loading_image_error);
                                             filter.getSubFilters().remove(filter.getSubFilters().size() - 1);
-                                            loadActionsLayout();
+                                            loadActionsLayout(true);
                                         } else {
                                             aux.setImageBitmap(bmCurrent);
-                                            loadActionsLayout();
+                                            loadActionsLayout(true);
                                         }
                                         mutex.release();
                                         loadingImage = false;
@@ -398,9 +416,9 @@ public class ImageViewActivity extends AppCompatActivity implements View.OnTouch
             @Override
             public void run() {
                 if (loadingImage)
-                    Utils.showSnackBar(R.string.loading_image);
-                else if(invalidImage)
-                    Utils.showSnackBar(R.string.invalid_image);
+                    showSnackBar(R.string.loading_image);
+                else if (invalidImage)
+                    showSnackBar(R.string.invalid_image);
                 else {
                     try {
                         mutex.acquire();
@@ -429,7 +447,7 @@ public class ImageViewActivity extends AppCompatActivity implements View.OnTouch
                             public void run() {
                                 if (!load) {
                                     filter.addSubFilters(subFilters);
-                                    loadActionsLayout();
+                                    loadActionsLayout(true);
                                 } else
                                     aux.setImageBitmap(bmCurrent);
                                 mutex.release();
@@ -460,9 +478,9 @@ public class ImageViewActivity extends AppCompatActivity implements View.OnTouch
                 @Override
                 public void run() {
                     if (loadingImage)
-                        Utils.showSnackBar(R.string.loading_image);
-                    else if(invalidImage)
-                        Utils.showSnackBar(R.string.invalid_image);
+                        showSnackBar(R.string.loading_image);
+                    else if (invalidImage)
+                        showSnackBar(R.string.invalid_image);
                     else {
                         int countFilters = filter.getSubFilters().size();
                         if (countFilters > 0) {
@@ -491,14 +509,14 @@ public class ImageViewActivity extends AppCompatActivity implements View.OnTouch
                                             @Override
                                             public void run() {
                                                 if (error) {
-                                                    Utils.showSnackBar(R.string.loading_image_error);
+                                                    showSnackBar(R.string.loading_image_error);
                                                     filter.addSubFilter(removedSubFilter);
                                                     bmCurrent = copy;
-                                                    loadActionsLayout();
+                                                    loadActionsLayout(true);
                                                 } else {
                                                     aux.setImageBitmap(bmCurrent);
-                                                    Utils.recycleBitmap(copy);
-                                                    loadActionsLayout();
+                                                    recycleBitmap(copy);
+                                                    loadActionsLayout(true);
                                                 }
                                                 mutex.release();
                                                 loadingImage = false;
@@ -538,14 +556,14 @@ public class ImageViewActivity extends AppCompatActivity implements View.OnTouch
         @Override
         public void onClick(View v) {
             if (savingFilter)
-                Utils.showSnackBar(R.string.saving_image_wait);
-            else if(invalidImage)
-                Utils.showSnackBar(R.string.invalid_image);
+                showSnackBar(R.string.saving_image_wait);
+            else if (invalidImage)
+                showSnackBar(R.string.invalid_image);
             else {
                 try {
                     mutexSave.acquire();
                     savingFilter = true;
-                    Utils.showSnackBar(R.string.saving_image);
+                    showSnackBar(R.string.saving_image);
                     final String name = resource.getName();
                     final Bitmap aux = Bitmap.createBitmap(bmCurrent);
                     new Thread(new Runnable() {
@@ -553,25 +571,25 @@ public class ImageViewActivity extends AppCompatActivity implements View.OnTouch
                         public void run() {
                             String saveName = saveBitmapToAppFolder(aux, name);
                             if (saveName != null) {
-                                Utils.showSnackBar(String.format("%s \"%s\"", getString(R.string.save_image_complete),
+                                showSnackBar(String.format("%s \"%s\"", getString(R.string.save_image_complete),
                                         saveName));
                                 aux.recycle();
                             } else
-                                Utils.showSnackBar(R.string.error_saving_image);
+                                showSnackBar(R.string.error_saving_image);
                             savingFilter = false;
                             mutexSave.release();
                         }
                     }).start();
                 } catch (InterruptedException e) {
                     e.printStackTrace();
-                    Utils.showSnackBar(R.string.error_saving_image);
+                    showSnackBar(R.string.error_saving_image);
                     mutexSave.release();
                 }
             }
         }
     };
 
-    private Point getImageDimension (int realWidth, int realHeight) {
+    private Point getImageDimension(int realWidth, int realHeight) {
         int width = realWidth, height = realHeight;
         if (realHeight > MAX_HEIGHT_SUPPORT) {
             height = MAX_HEIGHT_SUPPORT;
@@ -588,9 +606,11 @@ public class ImageViewActivity extends AppCompatActivity implements View.OnTouch
         return new Point(width, height);
     }
 
-    private void loadDirectory(Bundle bundle) {
-        String name = bundle != null ? bundle.getString(Utils.DIRECTORY_KEY) : "";
-        currentIndex = bundle != null ? bundle.getInt(Utils.INDEX_CURRENT_KEY) : 0;
+    private void loadFromBundle(Bundle bundle) {
+        String name = bundle != null ? bundle.getString(DIRECTORY_KEY) : "";
+        currentIndex = bundle != null ? bundle.getInt(INDEX_CURRENT_KEY) : 0;
+        if (bundle != null && bundle.containsKey(STACK_VARS_KEY))
+            stackVars = bundle.getParcelableArrayList(STACK_VARS_KEY);
         directory = getSpecialDirectory(name);
         if (directory == null)
             loadParentDirectoryFromResource(name);
@@ -613,7 +633,7 @@ public class ImageViewActivity extends AppCompatActivity implements View.OnTouch
                     directory.getContent().add(current);
                     index++;
                 }
-                if (Utils.isEqual(current.getRelUrl(), resource.getRelUrl())) {
+                if (isEqual(current.getRelUrl(), resource.getRelUrl())) {
                     if (!add) {
                         directory.getContent().add(current);
                         currentIndex = index;
@@ -672,7 +692,7 @@ public class ImageViewActivity extends AppCompatActivity implements View.OnTouch
             new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    final boolean isFavorite = Utils.isFavorite(resource);
+                    final boolean isFavorite = isFavorite(resource);
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -700,12 +720,12 @@ public class ImageViewActivity extends AppCompatActivity implements View.OnTouch
             case R.id.mnFavorite:
                 if (resource.isImage()) {
                     if (!resource.getFavoriteStateLoad())
-                        Utils.isFavorite(resource);
+                        isFavorite(resource);
 
                     if (resource.isFavorite())
-                        resource.setIsFavorite(false, Utils.deleteFavoriteData(resource.getIdFavorite()));
+                        resource.setIsFavorite(false, deleteFavoriteData(resource.getIdFavorite()));
                     else
-                        resource.setIsFavorite(true, Utils.saveFavoriteData(new FavoriteDetails(resource.getRelUrl(),
+                        resource.setIsFavorite(true, saveFavoriteData(new FavoriteDetails(resource.getRelUrl(),
                                 resource.getComment(), resource.getParentName(), resource.mSize, resource.getModificationDate())));
 
                     item.setIcon(resource.isFavorite()
@@ -740,20 +760,20 @@ public class ImageViewActivity extends AppCompatActivity implements View.OnTouch
                 break;
             case R.id.mnRateApp:
                 try {
-                    Utils.rateApp();
+                    rateApp();
                 } catch (Exception ignored) {
                     ignored.printStackTrace();
                 }
                 break;
             case R.id.mnAbout:
-                Utils.showAboutDialog();
+                showAboutDialog();
                 break;
             case R.id.mnDetails:
                 //Details
                 try {
                     DetailsFragment details = new DetailsFragment();
                     Bundle bundle = new Bundle();
-                    bundle.putSerializable(Utils.RESOURCE_FOR_DETAILS_KEY, resource);
+                    bundle.putSerializable(RESOURCE_FOR_DETAILS_KEY, resource);
                     details.setArguments(bundle);
                     details.show(getFragmentManager(), "jlab.Details");
                 } catch (Exception exp) {
@@ -770,9 +790,10 @@ public class ImageViewActivity extends AppCompatActivity implements View.OnTouch
     @Override
     protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putString(Utils.DIRECTORY_KEY, directory.getName());
-        outState.putInt(Utils.INDEX_CURRENT_KEY, currentIndex);
-        outState.putString(Utils.RESOURCE_PATH_KEY, resource.getAbsUrl());
+        outState.putString(DIRECTORY_KEY, directory.getName());
+        outState.putInt(INDEX_CURRENT_KEY, currentIndex);
+        outState.putString(RESOURCE_PATH_KEY, resource.getAbsUrl());
+        outState.putParcelableArrayList(STACK_VARS_KEY, stackVars);
     }
 
     @Override
@@ -802,12 +823,13 @@ public class ImageViewActivity extends AppCompatActivity implements View.OnTouch
                     public void run() {
                         try {
                             mutex.acquire();
-                            if(currentIndex != index)
+                            if (currentIndex != index)
                                 mutex.release();
                             else {
                                 currentView = view.findViewById(R.id.ivImageContent);
                                 loadingImage = true;
-                                stackVars.get(stackVars.size() - 1).BeginPosition = index;
+                                if (stackVars != null && !stackVars.isEmpty())
+                                    stackVars.get(stackVars.size() - 1).BeginPosition = index;
                                 resource = (FileResource) directory.getResource(index);
                                 filter.clearSubFilters();
                                 if (loadBitmapForResource(true)) {
@@ -862,16 +884,25 @@ public class ImageViewActivity extends AppCompatActivity implements View.OnTouch
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-        barImage.startAnimation(AnimationUtils.loadAnimation(getBaseContext(), R.anim.alpha_in_out));
-        layoutFilters.startAnimation(AnimationUtils.loadAnimation(getBaseContext(), R.anim.alpha_in_out_filter_layout));
-        loadActionsLayout();
+        if (layoutFilters.getAnimation() == null || (layoutFilters.getAnimation() != null && layoutFilters.getAnimation().hasEnded()))
+            layoutFilters.startAnimation(AnimationUtils.loadAnimation(getBaseContext(), R.anim.alpha_in_out_layout));
+        if (barImage.getAnimation() == null || (barImage.getAnimation() != null
+                && barImage.getAnimation().hasEnded()))
+            barImage.startAnimation(AnimationUtils.loadAnimation(getBaseContext(), R.anim.alpha_in_out_layout));
+        loadActionsLayout(false);
     }
 
-    private void loadActionsLayout() {
+    private void loadActionsLayout(boolean animFilters) {
         int size = filter.getSubFilters().size();
-        if (size > 0)
-            layoutActions.startAnimation(AnimationUtils.loadAnimation(getBaseContext(), R.anim.alpha_in_out_filter_layout));
-        else
+        if (size > 0 && (layoutActions.getAnimation() == null || (layoutActions.getAnimation() != null
+                && layoutActions.getAnimation().hasEnded()))) {
+            layoutActions.startAnimation(AnimationUtils.loadAnimation(getBaseContext(), R.anim.alpha_out_layout));
+            if (animFilters)
+                layoutFilters.startAnimation(AnimationUtils.loadAnimation(getBaseContext(), R.anim.alpha_out_layout));
+            fbSave.startAnimation(AnimationUtils.loadAnimation(getBaseContext(), R.anim.in_out_save_button));
+            fbUndo.startAnimation(AnimationUtils.loadAnimation(getBaseContext(), R.anim.in_out_undo_button));
+            fbCancel.startAnimation(AnimationUtils.loadAnimation(getBaseContext(), R.anim.in_out_cancel_button));
+        } else if (size == 0)
             layoutActions.clearAnimation();
     }
 }
