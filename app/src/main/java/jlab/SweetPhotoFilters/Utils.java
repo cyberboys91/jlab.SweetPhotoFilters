@@ -52,9 +52,6 @@ import com.zomato.photofilters.imageprocessors.subfilters.ColorOverlaySubFilter;
 
 public class Utils {
     public static ArrayList<Variables> stackVars = new ArrayList<>();
-    public static String hostServer = "192.168.43.40";
-    public static String portServer = "9101";
-    public static String urlServer = "";
     public static Activity currentActivity;
     public static View viewForSnack;
     public static String pathStorageDownload;
@@ -259,12 +256,6 @@ public class Utils {
                 return new Variables[size];
             }
         };
-    }
-
-    public static void setHostPortAndUrlServer(String host, String port) {
-        Utils.hostServer = host;
-        Utils.portServer = port;
-        Utils.urlServer = String.format("http://%s:%s", Utils.hostServer, Utils.portServer);
     }
 
     private static Snackbar createSnackBar(int message) {

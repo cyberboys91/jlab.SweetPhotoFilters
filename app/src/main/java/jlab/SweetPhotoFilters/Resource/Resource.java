@@ -27,7 +27,7 @@ public abstract class Resource implements Serializable {
     private int indexPattern;
 
     public Resource(String name, String relUrl, String comment, boolean isDirectory, long modification) {
-        this.urlServer = Utils.urlServer;
+        this.urlServer = "";
         this.name = name;
         this.relUrl = relUrl;
         this.isDir = isDirectory;

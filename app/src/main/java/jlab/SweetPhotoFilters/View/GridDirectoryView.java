@@ -19,6 +19,11 @@ import jlab.SweetPhotoFilters.Interfaces;
 import jlab.SweetPhotoFilters.Resource.Resource;
 import jlab.SweetPhotoFilters.Activity.DirectoryActivity;
 
+import static jlab.SweetPhotoFilters.Utils.LOADING_VISIBLE;
+import static jlab.SweetPhotoFilters.Utils.REFRESH_LISTVIEW;
+import static jlab.SweetPhotoFilters.Utils.TIME_WAIT_LOADING;
+import static jlab.SweetPhotoFilters.Utils.stackVars;
+
 /*
  * Created by Javier on 26/9/2016.
  */
@@ -118,8 +123,8 @@ public class GridDirectoryView extends GridView implements Interfaces.IListConte
     }
 
     public void loadParentDirectory() {
-        if (!Utils.stackVars.isEmpty()) {
-            Utils.stackVars.remove(Utils.stackVars.size() - 1);
+        if (!stackVars.isEmpty()) {
+            stackVars.remove(stackVars.size() - 1);
             loadDirectory();
         }
     }
@@ -145,28 +150,28 @@ public class GridDirectoryView extends GridView implements Interfaces.IListConte
     }
 
     public void loadDirectory() {
-        if (Utils.stackVars.isEmpty())
+        if (stackVars.isEmpty())
             mListener.onDirectoryClick(nameDirectoryRoot, relUrlDirectoryRoot);
 
-        Utils.Variables vars = Utils.stackVars.get(Utils.stackVars.size() - 1);
+        Utils.Variables vars = stackVars.get(stackVars.size() - 1);
         mdirectory = mListener.getDirectory(vars.NameDirectory, vars.RelUrlDirectory);
         new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
-                    Thread.sleep(Utils.TIME_WAIT_LOADING);
+                    Thread.sleep(TIME_WAIT_LOADING);
                 } catch (Exception | OutOfMemoryError e) {
                     e.printStackTrace();
                 }
                 synchronized (Directory.monitor) {
                     if (!mdirectory.loaded())
-                        handler.sendEmptyMessage(Utils.LOADING_VISIBLE);
+                        handler.sendEmptyMessage(LOADING_VISIBLE);
                 }
             }
         }).start();
         mAdapter.clear();
         synchronized (Directory.monitor) {
-            handler.sendEmptyMessage(Utils.REFRESH_LISTVIEW);
+            handler.sendEmptyMessage(REFRESH_LISTVIEW);
         }
         mdirectory.openAsynchronic(handler);
     }
@@ -195,10 +200,10 @@ public class GridDirectoryView extends GridView implements Interfaces.IListConte
     public void openResource(Resource res, int index, Point position) {
         scrolling = false;
         try {
-            Utils.Variables var = Utils.stackVars.get(Utils.stackVars.size() - 1);
+            Utils.Variables var = stackVars.get(stackVars.size() - 1);
             var.BeginPosition = getFirstVisiblePosition();
             if (res.isDir()) {
-                Utils.stackVars.add(new Utils.Variables(res.getRelUrl(), res.getName(), 0));
+                stackVars.add(new Utils.Variables(res.getRelUrl(), res.getName(), 0));
                 loadDirectory();
                 mListener.onDirectoryClick(res.getName(), res.getRelUrl(), index, position);
             } else

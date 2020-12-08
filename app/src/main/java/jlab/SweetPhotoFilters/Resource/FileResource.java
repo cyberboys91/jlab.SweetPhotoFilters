@@ -97,8 +97,8 @@ public abstract class FileResource extends Resource {
     public String thumbUrl() {
         if (this.mThumbUrl == null && this.RelUrlEncode == null)
             this.RelUrlEncode = strEncode(relUrl);
-        if (this.mThumbUrl == null)
-            this.mThumbUrl = Utils.urlServer + "/t" + this.RelUrlEncode;
+//        if (this.mThumbUrl == null)
+//            this.mThumbUrl = Utils.urlServer + "/t" + this.RelUrlEncode;
         return this.mThumbUrl;
     }
 

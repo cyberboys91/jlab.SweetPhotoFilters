@@ -88,7 +88,7 @@ public class DirectoryActivity extends AppCompatActivity
     private SearchView msvSearch;
     private boolean isRemoteDirectory = false, isPortrait, isMoving = false;
     private static final int TIME_WAIT_FBUTTON_ANIM = 300, PERMISSION_REQUEST_CODE = 2901;
-    private static final String STACK_VARS_KEY = "STACK_VARS_KEY",
+    public static final String STACK_VARS_KEY = "STACK_VARS_KEY",
             NAME_DOWNLOAD_DIR_KEY = "NAME_DOWNLOAD_DIR_KEY",
             LOST_CONNECTION_KEY = "LOST_CONNECTION_KEY",
             SHOW_HIDDEN_FILES_KEY = "SHOW_HIDDEN_FILES_KEY";
@@ -720,8 +720,6 @@ public class DirectoryActivity extends AppCompatActivity
         intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         intent.putExtra(Utils.INDEX_CURRENT_KEY, position);
         intent.putExtra(Utils.DIRECTORY_KEY, getDirectory().getName());
-        intent.putExtra(Utils.HOST_SERVER_KEY, Utils.hostServer);
-        intent.putExtra(Utils.PORT_SERVER_KEY, Utils.portServer);
         startActivity(intent);
         overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
     }
@@ -730,8 +728,6 @@ public class DirectoryActivity extends AppCompatActivity
     protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putParcelableArrayList(STACK_VARS_KEY, stackVars);
-        outState.putString(Utils.HOST_SERVER_KEY, Utils.hostServer);
-        outState.putString(Utils.PORT_SERVER_KEY, Utils.portServer);
         outState.putString(NAME_DOWNLOAD_DIR_KEY, Utils.pathStorageDownload);
         outState.putBoolean(LOST_CONNECTION_KEY, Utils.lostConnection);
         outState.putBoolean(SHOW_HIDDEN_FILES_KEY, Utils.showHiddenFiles);
@@ -830,9 +826,6 @@ public class DirectoryActivity extends AppCompatActivity
     private void loadFromBundle(Bundle savedInstanceState) {
         if (savedInstanceState != null && savedInstanceState.containsKey(STACK_VARS_KEY)) {
             stackVars = savedInstanceState.getParcelableArrayList(STACK_VARS_KEY);
-            Utils.hostServer = savedInstanceState.getString(Utils.HOST_SERVER_KEY);
-            Utils.portServer = savedInstanceState.getString(Utils.PORT_SERVER_KEY);
-            Utils.urlServer = String.format("http://%s:%s", Utils.hostServer, Utils.portServer);
             Utils.pathStorageDownload = savedInstanceState.getString(NAME_DOWNLOAD_DIR_KEY);
             Utils.lostConnection = savedInstanceState.getBoolean(LOST_CONNECTION_KEY);
             Utils.showHiddenFiles = savedInstanceState.getBoolean(SHOW_HIDDEN_FILES_KEY);
