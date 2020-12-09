@@ -1062,7 +1062,7 @@ public class Utils {
                 filter.addSubFilter(new TintSubFilter((int) params[0]));
                 break;
             case Other:
-                filter.addSubFilter(new SnowSubFilter());
+                filter.addSubFilter(new TintSubFilter(25));
                 break;
         }
     }

@@ -144,7 +144,7 @@ public class ImageViewActivity extends AppCompatActivity implements View.OnTouch
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 if (event.getAction() == MotionEvent.ACTION_MOVE)
-                    layoutFilters.startAnimation(AnimationUtils.loadAnimation(getBaseContext(), R.anim.alpha_out_layout));
+                    layoutFilters.startAnimation(AnimationUtils.loadAnimation(getBaseContext(), R.anim.out_layout_v1));
                 return false;
             }
         });
@@ -152,7 +152,7 @@ public class ImageViewActivity extends AppCompatActivity implements View.OnTouch
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 if (event.getAction() == MotionEvent.ACTION_MOVE)
-                    barImage.startAnimation(AnimationUtils.loadAnimation(getBaseContext(), R.anim.alpha_out_layout));
+                    barImage.startAnimation(AnimationUtils.loadAnimation(getBaseContext(), R.anim.out_layout_v1));
                 return false;
             }
         });
@@ -389,10 +389,10 @@ public class ImageViewActivity extends AppCompatActivity implements View.OnTouch
                                         if (error) {
                                             showSnackBar(R.string.loading_image_error);
                                             filter.getSubFilters().remove(filter.getSubFilters().size() - 1);
-                                            loadActionsLayout(true);
+                                            showActionsLayout(true);
                                         } else {
                                             aux.setImageBitmap(bmCurrent);
-                                            loadActionsLayout(true);
+                                            showActionsLayout(true);
                                         }
                                         mutex.release();
                                         loadingImage = false;
@@ -444,7 +444,7 @@ public class ImageViewActivity extends AppCompatActivity implements View.OnTouch
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                layoutActions.clearAnimation();
+                                hideActionsLayout(true);
                             }
                         });
                         final boolean load = loadBitmapForResource(true);
@@ -453,7 +453,7 @@ public class ImageViewActivity extends AppCompatActivity implements View.OnTouch
                             public void run() {
                                 if (!load) {
                                     filter.addSubFilters(subFilters);
-                                    loadActionsLayout(true);
+                                    showActionsLayout(true);
                                 } else
                                     aux.setImageBitmap(bmCurrent);
                                 mutex.release();
@@ -518,11 +518,11 @@ public class ImageViewActivity extends AppCompatActivity implements View.OnTouch
                                                     showSnackBar(R.string.loading_image_error);
                                                     filter.addSubFilter(removedSubFilter);
                                                     bmCurrent = copy;
-                                                    loadActionsLayout(true);
+                                                    showActionsLayout(true);
                                                 } else {
                                                     aux.setImageBitmap(bmCurrent);
                                                     recycleBitmap(copy);
-                                                    loadActionsLayout(true);
+                                                    showActionsLayout(true);
                                                 }
                                                 mutex.release();
                                                 loadingImage = false;
@@ -821,8 +821,8 @@ public class ImageViewActivity extends AppCompatActivity implements View.OnTouch
     public void onItemSelected(AdapterView<?> adapterView, final View view, final int index, long l) {
         if (resource.isImage()) {
             if (view != null) {
+                hideActionsLayout(false);
                 msrlRefresh.setRefreshing(true);
-                layoutActions.clearAnimation();
                 currentIndex = index;
                 new Thread(new Runnable() {
                     @Override
@@ -891,24 +891,33 @@ public class ImageViewActivity extends AppCompatActivity implements View.OnTouch
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
         if (layoutFilters.getAnimation() == null || (layoutFilters.getAnimation() != null && layoutFilters.getAnimation().hasEnded()))
-            layoutFilters.startAnimation(AnimationUtils.loadAnimation(getBaseContext(), R.anim.alpha_in_out_layout));
+            layoutFilters.startAnimation(AnimationUtils.loadAnimation(getBaseContext(), R.anim.in_out_layout));
         if (barImage.getAnimation() == null || (barImage.getAnimation() != null
                 && barImage.getAnimation().hasEnded()))
-            barImage.startAnimation(AnimationUtils.loadAnimation(getBaseContext(), R.anim.alpha_in_out_layout));
-        loadActionsLayout(false);
+            barImage.startAnimation(AnimationUtils.loadAnimation(getBaseContext(), R.anim.in_out_layout));
+        showActionsLayout(false);
     }
 
-    private void loadActionsLayout(boolean animFilters) {
+    private void showActionsLayout(boolean animFilters) {
         int size = filter.getSubFilters().size();
-        if (size > 0 && (layoutActions.getAnimation() == null || (layoutActions.getAnimation() != null
-                && layoutActions.getAnimation().hasEnded()))) {
-            layoutActions.startAnimation(AnimationUtils.loadAnimation(getBaseContext(), R.anim.alpha_out_layout));
+        if (size > 0 && (layoutActions.getAnimation() == null || layoutActions.getAnimation().hasEnded())) {
+            layoutActions.startAnimation(AnimationUtils.loadAnimation(getBaseContext(), R.anim.out_layout_v1));
             if (animFilters)
-                layoutFilters.startAnimation(AnimationUtils.loadAnimation(getBaseContext(), R.anim.alpha_out_layout));
+                layoutFilters.startAnimation(AnimationUtils.loadAnimation(getBaseContext(), R.anim.out_layout_v1));
             fbSave.startAnimation(AnimationUtils.loadAnimation(getBaseContext(), R.anim.in_out_save_button));
             fbUndo.startAnimation(AnimationUtils.loadAnimation(getBaseContext(), R.anim.in_out_undo_button));
             fbCancel.startAnimation(AnimationUtils.loadAnimation(getBaseContext(), R.anim.in_out_cancel_button));
-        } else if (size == 0)
+        }
+    }
+
+    private void hideActionsLayout(boolean animate) {
+        if (animate && layoutActions.getAnimation() != null && !layoutActions.getAnimation().hasEnded()) {
+            layoutActions.startAnimation(AnimationUtils.loadAnimation(getBaseContext(), R.anim.out_layout_v2));
+            fbSave.startAnimation(AnimationUtils.loadAnimation(getBaseContext(), R.anim.out_save_button));
+            fbUndo.startAnimation(AnimationUtils.loadAnimation(getBaseContext(), R.anim.out_undo_button));
+            fbCancel.startAnimation(AnimationUtils.loadAnimation(getBaseContext(), R.anim.out_cancel_button));
+        }
+        else if(!animate)
             layoutActions.clearAnimation();
     }
 }
