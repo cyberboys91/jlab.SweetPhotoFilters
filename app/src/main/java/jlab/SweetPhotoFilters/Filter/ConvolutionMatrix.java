@@ -38,7 +38,6 @@ public class ConvolutionMatrix
     public static Bitmap computeConvolution3x3(Bitmap src, ConvolutionMatrix matrix) {
         int width = src.getWidth();
         int height = src.getHeight();
-        Bitmap result = Bitmap.createBitmap(width, height, src.getConfig());
 
         int A, R, G, B;
         int sumR, sumG, sumB;
@@ -85,11 +84,11 @@ public class ConvolutionMatrix
                 else if(B > 255) { B = 255; }
 
                 // apply new pixel
-                result.setPixel(x + 1, y + 1, Color.argb(A, R, G, B));
+                src.setPixel(x + 1, y + 1, Color.argb(A, R, G, B));
             }
         }
 
         // final image
-        return result;
+        return src;
     }
 }
