@@ -281,7 +281,10 @@ public class ImageViewActivity extends AppCompatActivity implements View.OnTouch
                 ivHgayanSixteenFilter = (ImageView) findViewById(R.id.ivHgayanSixteenFilter),
                 ivVintageFilter = (ImageView) findViewById(R.id.ivVintageFilter),
                 ivSepiaFilter = (ImageView) findViewById(R.id.ivSepiaFilter),
-                ivBrownishFilter = (ImageView) findViewById(R.id.ivBrownishFilter);
+                ivBrownishFilter = (ImageView) findViewById(R.id.ivBrownishFilter),
+                ivTintLowFilter = (ImageView) findViewById(R.id.ivTintLowFilter),
+                ivTintMediumFilter = (ImageView) findViewById(R.id.ivTintMediumFilter),
+                ivTintHighFilter = (ImageView) findViewById(R.id.ivTintHighFilter);
 
         ivBrightnessFilter.setOnClickListener(applyFilterAux(FilterType.Brightness, 60));
         ivHightBrightnessFilter.setOnClickListener(applyFilterAux(FilterType.Brightness, 90));
@@ -350,6 +353,9 @@ public class ImageViewActivity extends AppCompatActivity implements View.OnTouch
         ivVintageFilter.setOnClickListener(applyFilterAux(FilterType.Vintage));
         ivSepiaFilter.setOnClickListener(applyFilterAux(FilterType.Sepia));
         ivBrownishFilter.setOnClickListener(applyFilterAux(FilterType.Brownish));
+        ivTintLowFilter.setOnClickListener(applyFilterAux(FilterType.Tint, 25));
+        ivTintMediumFilter.setOnClickListener(applyFilterAux(FilterType.Tint, 50));
+        ivTintHighFilter.setOnClickListener(applyFilterAux(FilterType.Tint, 75));
         ivOtherFilter.setOnClickListener(applyFilterAux(FilterType.Other));
     }
 

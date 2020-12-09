@@ -198,6 +198,14 @@
                         android:src="@drawable/img_hgayan_sixteen_filter"/>
 
                     <ImageView
+                        android:id="@+id/ivTintLowFilter"
+                        android:layout_width="60dp"
+                        android:layout_height="60dp"
+                        android:layout_gravity="center_vertical"
+                        android:layout_margin="@dimen/min_margin"
+                        android:src="@drawable/img_tint_low_filter"/>
+
+                    <ImageView
                         android:id="@+id/ivContrastFilter"
                         android:layout_width="60dp"
                         android:layout_height="60dp"
@@ -332,6 +340,14 @@
                         android:layout_gravity="center_vertical"
                         android:layout_margin="@dimen/min_margin"
                         android:src="@drawable/img_expose_filter"/>
+
+                    <ImageView
+                        android:id="@+id/ivTintMediumFilter"
+                        android:layout_width="60dp"
+                        android:layout_height="60dp"
+                        android:layout_gravity="center_vertical"
+                        android:layout_margin="@dimen/min_margin"
+                        android:src="@drawable/img_tint_medium_filter"/>
 
                     <!--<ImageView-->
                         <!--android:id="@+id/ivFlipFilter"-->
@@ -613,6 +629,14 @@
                         android:layout_gravity="center_vertical"
                         android:layout_margin="@dimen/min_margin"
                         android:src="@drawable/img_hgayan_five_filter"/>
+
+                    <ImageView
+                        android:id="@+id/ivTintHighFilter"
+                        android:layout_width="60dp"
+                        android:layout_height="60dp"
+                        android:layout_gravity="center_vertical"
+                        android:layout_margin="@dimen/min_margin"
+                        android:src="@drawable/img_tint_high_filter"/>
 
                     <ImageView
                         android:id="@+id/ivEdgeFilter"

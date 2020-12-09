@@ -1058,8 +1058,11 @@ public class Utils {
             case Brownish:
                 filter.addSubFilter(new BrownishSubFilter());
                 break;
+            case Tint:
+                filter.addSubFilter(new TintSubFilter((int) params[0]));
+                break;
             case Other:
-                filter.addSubFilter(new MirrorsGlassSubFilter());
+                filter.addSubFilter(new SnowSubFilter());
                 break;
         }
     }
