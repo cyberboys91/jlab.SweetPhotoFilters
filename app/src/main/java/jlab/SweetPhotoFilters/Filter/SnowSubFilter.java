@@ -30,8 +30,8 @@ public class SnowSubFilter extends JlabSubFilter {
 
         int R, G, B, index, thresHold;
         // iteration through pixels
-        for(int y = 0; y < height; ++y) {
-            for(int x = 0; x < width; ++x) {
+        for(int y = 1; y < height; y+=2) {
+            for(int x = 0; x < width; x+=2) {
                 // get current index in 2D-matrix
                 index = y * width + x;
                 // get color
