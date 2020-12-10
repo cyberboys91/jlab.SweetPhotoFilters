@@ -821,9 +821,9 @@ public class ImageViewActivity extends AppCompatActivity implements View.OnTouch
     public void onItemSelected(AdapterView<?> adapterView, final View view, final int index, long l) {
         if (resource.isImage()) {
             if (view != null) {
-                hideActionsLayout(false);
                 msrlRefresh.setRefreshing(true);
                 currentIndex = index;
+                hideActionsLayout(false);
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
@@ -911,11 +911,22 @@ public class ImageViewActivity extends AppCompatActivity implements View.OnTouch
     }
 
     private void hideActionsLayout(boolean animate) {
-        if (animate && layoutActions.getAnimation() != null && !layoutActions.getAnimation().hasEnded()) {
+        if (animate && fbCancel.getAnimation() != null && !fbCancel.getAnimation().hasEnded()) {
+            fbSave.setEnabled(false);
+            fbUndo.setEnabled(false);
+            fbCancel.setEnabled(false);
             layoutActions.startAnimation(AnimationUtils.loadAnimation(getBaseContext(), R.anim.out_layout_v2));
             fbSave.startAnimation(AnimationUtils.loadAnimation(getBaseContext(), R.anim.out_save_button));
             fbUndo.startAnimation(AnimationUtils.loadAnimation(getBaseContext(), R.anim.out_undo_button));
             fbCancel.startAnimation(AnimationUtils.loadAnimation(getBaseContext(), R.anim.out_cancel_button));
+            fbCancel.postOnAnimation(new Runnable() {
+                @Override
+                public void run() {
+                    fbSave.setEnabled(true);
+                    fbUndo.setEnabled(true);
+                    fbCancel.setEnabled(true);
+                }
+            });
         }
         else if(!animate)
             layoutActions.clearAnimation();

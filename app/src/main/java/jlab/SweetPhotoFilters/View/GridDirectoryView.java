@@ -7,6 +7,7 @@ import android.view.View;
 import android.os.Handler;
 import jlab.SweetPhotoFilters.R;
 import android.content.Context;
+import android.view.animation.AnimationUtils;
 import android.widget.AbsListView;
 import android.widget.GridView;
 import android.widget.ImageView;

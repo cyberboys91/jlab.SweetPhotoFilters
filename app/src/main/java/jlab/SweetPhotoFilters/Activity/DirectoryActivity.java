@@ -31,7 +31,6 @@ import android.util.DisplayMetrics;
 import android.app.DownloadManager;
 import jlab.SweetPhotoFilters.Resource.*;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.concurrent.Semaphore;
 import android.content.DialogInterface;
@@ -63,7 +62,6 @@ import android.support.design.widget.FloatingActionButton;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestBuilder;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.signature.MediaStoreSignature;
 
@@ -683,7 +681,7 @@ public class DirectoryActivity extends AppCompatActivity
         } else if (Utils.lostConnection)
             lostConnection();
         else {
-            mlcResourcesDir.startAnimation(AnimationUtils.loadAnimation(this, R.anim.scale_in));
+            mlcResourcesDir.startAnimation(AnimationUtils.loadAnimation(this, R.anim.scale_in_grid));
             mlcResourcesDir.post(new Runnable() {
                 @Override
                 public void run() {

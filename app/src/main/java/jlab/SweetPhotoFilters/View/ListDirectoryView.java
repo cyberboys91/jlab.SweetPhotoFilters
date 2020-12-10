@@ -180,7 +180,7 @@ public class ListDirectoryView extends ListView implements AbsListView.OnScrollL
 
     public void loadDirectory() {
         if (Utils.stackVars.isEmpty()) {
-            Utils.stackVars.add(new Utils.Variables(Utils.RELURL_SPECIAL_DIR, getContext().getString(R.string.all_images), 0));
+            Utils.stackVars.add(new Utils.Variables(Utils.RELURL_SPECIAL_DIR, getContext().getString(R.string.albums_folder), 0));
             mListener.onDirectoryClick(getContext().getString(R.string.all_images), Utils.RELURL_SPECIAL_DIR);
         }
 
