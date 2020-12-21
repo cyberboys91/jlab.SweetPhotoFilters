@@ -120,13 +120,13 @@
     <string name="rate_app">квалифицировать заявку</string>
     <string name="pending_to_download">находится в ожидании загрузки</string>
     <string name="preparing_for_play">Подготовка к воспроизведению…</string>
-    <string name="elements">elems.</string>
-    <string name="loading_image">Loading image, please wait…</string>
-    <string name="saving_image">Saving image…</string>
-    <string name="save_image_complete">The image was save like</string>
-    <string name="saving_image_wait">Saving image, please wait…</string>
-    <string name="please_wait">Please wait…</string>
-    <string name="loading_image_error">Error loading image…</string>
-    <string name="error_saving_image">Error saving image…</string>
-    <string name="camera">Camera</string>
+    <string name="elements">Элемс.</string>
+    <string name="loading_image">Загрузка изображения, подождите…</string>
+    <string name="saving_image">Сохранение изображения…</string>
+    <string name="save_image_complete">Изображение было сохранено как</string>
+    <string name="saving_image_wait">Сохранение изображения, подождите…</string>
+    <string name="please_wait">пожалуйста, подождите…</string>
+    <string name="loading_image_error">Ошибка загрузки изображения…</string>
+    <string name="error_saving_image">Ошибка при сохранении изображения…</string>
+    <string name="camera">Камера</string>
 </resources>

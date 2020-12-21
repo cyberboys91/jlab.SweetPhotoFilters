@@ -121,12 +121,12 @@
     <string name="rate_app">Bewerten Sie diese App</string>
     <string name="preparing_for_play">Vorbereitung für die Reproduktion…</string>
     <string name="elements">elems.</string>
-    <string name="loading_image">Loading image, please wait…</string>
-    <string name="saving_image">Saving image…</string>
-    <string name="save_image_complete">The image was save like</string>
-    <string name="saving_image_wait">Saving image, please wait…</string>
-    <string name="please_wait">Please wait…</string>
-    <string name="loading_image_error">Error loading image…</string>
-    <string name="error_saving_image">Error saving image…</string>
-    <string name="camera">Camera</string>
+    <string name="loading_image">Bild laden, bitte warten…</string>
+    <string name="saving_image">Bild speichern…</string>
+    <string name="save_image_complete">Das Bild war wie gespeichert</string>
+    <string name="saving_image_wait">Bild speichern, warten Sie mal…</string>
+    <string name="please_wait">Warten Sie mal…</string>
+    <string name="loading_image_error">Fehler beim Laden des Bildes…</string>
+    <string name="error_saving_image">Fehler beim Speichern des Bildes…</string>
+    <string name="camera">Kamera</string>
 </resources>

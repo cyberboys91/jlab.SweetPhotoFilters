@@ -123,7 +123,7 @@
     <string name="elements">elems.</string>
     <string name="loading_image">Loading image, please wait…</string>
     <string name="saving_image">Saving image…</string>
-    <string name="save_image_complete">The image was save like</string>
+    <string name="save_image_complete">The image was save as</string>
     <string name="saving_image_wait">Saving image, please wait…</string>
     <string name="please_wait">Please wait…</string>
     <string name="loading_image_error">Error loading image…</string>
