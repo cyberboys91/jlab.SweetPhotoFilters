@@ -1,11 +1,20 @@
 package jlab.SweetPhotoFilters;
 
 import java.io.File;
+
+import android.annotation.TargetApi;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Parcel;
+import android.os.storage.StorageManager;
+import android.os.storage.StorageVolume;
+import android.provider.DocumentsContract;
+import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
 import android.view.View;
 import java.io.IOException;
+import java.lang.reflect.Array;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import android.app.Activity;
 import android.os.Parcelable;
@@ -25,6 +34,8 @@ import android.util.DisplayMetrics;
 import android.provider.MediaStore;
 import android.media.ThumbnailUtils;
 import android.content.ContentValues;
+
+import java.util.List;
 import java.util.concurrent.Semaphore;
 import android.content.pm.PackageInfo;
 import android.graphics.BitmapFactory;
@@ -102,8 +113,9 @@ public class Utils {
     private static Semaphore mutexDelete = new Semaphore(1);
     private static Semaphore semaphoreLoadThumbnail = new Semaphore(4);
     private static CharSequence[] invalidChars = {"?", "|", "*", "\\", "/", "<", ">", ":", "\""};
-    private static FavoriteDbManager favoriteDbManager;
+    public static FavoriteDbManager favoriteDbManager;
     public static LocalStorageDirectories specialDirectories;
+    public static String saveFolderPath = String.format("%s/SweetPhotoFilters", Environment.getExternalStorageDirectory());
     private static DocumentFile parentDir = DocumentFile.fromFile(new File(String.format("%s/SweetPhotoFilters"
             , Environment.getExternalStorageDirectory().getPath())))
             , rootDir = DocumentFile.fromFile(Environment.getExternalStorageDirectory());
@@ -275,7 +287,8 @@ public class Utils {
     public static void showSnackBar(int msg) {
         Snackbar snackbar = createSnackBar(msg);
         if (snackbar != null) {
-            ((TextView) snackbar.getView().findViewById(R.id.snackbar_text)).setTextColor(currentActivity.getResources().getColor(R.color.white));
+            ((TextView) snackbar.getView().findViewById(R.id.snackbar_text))
+                    .setTextColor(currentActivity.getResources().getColor(R.color.white));
             snackbar.setActionTextColor(viewForSnack.getResources().getColor(R.color.accent));
             snackbar.show();
         }
@@ -284,7 +297,8 @@ public class Utils {
     public static void showSnackBar(String msg) {
         Snackbar snackbar = Utils.createSnackBar(msg);
         if (snackbar != null) {
-            ((TextView) snackbar.getView().findViewById(R.id.snackbar_text)).setTextColor(currentActivity.getResources().getColor(R.color.white));
+            ((TextView) snackbar.getView().findViewById(R.id.snackbar_text))
+                    .setTextColor(currentActivity.getResources().getColor(R.color.white));
             snackbar.show();
         }
     }
@@ -1062,7 +1076,7 @@ public class Utils {
                 filter.addSubFilter(new TintSubFilter((int) params[0]));
                 break;
             case Other:
-                filter.addSubFilter(new PointillizeSubFilter());
+                filter.addSubFilter(new OthersubFilter());
                 break;
         }
     }
@@ -1087,8 +1101,8 @@ public class Utils {
 
     public static String saveBitmapToAppFolder(Bitmap current, String name) {
         name = getNameForImageFile(name);
-        final String pathImage = String.format("%s/SweetPhotoFilters/%s"
-                , Environment.getExternalStorageDirectory().getPath()
+        final String pathImage = String.format("%s/%s"
+                , saveFolderPath
                 , name);
         try {
             if ((parentDir.exists() || rootDir.createDirectory("SweetPhotoFilters").exists())

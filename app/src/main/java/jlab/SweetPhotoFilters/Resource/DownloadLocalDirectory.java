@@ -19,7 +19,6 @@ public class DownloadLocalDirectory  extends FilesLocalDirectory {
 
     @Override
     public void openSynchronic(Handler handler) {
-        //TODO: Agregar también lo de synchronized(...) en jlab.FileTransfer
         synchronized (monitor) {
             try {
                 if (!loaded) {
@@ -27,14 +26,10 @@ public class DownloadLocalDirectory  extends FilesLocalDirectory {
                     count = 0;
                     ocupedSpace = 0;
                     ArrayList<String> stgPath = Utils.getStoragesPath();
-                    Directory allImages = Utils.specialDirectories.getImagesDirectory();
-                    allImages.openSynchronic(handler);
                     for (int i = 0; i < stgPath.size(); i++) {
                         String current = stgPath.get(i);
-                        if (Utils.existAndMountDir(current)) {
-                            loadContentForDir(allImages, String.format("%s/%s/", current, Environment.DIRECTORY_DOWNLOADS));
-                            loadContentForDir(allImages, String.format("%s/Android/data/%s/files/", current, Utils.getPackageName()));
-                        }
+                        if (Utils.existAndMountDir(current))
+                            loadContentForDir(String.format("%s/%s/", current, Environment.DIRECTORY_DOWNLOADS));
                     }
                     sort(getContent(), new Comparator<Resource>() {
                         @Override
@@ -59,7 +54,9 @@ public class DownloadLocalDirectory  extends FilesLocalDirectory {
         }
     }
 
-    private void loadContentForDir(Directory directory, String path) {
+    private void loadContentForDir(String path) {
+        LocalDirectory directory = new LocalDirectory("", path, "", false, 0);
+        directory.openSynchronic(null);
         for (int i = 0; i < directory.getCountElements(); i++) {
             Resource current = directory.getResource(i);
             if ((Utils.showHiddenFiles || !current.isHidden())

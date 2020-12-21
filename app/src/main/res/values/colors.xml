@@ -31,8 +31,8 @@
     <color name="yellow">#c59a2d</color>
     <color name="yellow_dark">#886b21</color>
     <color name="yellow_bright">#bbe4b53e</color>
-    <color name="gray">#5e6c76</color>
-    <color name="gray_dark">#495862</color>
-    <color name="gray_bright">#a7adb0</color>
+    <color name="gray">#282b36</color>
+    <color name="gray_dark">#1a1b22</color>
+    <color name="gray_bright">#de282b36</color>
     <color name="black">#000000</color>
 </resources>

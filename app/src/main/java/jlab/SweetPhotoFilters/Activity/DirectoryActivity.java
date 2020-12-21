@@ -1,6 +1,7 @@
 package jlab.SweetPhotoFilters.Activity;
 
 import android.Manifest;
+import android.animation.Animator;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Point;
@@ -8,7 +9,11 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.MediaStore;
+import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.provider.DocumentFile;
+import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.View;
 import android.os.Bundle;
@@ -20,27 +25,29 @@ import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.text.Selection;
 import android.content.Intent;
+import android.view.ViewAnimationUtils;
 import android.view.ViewGroup;
+import android.view.ViewParent;
+import android.view.Window;
+import android.view.WindowManager;
 import android.view.animation.TranslateAnimation;
+import android.widget.AdapterView;
 import android.widget.TextView;
 import android.widget.ImageView;
 import jlab.SweetPhotoFilters.View.*;
 import android.widget.LinearLayout;
 import android.view.LayoutInflater;
 import android.util.DisplayMetrics;
-import android.app.DownloadManager;
 import jlab.SweetPhotoFilters.Resource.*;
-
 import java.util.ArrayList;
 import java.util.concurrent.Semaphore;
-import android.content.DialogInterface;
 import android.content.res.Configuration;
 import android.support.v7.widget.Toolbar;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.content.res.ColorStateList;
 import android.text.SpannableStringBuilder;
-import jlab.SweetPhotoFilters.DownloadImageTask;
+import jlab.SweetPhotoFilters.LoaderImageTask;
 import android.support.v7.widget.SearchView;
 import jlab.SweetPhotoFilters.db.FavoriteDetails;
 import jlab.SweetPhotoFilters.db.FavoriteDbManager;
@@ -55,11 +62,12 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.design.widget.NavigationView;
 
+import static java.lang.Math.max;
+import static jlab.SweetPhotoFilters.Utils.favoriteDbManager;
+import static jlab.SweetPhotoFilters.Utils.getDimensionScreen;
 import static jlab.SweetPhotoFilters.Utils.specialDirectories;
 import static jlab.SweetPhotoFilters.Utils.stackVars;
-
 import android.support.design.widget.FloatingActionButton;
-
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestBuilder;
 import com.bumptech.glide.request.RequestOptions;
@@ -68,16 +76,14 @@ import com.bumptech.glide.signature.MediaStoreSignature;
 public class DirectoryActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, Interfaces.ILoadThumbnailForFile,
         Interfaces.IRemoteResourceClickListener, ResourceDetailsAdapter.OnGetSetViewListener,
-        DownloadImageTask.OnSetImageIconUIThread, Interfaces.IGetDirectoryListener, Interfaces.ICopyRefresh,
-        ActivityCompat.OnRequestPermissionsResultCallback, Interfaces.IElementRefreshListener,
-        Interfaces.ICloseListener, Interfaces.IRefreshListener {
+        LoaderImageTask.OnSetImageIconUIThread, Interfaces.IGetDirectoryListener, Interfaces.ICopyRefresh,
+        Interfaces.IElementRefreshListener, Interfaces.ICloseListener, Interfaces.IRefreshListener {
 
-    private int iconSize, swipeColor = R.color.accent, countColumns;
+    public static int iconSize, swipeColor = R.color.accent, countColumns;
     private FloatingActionButton mfbSearch;
     private TextView mtvEmptyFolder;
-    private static Interfaces.IListContent mlcResourcesDir;
+    public static Interfaces.IListContent mlcResourcesDir;
     private LayoutInflater mlinflater;
-    private DownloadManager mdMgr;
     private NavigationView mnavMenuExplorer;
     private SwipeRefreshLayout msrlRefresh;
     private DrawerLayout mdrawer;
@@ -85,16 +91,17 @@ public class DirectoryActivity extends AppCompatActivity
     private Toolbar toolbar;
     private SearchView msvSearch;
     private boolean isRemoteDirectory = false, isPortrait, isMoving = false;
-    private static final int TIME_WAIT_FBUTTON_ANIM = 300, PERMISSION_REQUEST_CODE = 2901;
+    private static final short TIME_WAIT_FBUTTON_ANIM = 300,
+            CAMERA_REQUEST_CODE = 9101, PERMISSION_REQUEST_CODE = 9102;
     public static final String STACK_VARS_KEY = "STACK_VARS_KEY",
             NAME_DOWNLOAD_DIR_KEY = "NAME_DOWNLOAD_DIR_KEY",
             LOST_CONNECTION_KEY = "LOST_CONNECTION_KEY",
             SHOW_HIDDEN_FILES_KEY = "SHOW_HIDDEN_FILES_KEY";
     public static Uri treeUri;
     private Semaphore mutexLoadDataSpecial = new Semaphore(1),
-            mutexLoadDirectory = new Semaphore(1);
-    private Point fromPoint;
-
+            mutexLoadDirectory = new Semaphore(1),
+            semaphoreLoadFavoriteState = new Semaphore(2);
+    public static Point fromPoint = new Point(0, 0);
     private Handler handler = new Handler() {
         @Override
         public void handleMessage(final Message msg) {
@@ -139,11 +146,6 @@ public class DirectoryActivity extends AppCompatActivity
                 requestPermissions.add(Manifest.permission.INTERNET);
                 request = true;
             }
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.WAKE_LOCK)
-                    != PackageManager.PERMISSION_GRANTED) {
-                requestPermissions.add(Manifest.permission.WAKE_LOCK);
-                request = true;
-            }
             if (request)
                 requestAllPermission(requestPermissions);
         }
@@ -161,22 +163,22 @@ public class DirectoryActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Utils.currentActivity = this;
+        if (favoriteDbManager == null)
+            favoriteDbManager = new FavoriteDbManager(this);
         Bundle extras = savedInstanceState != null ? savedInstanceState : getIntent().getExtras();
         boolean haveExtras = extras != null && extras.containsKey(Utils.SERVER_DATA_KEY);
         if (haveExtras)
             this.isRemoteDirectory = extras.getBoolean(Utils.IS_REMOTE_DIRECTORY);
         loadFromBundle(savedInstanceState);
         setContentView(R.layout.activity_directory);
-        DownloadImageTask.monSetImageIcon = this;
+        LoaderImageTask.monSetImageIcon = this;
         loadViews();
         if (haveExtras)
             mlcResourcesDir.setRelUrlDirectoryRoot(this.isRemoteDirectory ?
                     Utils.NAME_REMOTE_DIRECTORY_ROOT : "", extras.getString(Utils.RELATIVE_URL_DIRECTORY_ROOT));
         setOnListeners();
-        this.mdMgr = (DownloadManager) getSystemService(DOWNLOAD_SERVICE);
         this.mlinflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
-        DisplayMetrics displayMetrics = Utils.getDimensionScreen();
-        fromPoint = new Point(displayMetrics.widthPixels / 2, displayMetrics.heightPixels / 2);
+        fromPoint = new Point(0, 0);
         reloadSpecialDir();
         requestPermission();
     }
@@ -188,16 +190,38 @@ public class DirectoryActivity extends AppCompatActivity
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == RESULT_OK && Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+        if (resultCode == RESULT_OK && requestCode == PERMISSION_REQUEST_CODE
+                && Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             treeUri = data.getData();
             grantUriPermission(getPackageName(), treeUri, Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
             getContentResolver().takePersistableUriPermission(treeUri, Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+        } else if (resultCode == RESULT_OK && requestCode == CAMERA_REQUEST_CODE) {
+            Intent intent = new Intent(this, ImageViewActivity.class);
+            intent.setAction(Intent.ACTION_VIEW);
+            intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            intent.putExtra(Utils.DIRECTORY_KEY, getString(R.string.camera_folder));
+            FileResource resource = getResourceForName(new CameraImagesDirectory(getString(R.string.camera_folder))
+                    , DocumentFile.fromSingleUri(this, data.getData()).getName());
+            if (resource != null) {
+                intent.setDataAndType(Uri.parse(resource.getAbsUrl()), resource.getMimeType());
+                intent.putExtra(Utils.INDEX_CURRENT_KEY, resource.getIndexPattern());
+                startActivity(intent);
+                overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+            }
         }
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
-                                           @NonNull int[] grantResults) {
+    @Nullable
+    private FileResource getResourceForName(CameraImagesDirectory cameraDirectory, String name) {
+        cameraDirectory.openSynchronic(null);
+        for (int i = 0; i < cameraDirectory.getCountElements(); i++) {
+            Resource current = cameraDirectory.getResource(i);
+            if (!current.isDir() && current.getName().equals(name)) {
+                current.setIndexPattern(i);
+                return (FileResource) current;
+            }
+        }
+        return null;
     }
 
     @Override
@@ -266,29 +290,24 @@ public class DirectoryActivity extends AppCompatActivity
 
     @Override
     public void setImage(final ImageView imageView, final FileResource file) {
-        new Thread(new Runnable() {
+        final RequestBuilder<Drawable> req = Glide.with(imageView).load(file.getRelUrl()).apply(
+                new RequestOptions().signature(new MediaStoreSignature(file.getMimeType(),
+                        file.getModificationDate(), 0))
+        );
+        runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                final RequestBuilder<Drawable> req = Glide.with(imageView).load(file.getRelUrl()).apply(
-                        new RequestOptions().signature(new MediaStoreSignature(file.getMimeType(),
-                                file.getModificationDate(), 0))
-                );
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        req.into(imageView);
-                    }
-                });
+                req.into(imageView);
             }
-        }).start();
+        });
     }
 
     @Override
     public void setImage(final ImageView imageView, final Bitmap image) {
+        final RequestBuilder<Bitmap> req = Glide.with(imageView).asBitmap().load(image);
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                final RequestBuilder<Bitmap> req = Glide.with(imageView).asBitmap().load(image);
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -439,9 +458,9 @@ public class DirectoryActivity extends AppCompatActivity
                 toolbar.setTitle(R.string.all_images);
             }
             theme = R.style.AppImageTheme;
-            barColor = R.color.green;
-            pathColor = R.color.green_bright;
-            statusBarColor = R.color.green_dark;
+            barColor = R.color.gray;
+            pathColor = R.color.gray_bright;
+            statusBarColor = R.color.gray_dark;
             progressDrawable = R.drawable.progressbar_blue;
         }
         swipeColor = barColor;
@@ -460,20 +479,19 @@ public class DirectoryActivity extends AppCompatActivity
 
     @Override
     public void onFileClick(FileResource res, int index, Point position) {
-        this.fromPoint = position;
+        fromPoint = position;
         createOptionActivity(res, index);
     }
 
     @Override
     public void onDirectoryClick(String name, String relurlDir, int index, Point position) {
-        this.fromPoint = position;
+        fromPoint = position;
         handler.sendEmptyMessage(Utils.SCROLLER_PATH);
     }
 
     @Override
     public void onDirectoryClick(String name, String relurlDir) {
-        DisplayMetrics displayMetrics = Utils.getDimensionScreen();
-        this.fromPoint = new Point(displayMetrics.widthPixels / 2, displayMetrics.heightPixels / 2);
+        fromPoint = new Point(0, 0);
         handler.sendEmptyMessage(Utils.SCROLLER_PATH);
     }
 
@@ -500,58 +518,160 @@ public class DirectoryActivity extends AppCompatActivity
 
     @Override
     public boolean onResourceLongClick(final Resource resource, final int index, final Point position) {
+        fromPoint = position;
         CharSequence[] items = resource.isDir()
                 ? new CharSequence[]{getString(R.string.open), getString(R.string.details)}
                 : new CharSequence[]{getString(R.string.open), getString(R.string.share),
                 getString(R.string.set_image_as), getString(R.string.details)};
-        new AlertDialog.Builder(this).setItems(items, new DialogInterface.OnClickListener() {
+        final AlertDialog alertDialog = new AlertDialog.Builder(this).setItems(items, null)
+                .setTitle(resource.getName()).create();
+        alertDialog.show();
+        alertDialog.getListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
+            public void onItemClick(AdapterView<?> parent, View view, int i, long id) {
                 if (resource.isDir() && i > 0)
-                    i+=2;
+                    i += 2;
                 switch (i) {
                     case 0:
                         //Open
-                        mlcResourcesDir.openResource(resource, index, position);
+                        startAnimationMenu(alertDialog, position, true, new Runnable() {
+                            @Override
+                            public void run() {
+                                mlcResourcesDir.openResource(resource, index, position);
+                                alertDialog.dismiss();
+                            }
+                        });
                         break;
                     case 1:
                         //Share
-                        try {
-                            Intent intent = new Intent(Intent.ACTION_SEND);
-                            intent.setType(((FileResource) resource).getMimeType());
-                            intent.putExtra(Intent.EXTRA_STREAM, Uri.parse(resource.getAbsUrl()));
-                            startActivity(Intent.createChooser(intent, getString(R.string.share)));
-                        }catch (Exception ignored) {
-                            ignored.printStackTrace();
-                        }
+                        startAnimationMenu(alertDialog, position, true, new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    Intent intent = new Intent(Intent.ACTION_SEND);
+                                    intent.setType(((FileResource) resource).getMimeType());
+                                    intent.putExtra(Intent.EXTRA_STREAM, Uri.parse(resource.getAbsUrl()));
+                                    startActivity(Intent.createChooser(intent, getString(R.string.share)));
+                                } catch (Exception ignored) {
+                                    ignored.printStackTrace();
+                                } finally {
+                                    alertDialog.dismiss();
+                                }
+                            }
+                        });
                         break;
                     case 2:
                         //Set image as
-                        try{
-                            Intent intent = new Intent(Intent.ACTION_ATTACH_DATA);
-                            intent.putExtra(((FileResource)resource).getExtension(),((FileResource)resource).getMimeType());
-                            intent.setDataAndType(Uri.parse(resource.getAbsUrl()), ((FileResource)resource).getMimeType());
-                            startActivity(Intent.createChooser(intent, getString(R.string.set_image_as)));
-                        }catch (Exception ignored) {
-                            ignored.printStackTrace();
-                        }
+                        startAnimationMenu(alertDialog, position, true, new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    Intent intent = new Intent(Intent.ACTION_ATTACH_DATA);
+                                    intent.putExtra(((FileResource) resource).getExtension(), ((FileResource) resource).getMimeType());
+                                    intent.setDataAndType(Uri.parse(resource.getAbsUrl()), ((FileResource) resource).getMimeType());
+                                    startActivity(Intent.createChooser(intent, getString(R.string.set_image_as)));
+                                } catch (Exception ignored) {
+                                    ignored.printStackTrace();
+                                } finally {
+                                    alertDialog.dismiss();
+                                }
+                            }
+                        });
                         break;
                     case 3:
                         //Details
-                        try {
-                            DetailsFragment details = new DetailsFragment();
-                            Bundle bundle = new Bundle();
-                            bundle.putSerializable(Utils.RESOURCE_FOR_DETAILS_KEY, resource);
-                            details.setArguments(bundle);
-                            details.show(getFragmentManager(), "jlab.Details");
-                        } catch (Exception exp) {
-                            exp.printStackTrace();
-                        }
+                        startAnimationMenu(alertDialog, position, true, new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    DetailsFragment details = new DetailsFragment();
+                                    Bundle bundle = new Bundle();
+                                    bundle.putSerializable(Utils.RESOURCE_FOR_DETAILS_KEY, resource);
+                                    details.setArguments(bundle);
+                                    details.show(getFragmentManager(), "jlab.Details");
+                                } catch (Exception exp) {
+                                    exp.printStackTrace();
+                                } finally {
+                                    alertDialog.dismiss();
+                                }
+                            }
+                        });
                         break;
                 }
             }
-        }).show();
+        });
+        startAnimationMenu(alertDialog, position, false, new Runnable() {
+            @Override
+            public void run() {
+            }
+        });
         return true;
+    }
+
+    private void startAnimationMenu(AlertDialog dialog, final Point position,
+                                    final boolean reverse, final Runnable onEndListener) {
+        Window window = dialog.getWindow();
+        if(window != null) {
+            WindowManager.LayoutParams wlp = window.getAttributes();
+            wlp.gravity = Gravity.BOTTOM;
+            wlp.width = getDimensionScreen().widthPixels;
+            wlp.flags &= -WindowManager.LayoutParams.FLAG_DIM_BEHIND;
+            window.setAttributes(wlp);
+        }
+        View view = (View) dialog.getListView().getParent().getParent();
+        ViewParent parent = view.getParent();
+        view.setBackgroundResource(R.color.white);
+        while (parent.getParent() != null) {
+            parent = parent.getParent();
+            if(parent instanceof View) {
+                ((View) parent).setBackgroundResource(R.color.transparent);
+                view = (View) parent;
+                view.setPadding(0, 0, 0, 0);
+            }
+            else
+                break;
+        }
+        dialog.show();
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+            final View finalView = view;
+            view.post(new Runnable() {
+                @Override
+                public void run() {
+                    DisplayMetrics dimen = Utils.getDimensionScreen();
+                    int radius = max(dimen.widthPixels, dimen.heightPixels),
+                            fromRadius = reverse ? radius : 0,
+                            toRadius = reverse ? 0 : radius;
+                    Animator animator = ViewAnimationUtils.createCircularReveal(finalView,
+                            position.x + iconSize / 2, 0,
+                            fromRadius, toRadius);
+                    animator.setDuration(400);
+                    animator.addListener(new Animator.AnimatorListener() {
+                        @Override
+                        public void onAnimationStart(Animator animation) {
+
+                        }
+
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
+                            onEndListener.run();
+                        }
+
+                        @Override
+                        public void onAnimationCancel(Animator animation) {
+                            onEndListener.run();
+                        }
+
+                        @Override
+                        public void onAnimationRepeat(Animator animation) {
+
+                        }
+                    });
+                    animator.start();
+                }
+            });
+        }
+        else
+            onEndListener.run();
     }
 
     @Override
@@ -567,16 +687,26 @@ public class DirectoryActivity extends AppCompatActivity
     }
 
     @Override
-    public void setView(View view, Resource resource, int position) {
-        ImageView icon = (ImageView) view.findViewById(R.id.ivResourceIcon),
-                ivfavorite = (ImageView) view.findViewById(R.id.ivFavorite);
-        setDefaultView(icon, view, resource, mdMgr);
-        if (resource.isDir()) {
-            Directory dir = (Directory) resource;
-            if (dir.getCountElements() > 0 && dir.getResource(0) instanceof FileResource)
-                loadThumbnailForFile((FileResource) dir.getResource(0), icon, ivfavorite, true, true);
-        } else
-            loadThumbnailForFile((FileResource) resource, icon, ivfavorite, true, false);
+    public void setView(final View view, final Resource resource, int position) {
+        final ImageView icon = view.findViewById(R.id.ivResourceIcon),
+                ivfavorite = view.findViewById(R.id.ivFavorite);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        setDefaultView(icon, view, resource);
+                    }
+                });
+                if (resource.isDir()) {
+                    Directory dir = (Directory) resource;
+                    if (!dir.isEmpty() && dir.getResource(0) instanceof FileResource)
+                        loadThumbnailForFile((FileResource) dir.getResource(0), icon, ivfavorite, true, true);
+                } else
+                    loadThumbnailForFile((FileResource) resource, icon, ivfavorite, true, false);
+            }
+        }).start();
     }
 
     private void setOnListeners() {
@@ -587,53 +717,54 @@ public class DirectoryActivity extends AppCompatActivity
         //.
     }
 
-    private int getDrawableForFile(FileResource file, boolean isAlbum) {
-        return R.color.transparent;
-    }
-
     public void loadThumbnailForFile(final FileResource file, final ImageView ivIcon, final ImageView ivfavorite,
                                      boolean setBackground, boolean isAlbum) {
-        if (file.isThumbnailer()) {
-            DownloadImageTask downloadImageTask = new DownloadImageTask(ivIcon, ivfavorite,
-                    getDrawableForFile(file, isAlbum), setBackground, getDirectory().isMultiColumn());
-            downloadImageTask.load(file, isAlbum);
-        }
+        if (file.isThumbnailer())
+            new LoaderImageTask(ivIcon, ivfavorite).load(file, isAlbum);
         else if (!isAlbum && !file.getFavoriteStateLoad()) {
             new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    if (ivfavorite != null) {
-                        final boolean isFavorite = Utils.isFavorite(file);
-                        setImage(ivfavorite, isFavorite
-                                ? R.drawable.img_favorite_checked
-                                : R.drawable.img_favorite_not_checked);
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                ivfavorite.setOnClickListener(new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View view) {
-                                        if (file.isFavorite())
-                                            file.setIsFavorite(false, Utils.deleteFavoriteData(file.getIdFavorite()));
-                                        else
-                                            file.setIsFavorite(true, Utils.saveFavoriteData(new FavoriteDetails(file.getRelUrl(),
-                                                    file.getComment(), file.getParentName(), file.mSize, file.getModificationDate())));
-                                        setImage(ivfavorite, file.isFavorite()
-                                                ? R.drawable.img_favorite_checked
-                                                : R.drawable.img_favorite_not_checked);
-                                    }
-                                });
-                                ivfavorite.setOnLongClickListener(new View.OnLongClickListener() {
-                                    @Override
-                                    public boolean onLongClick(View view) {
-                                        Utils.showSnackBar(file.isFavorite()
-                                                ? R.string.remove_of_favorite_folder
-                                                : R.string.add_to_favorite_folder);
-                                        return true;
-                                    }
-                                });
-                            }
-                        });
+                    try {
+                        semaphoreLoadFavoriteState.acquire();
+                        if (ivfavorite != null) {
+                            final boolean isFavorite = Utils.isFavorite(file);
+                            setImage(ivfavorite, isFavorite
+                                    ? R.drawable.img_favorite_checked
+                                    : R.drawable.img_favorite_not_checked);
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    ivfavorite.setOnClickListener(new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View view) {
+                                            if (file.isFavorite())
+                                                file.setIsFavorite(false, Utils.deleteFavoriteData(file.getIdFavorite()));
+                                            else
+                                                file.setIsFavorite(true, Utils.saveFavoriteData(new FavoriteDetails(file.getRelUrl(),
+                                                        file.getComment(), file.getParentName(), file.mSize, file.getModificationDate())));
+                                            setImage(ivfavorite, file.isFavorite()
+                                                    ? R.drawable.img_favorite_checked
+                                                    : R.drawable.img_favorite_not_checked);
+                                        }
+                                    });
+                                    ivfavorite.setOnLongClickListener(new View.OnLongClickListener() {
+                                        @Override
+                                        public boolean onLongClick(View view) {
+                                            Utils.showSnackBar(file.isFavorite()
+                                                    ? R.string.remove_of_favorite_folder
+                                                    : R.string.add_to_favorite_folder);
+                                            return true;
+                                        }
+                                    });
+                                }
+                            });
+                        }
+                    }catch (Exception ignored) {
+                        ignored.printStackTrace();
+                    }
+                    finally {
+                        semaphoreLoadFavoriteState.release();
                     }
                 }
             }).start();
@@ -648,7 +779,9 @@ public class DirectoryActivity extends AppCompatActivity
     private void reloadDir(Directory directory) {
         if (directory.isMultiColumn()) {
             reload(R.layout.grid_view_directory, directory);
-            this.countColumns = isPortrait ? 2 : 4;
+            countColumns = favoriteDbManager.getNumColumns();
+            if (!isPortrait)
+                countColumns += 2;
             mlcResourcesDir.setNumColumns(countColumns);
         } else if (mlcResourcesDir.getNumColumns() > 1)
             reload(R.layout.list_view_directory, directory);
@@ -681,7 +814,20 @@ public class DirectoryActivity extends AppCompatActivity
         } else if (Utils.lostConnection)
             lostConnection();
         else {
-            mlcResourcesDir.startAnimation(AnimationUtils.loadAnimation(this, R.anim.scale_in_grid));
+            final boolean showCircleAnimator = android.os.Build.VERSION.SDK_INT
+                    >= android.os.Build.VERSION_CODES.LOLLIPOP;
+            if (showCircleAnimator) {
+                View view = mlcResourcesDir.getView();
+                Animator animator = ViewAnimationUtils.createCircularReveal(view,
+                        fromPoint.x + iconSize / 2, fromPoint.y + iconSize / 2, 0,
+                        max(view.getWidth(), view.getHeight()));
+                animator.setDuration(500);
+                animator.start();
+            }
+            mlcResourcesDir.startAnimation(AnimationUtils.loadAnimation(
+                    mlcResourcesDir.getView().getContext()
+                    ,showCircleAnimator ? R.anim.alpha_in_grid : R.anim.scale_in_grid));
+
             mlcResourcesDir.post(new Runnable() {
                 @Override
                 public void run() {
@@ -691,9 +837,19 @@ public class DirectoryActivity extends AppCompatActivity
                         if (current != null) {
                             final TranslateAnimation animation = new TranslateAnimation(
                                     fromPoint.x - current.getX(), 0, fromPoint.y - current.getY(), 0);
-                            animation.setStartOffset(-200);
+                            animation.setStartOffset(showCircleAnimator ? -100 : -200);
                             animation.setDuration(400);
-                            current.startAnimation(animation);
+                            new Thread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            current.startAnimation(animation);
+                                        }
+                                    });
+                                }
+                            }).start();
                         }
                         else
                             break;
@@ -769,22 +925,26 @@ public class DirectoryActivity extends AppCompatActivity
         loadDirectory();
     }
 
-    private void refreshConfiguration() {
+    public void refreshConfiguration() {
         DisplayMetrics displayMetrics = Utils.getDimensionScreen();
         int rotation = getWindowManager().getDefaultDisplay().getRotation();
         isPortrait = rotation == Surface.ROTATION_0 || rotation == Surface.ROTATION_180;
-        this.countColumns = isPortrait ? 2 : 4;
-        this.iconSize = (displayMetrics.widthPixels / countColumns);
+        countColumns = favoriteDbManager.getNumColumns();
+        if (!isPortrait)
+            countColumns += 2;
+        iconSize = (displayMetrics.widthPixels / countColumns);
     }
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         refreshConfiguration();
-        if (getDirectory().isMultiColumn()) {
-            mlcResourcesDir.setSelection(mlcResourcesDir.getFirstVisiblePosition());
-            mlcResourcesDir.setNumColumns(countColumns);
-        }
+        mlcResourcesDir.setSelection(mlcResourcesDir.getFirstVisiblePosition());
+        mlcResourcesDir.setNumColumns(countColumns);
+        DisplayMetrics displayMetrics = Utils.getDimensionScreen();
+        fromPoint = new Point((displayMetrics.widthPixels - iconSize) / 2,
+                (displayMetrics.heightPixels - iconSize) / 2 - getResources()
+                        .getDimensionPixelOffset(R.dimen.tool_bar_height));
     }
 
     @Override
@@ -832,68 +992,44 @@ public class DirectoryActivity extends AppCompatActivity
         }
     }
 
-    private void setDefaultView(ImageView rico, View view, final Resource resource, DownloadManager dMgr) {
-        final TextView rname = (TextView) view.findViewById(R.id.tvResourceName);
-          final TextView mcomment = (TextView) view.findViewById(R.id.tvContentComment);
-        final ImageView ivfavorite = (ImageView) view.findViewById(R.id.ivFavorite);
+    private void setDefaultView(ImageView rico, View view, final Resource resource) {
+        final TextView rName = view.findViewById(R.id.tvResourceName);
+        final TextView mComment = view.findViewById(R.id.tvContentComment);
+        final ImageView ivFavorite = view.findViewById(R.id.ivFavorite);
+        if(countColumns < 3) {
+            int padding = getResources().getDimensionPixelSize(R.dimen.margin);
+            rName.setPadding(padding, padding, padding, padding);
+        }
+        else {
+            if(ivFavorite != null) {
+                int size = getResources().getDimensionPixelSize(R.dimen.favorite_short_size);
+                ivFavorite.getLayoutParams().height = size;
+                ivFavorite.getLayoutParams().width = size;
+            }
+            rName.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 15);
+        }
         if (!resource.isDir()) {
             final FileResource file = (FileResource) resource;
             if (file.getFavoriteStateLoad()) {
-                ivfavorite.setImageResource(file.isFavorite() ? R.drawable.img_favorite_checked : R.drawable.img_favorite_not_checked);
-                Utils.setOnFavoriteClickListener(ivfavorite, file);
+                ivFavorite.setImageResource(file.isFavorite()
+                        ? R.drawable.img_favorite_checked
+                        : R.drawable.img_favorite_not_checked);
+                Utils.setOnFavoriteClickListener(ivFavorite, file);
             }
         }
-        if (resource instanceof AlbumDirectory
-                && resource.getComment() != null && mcomment != null)
-            mcomment.setText(resource.getComment());
-        else if (mcomment != null)
-            mcomment.setVisibility(View.INVISIBLE);
+        if (resource instanceof AlbumDirectory && resource.getComment() != null && mComment != null) {
+            mComment.setText(resource.getComment());
+        }
         if (getDirectory() instanceof SearchDirectory) {
-            BackgroundColorSpan colorSpan = new BackgroundColorSpan(getResources().getColor(R.color.green_bright));
+            BackgroundColorSpan colorSpan = new BackgroundColorSpan(getResources().getColor(R.color.blue_bright));
             String pattern = ((SearchDirectory) getDirectory()).getPattern();
             SpannableStringBuilder textBd = new SpannableStringBuilder(resource.getName());
             textBd.setSpan(colorSpan, resource.getIndexPattern(), resource.getIndexPattern() + pattern.length(), 0);
             Selection.selectAll(textBd);
-            rname.setText(textBd);
-        }
-        else
-            rname.setText(resource.getName());
-        setImageThumbnail(resource, rico);
-    }
-
-    public void setImageThumbnail(Resource res, ImageView rico) {
-        if (res.isDir()) {
-            Directory directory = (Directory) res;
-            if (directory.getCountElements() > 0 && !directory.getResource(0).isDir())
-                rico.setImageResource(R.color.transparent);
-            else
-                rico.setImageResource(R.color.transparent);
-        } else {
-            FileResource fres = (FileResource) res;
-            String ext = fres.getExtension();
-            switch (ext) {
-                case "jpg":
-                case "png":
-                case "bmp":
-                case "jpeg":
-                case "ico":
-                case "jpe":
-                case "jfi":
-                case "jfif":
-                case "dib":
-                case "jif":
-                case "apng":
-                case "gif":
-                    if (mlcResourcesDir.getNumColumns() > 1)
-                        rico.setImageResource(R.color.transparent);
-                    else
-                        rico.setImageResource(R.drawable.icon_image);
-                    break;
-                default:
-                    break;
-            }
-        }
-        if (!isRemoteDirectory && res.isHidden())
+            rName.setText(textBd);
+        } else
+            rName.setText(resource.getName());
+        if (resource.isHidden())
             rico.setAlpha(Utils.ALPHA_HIDDEN_FILES);
     }
 
@@ -950,7 +1086,11 @@ public class DirectoryActivity extends AppCompatActivity
         switch (item.getItemId()) {
             case R.id.mnShowCamera:
                 try {
-                    startActivity(new Intent(MediaStore.ACTION_IMAGE_CAPTURE));
+                    /*Intent intent = new Intent(this, CameraActivity.class);
+                    intent.setAction(Intent.ACTION_VIEW);
+                    startActivity(intent);*/
+                    startActivityForResult(new Intent(MediaStore.ACTION_IMAGE_CAPTURE), CAMERA_REQUEST_CODE);
+                    overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
                 }catch (Exception ignored) {
                     ignored.printStackTrace();
                 }
@@ -1078,17 +1218,6 @@ public class DirectoryActivity extends AppCompatActivity
         @Override
         public void onDrawerStateChanged(int newState) {
 
-        }
-    }
-
-    private class SeekListener {
-        private boolean finish = false;
-
-        private SeekListener() {
-        }
-
-        public void setFinish() {
-            this.finish = true;
         }
     }
 }

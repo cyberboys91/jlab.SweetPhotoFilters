@@ -26,12 +26,10 @@ public class CameraImagesDirectory extends FilesLocalDirectory {
                     clear();
                     ocupedSpace = 0;
                     ArrayList<String> stgPath = Utils.getStoragesPath();
-                    Directory allImages = Utils.specialDirectories.getImagesDirectory();
-                    allImages.openSynchronic(handler);
                     for (int i = 0; i < stgPath.size(); i++) {
                         String current = stgPath.get(i);
                         if (Utils.existAndMountDir(current))
-                            loadContentForDir(allImages, String.format("%s/%s/Camera/", current, Environment.DIRECTORY_DCIM));
+                            loadContentForDir(String.format("%s/%s/Camera/", current, Environment.DIRECTORY_DCIM));
                     }
                     sort(getContent(), new Comparator<Resource>() {
                         @Override
@@ -56,7 +54,9 @@ public class CameraImagesDirectory extends FilesLocalDirectory {
         }
     }
 
-    private void loadContentForDir(Directory directory, String path) {
+    private void loadContentForDir(String path) {
+        LocalDirectory directory = new LocalDirectory("", path, "", false, 0);
+        directory.openSynchronic(null);
         for (int i = 0; i < directory.getCountElements(); i++) {
             Resource current = directory.getResource(i);
             if ((Utils.showHiddenFiles || !current.isHidden())

@@ -129,4 +129,6 @@
     <string name="loading_image_error">Error loading image…</string>
     <string name="error_saving_image">Error saving image…</string>
     <string name="invalid_image">Invalid image</string>
+    <string name="camera">Camera</string>
+    <string name="rotate_camera">Rotate Camera</string>
 </resources>

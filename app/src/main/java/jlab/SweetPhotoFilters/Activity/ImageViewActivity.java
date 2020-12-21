@@ -10,12 +10,14 @@ import java.util.ArrayList;
 import android.view.MenuItem;
 import android.content.Intent;
 import android.view.ViewGroup;
+import android.graphics.Matrix;
 import android.graphics.Bitmap;
 import jlab.SweetPhotoFilters.R;
 import android.view.MotionEvent;
 import android.widget.ImageView;
 import android.widget.AdapterView;
 import android.widget.LinearLayout;
+import android.media.ExifInterface;
 import android.view.LayoutInflater;
 import jlab.SweetPhotoFilters.Utils;
 import android.graphics.BitmapFactory;
@@ -35,8 +37,6 @@ import jlab.SweetPhotoFilters.View.ZoomImageView;
 import jlab.SweetPhotoFilters.Resource.LocalFile;
 import jlab.SweetPhotoFilters.db.FavoriteDetails;
 import android.support.design.widget.AppBarLayout;
-
-import static jlab.SweetPhotoFilters.Activity.DirectoryActivity.STACK_VARS_KEY;
 import static jlab.SweetPhotoFilters.Utils.isEqual;
 import static jlab.SweetPhotoFilters.Utils.rateApp;
 import jlab.SweetPhotoFilters.Resource.FileResource;
@@ -49,6 +49,7 @@ import static jlab.SweetPhotoFilters.Utils.showSnackBar;
 import static jlab.SweetPhotoFilters.Utils.recycleBitmap;
 import static jlab.SweetPhotoFilters.Utils.DIRECTORY_KEY;
 import com.zomato.photofilters.imageprocessors.SubFilter;
+import static jlab.SweetPhotoFilters.Utils.saveFolderPath;
 import jlab.SweetPhotoFilters.View.ResourceDetailsAdapter;
 import android.support.design.widget.FloatingActionButton;
 import static jlab.SweetPhotoFilters.Utils.showAboutDialog;
@@ -62,6 +63,7 @@ import jlab.SweetPhotoFilters.Resource.LocalStorageDirectories;
 import jlab.SweetPhotoFilters.Activity.Fragment.DetailsFragment;
 import static jlab.SweetPhotoFilters.Utils.saveBitmapToAppFolder;
 import static jlab.SweetPhotoFilters.Utils.RESOURCE_FOR_DETAILS_KEY;
+import static jlab.SweetPhotoFilters.Activity.DirectoryActivity.STACK_VARS_KEY;
 import jlab.SweetPhotoFilters.View.ResourceDetailsAdapter.OnGetSetViewListener;
 
 /*
@@ -85,8 +87,7 @@ public class ImageViewActivity extends AppCompatActivity implements View.OnTouch
     private boolean loadingImage, savingFilter, invalidImage;
     private ImageSwipeRefreshLayout msrlRefresh;
     private Bitmap bmCurrent;
-    public Semaphore mutex = new Semaphore(1);
-    public Semaphore mutexSave = new Semaphore(1);
+    private Semaphore mutex = new Semaphore(1), mutexSave = new Semaphore(1);
     private FloatingActionButton fbSave, fbCancel, fbUndo;
 
     @Override
@@ -196,6 +197,18 @@ public class ImageViewActivity extends AppCompatActivity implements View.OnTouch
             options.outHeight = (int) dim.y;
             options.inJustDecodeBounds = false;
             bmCurrent = BitmapFactory.decodeFile(resource.getRelUrl(), options);
+            ExifInterface ei = new ExifInterface(resource.getRelUrl());
+            switch (ei.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_UNDEFINED)) {
+                case ExifInterface.ORIENTATION_ROTATE_90:
+                    bmCurrent = rotateBitmap(bmCurrent, 90);
+                    break;
+                case ExifInterface.ORIENTATION_ROTATE_180:
+                    bmCurrent = rotateBitmap(bmCurrent, 180);
+                    break;
+                case ExifInterface.ORIENTATION_ROTATE_270:
+                    bmCurrent = rotateBitmap(bmCurrent, 270);
+                    break;
+            }
             new Thread(new Runnable() {
                 @Override
                 public void run() {
@@ -209,6 +222,14 @@ public class ImageViewActivity extends AppCompatActivity implements View.OnTouch
                 showSnackBar(R.string.loading_image_error);
             return false;
         }
+    }
+
+    private Bitmap rotateBitmap(Bitmap source, int angle) {
+        Matrix matrix = new Matrix();
+        matrix.postRotate(angle);
+        Bitmap result = Bitmap.createBitmap(source, 0, 0, source.getWidth(), source.getHeight(), matrix, true);
+        source.recycle();
+        return result;
     }
 
     private void loadFiltersImages() {
@@ -243,13 +264,13 @@ public class ImageViewActivity extends AppCompatActivity implements View.OnTouch
                 ivRippleFilter = (ImageView) findViewById(R.id.ivRippleFilter),
                 ivRescaleFilter = (ImageView) findViewById(R.id.ivRescaleFilter),
                 ivQuantizeFilter = (ImageView) findViewById(R.id.ivQuantizeFilter),
-                ivOtherFilter = (ImageView) findViewById(R.id.ivOtherFilter),
+//                ivOtherFilter = (ImageView) findViewById(R.id.ivOtherFilter),
                 ivPosterizeFilter = (ImageView) findViewById(R.id.ivPosterizeFilter),
-                ivOilFilter = (ImageView) findViewById(R.id.ivOilFilter),
+//                ivOilFilter = (ImageView) findViewById(R.id.ivOilFilter),
 //                ivPointillizeFilter = (ImageView) findViewById(R.id.ivPointillizeFilter),
 //                ivOffsetFilter = (ImageView) findViewById(R.id.ivOffsetFilter),
                 ivNoiseFilter = (ImageView) findViewById(R.id.ivNoiseFilter),
-                ivMinimumFilter = (ImageView) findViewById(R.id.ivMinimumFilter),
+//                ivMinimumFilter = (ImageView) findViewById(R.id.ivMinimumFilter),
                 ivMaskFilter = (ImageView) findViewById(R.id.ivMaskFilter),
                 ivMarbleFilter = (ImageView) findViewById(R.id.ivMarbleFilter),
                 ivInvertFilter = (ImageView) findViewById(R.id.ivInvertFilter),
@@ -319,10 +340,10 @@ public class ImageViewActivity extends AppCompatActivity implements View.OnTouch
         ivQuantizeFilter.setOnClickListener(applyFilterAux(FilterType.Quantize, 50));
         ivPosterizeFilter.setOnClickListener(applyFilterAux(FilterType.Posterize));
 //        ivPointillizeFilter.setOnClickListener(applyFilterAux(FilterType.Pointillize));
-        ivOilFilter.setOnClickListener(applyFilterAux(FilterType.Oil));
+//        ivOilFilter.setOnClickListener(applyFilterAux(FilterType.Oil));
 //        ivOffsetFilter.setOnClickListener(applyFilterAux(FilterType.Offset));
         ivNoiseFilter.setOnClickListener(applyFilterAux(FilterType.Noise));
-        ivMinimumFilter.setOnClickListener(applyFilterAux(FilterType.Minimum));
+//        ivMinimumFilter.setOnClickListener(applyFilterAux(FilterType.Minimum));
         ivMaskFilter.setOnClickListener(applyFilterAux(FilterType.Mask));
         ivInvertFilter.setOnClickListener(applyFilterAux(FilterType.Invert));
         ivMarbleFilter.setOnClickListener(applyFilterAux(FilterType.Marble));
@@ -356,7 +377,7 @@ public class ImageViewActivity extends AppCompatActivity implements View.OnTouch
         ivTintLowFilter.setOnClickListener(applyFilterAux(FilterType.Tint, 25));
         ivTintMediumFilter.setOnClickListener(applyFilterAux(FilterType.Tint, 50));
         ivTintHighFilter.setOnClickListener(applyFilterAux(FilterType.Tint, 75));
-        ivOtherFilter.setOnClickListener(applyFilterAux(FilterType.Other));
+//        ivOtherFilter.setOnClickListener(applyFilterAux(FilterType.Other));
     }
 
     private View.OnClickListener applyFilterAux(final FilterType filterType, final float... params) {
@@ -561,39 +582,48 @@ public class ImageViewActivity extends AppCompatActivity implements View.OnTouch
     private View.OnClickListener saveFilterOnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            if (savingFilter)
-                showSnackBar(R.string.saving_image_wait);
-            else if (invalidImage)
-                showSnackBar(R.string.invalid_image);
-            else {
-                try {
-                    mutexSave.acquire();
-                    savingFilter = true;
-                    showSnackBar(R.string.saving_image);
-                    final String name = resource.getName();
-                    final Bitmap aux = Bitmap.createBitmap(bmCurrent);
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            String saveName = saveBitmapToAppFolder(aux, name);
-                            if (saveName != null) {
-                                showSnackBar(String.format("%s \"%s\"", getString(R.string.save_image_complete),
-                                        saveName));
-                                aux.recycle();
-                            } else
-                                showSnackBar(R.string.error_saving_image);
-                            savingFilter = false;
-                            mutexSave.release();
-                        }
-                    }).start();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                    showSnackBar(R.string.error_saving_image);
-                    mutexSave.release();
+            saveBitmap(new Interfaces.IPostOnSave() {
+                @Override
+                public void run(String path, String name) {
+                    showSnackBar(String.format("%s \"%s\"", getString(R.string.save_image_complete),
+                            name));
                 }
-            }
+            });
         }
     };
+
+    private void saveBitmap(final Interfaces.IPostOnSave postOnSave) {
+        if (savingFilter)
+            showSnackBar(R.string.saving_image_wait);
+        else if (invalidImage)
+            showSnackBar(R.string.invalid_image);
+        else {
+            try {
+                mutexSave.acquire();
+                savingFilter = true;
+                showSnackBar(R.string.saving_image);
+                final String name = resource.getName();
+                final Bitmap aux = Bitmap.createBitmap(bmCurrent);
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        String saveName = saveBitmapToAppFolder(aux, name);
+                        if (saveName != null) {
+                            postOnSave.run(String.format("file://%s/%s", saveFolderPath, saveName), saveName);
+                            aux.recycle();
+                        } else
+                            showSnackBar(R.string.error_saving_image);
+                        savingFilter = false;
+                        mutexSave.release();
+                    }
+                }).start();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+                showSnackBar(R.string.error_saving_image);
+                mutexSave.release();
+            }
+        }
+    }
 
     private Point getImageDimension(int realWidth, int realHeight) {
         int width = realWidth, height = realHeight;
@@ -745,10 +775,29 @@ public class ImageViewActivity extends AppCompatActivity implements View.OnTouch
             case R.id.mnShare:
                 //Share
                 try {
-                    Intent intent = new Intent(Intent.ACTION_SEND);
-                    intent.setType(resource.getMimeType());
-                    intent.putExtra(Intent.EXTRA_STREAM, Uri.parse(resource.getAbsUrl()));
-                    startActivity(Intent.createChooser(intent, getString(R.string.share)));
+                    if (loadingImage)
+                        showSnackBar(R.string.loading_image);
+                    else {
+                        final String mimeType = resource.getMimeType();
+                        Interfaces.IPostOnSave runnable = new Interfaces.IPostOnSave() {
+                            @Override
+                            public void run(final String path, String name) {
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        Intent intent = new Intent(Intent.ACTION_SEND);
+                                        intent.setType(mimeType);
+                                        intent.putExtra(Intent.EXTRA_STREAM, Uri.parse(path));
+                                        startActivity(Intent.createChooser(intent, getString(R.string.share)));
+                                    }
+                                });
+                            }
+                        };
+                        if (!filter.getSubFilters().isEmpty())
+                            saveBitmap(runnable);
+                        else
+                            runnable.run(resource.getAbsUrl(), resource.getName());
+                    }
                 } catch (Exception ignored) {
                     ignored.printStackTrace();
                 }
@@ -756,10 +805,30 @@ public class ImageViewActivity extends AppCompatActivity implements View.OnTouch
             case R.id.mnSetImageAs:
                 //Set image as
                 try {
-                    Intent intent = new Intent(Intent.ACTION_ATTACH_DATA);
-                    intent.putExtra(resource.getExtension(), resource.getMimeType());
-                    intent.setDataAndType(Uri.parse(resource.getAbsUrl()), resource.getMimeType());
-                    startActivity(Intent.createChooser(intent, getString(R.string.set_image_as)));
+                    if(loadingImage)
+                        showSnackBar(R.string.loading_image);
+                    else
+                    {
+                        final FileResource aux = resource;
+                        Interfaces.IPostOnSave runnable = new Interfaces.IPostOnSave() {
+                            @Override
+                            public void run(final String path, String name) {
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        Intent intent = new Intent(Intent.ACTION_ATTACH_DATA);
+                                        intent.putExtra(aux.getExtension(), aux.getMimeType());
+                                        intent.setDataAndType(Uri.parse(path), aux.getMimeType());
+                                        startActivity(Intent.createChooser(intent, getString(R.string.set_image_as)));
+                                    }
+                                });
+                            }
+                        };
+                        if (!filter.getSubFilters().isEmpty())
+                            saveBitmap(runnable);
+                        else
+                            runnable.run(aux.getAbsUrl(), aux.getName());
+                    }
                 } catch (Exception ignored) {
                     ignored.printStackTrace();
                 }

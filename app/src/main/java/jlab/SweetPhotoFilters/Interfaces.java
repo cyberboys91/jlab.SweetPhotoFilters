@@ -143,6 +143,8 @@ public class Interfaces {
 
         boolean post(Runnable runnable);
 
+        View getView();
+
     }
 
     public interface IRefreshListener {
@@ -171,5 +173,9 @@ public class Interfaces {
 
     public interface ILoadImageListener {
         boolean loadImage();
+    }
+
+    public interface IPostOnSave {
+        void run (String path, String name);
     }
 }

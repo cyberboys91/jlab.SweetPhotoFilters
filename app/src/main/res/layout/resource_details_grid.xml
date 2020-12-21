@@ -1,82 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:padding=".5dp"
+    android:background="@color/transparent_bright2">
 
-    <LinearLayout
-        android:id="@+id/lResourceData"
-        android:layout_width="match_parent"
+    <ImageView
         android:layout_height="match_parent"
-        android:layout_margin=".5dp"
-        android:orientation="vertical">
+        android:layout_width="match_parent"
+        android:id="@+id/ivResourceIcon"
+        android:scaleType="centerCrop"/>
 
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:layout_gravity="center_vertical"
-            android:background="@color/transparent_bright2">
+    <ImageView
+        android:layout_width="@dimen/favorite_big_size"
+        android:layout_height="@dimen/favorite_big_size"
+        android:id="@+id/ivFavorite"
+        android:layout_margin="2dp"
+        android:padding="3dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"/>
 
-            <ImageView
-                android:layout_height="match_parent"
-                android:layout_width="match_parent"
-                android:id="@+id/ivResourceIcon"
-                android:scaleType="centerCrop"/>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/properties_background"
+        android:layout_alignParentBottom="true"
+        android:id="@+id/tvResourceName"
+        android:padding="5dp"
+        android:textSize="@dimen/text_size"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:textColor="@color/white"/>
 
-            <ImageView
-                android:layout_width="35dp"
-                android:layout_height="35dp"
-                android:id="@+id/ivFavorite"
-                android:paddingTop="3dp"
-                android:paddingBottom="3dp"
-                android:paddingRight="3dp"
-                android:paddingEnd="3dp"
-                android:paddingLeft="3dp"
-                android:paddingStart="3dp"
-                android:layout_alignParentTop="true"
-                android:layout_alignParentRight="true"
-                android:layout_alignParentEnd="true"
-                android:layout_marginRight="2dp"
-                android:layout_marginEnd="2dp"
-                android:layout_marginTop="2dp"
-                android:layout_gravity="center_vertical|center_horizontal"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@color/white"
-                android:textColor="@color/transparent_black"
-                android:id="@+id/tvContentComment"
-                android:layout_alignParentBottom="true"
-                android:layout_alignParentRight="true"
-                android:layout_alignParentEnd="true"
-                android:textSize="@dimen/short_text_size_v2"
-                android:paddingTop="3dp"
-                android:paddingBottom="3dp"
-                android:paddingRight="5dp"
-                android:paddingEnd="5dp"
-                android:paddingLeft="3dp"
-                android:paddingStart="3dp"/>
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:padding="10dp"
-                android:background="@drawable/properties_background"
-                android:layout_alignParentBottom="true">
-
-                <include layout="@layout/grid_resource_details"
-                    android:layout_marginLeft="@dimen/middle_margin"
-                    android:layout_marginRight="@dimen/middle_margin"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/Properties"
-                    android:layout_gravity="center_vertical" />
-
-            </LinearLayout>
-
-        </RelativeLayout>
-
-    </LinearLayout>
-
-</LinearLayout>
+</RelativeLayout>

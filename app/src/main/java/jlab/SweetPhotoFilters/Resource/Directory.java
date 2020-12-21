@@ -98,4 +98,8 @@ public class Directory extends Resource {
     protected void clear() {
         this.Content.clear();
     }
+
+    public boolean isEmpty () {
+        return getContent().isEmpty();
+    }
 }

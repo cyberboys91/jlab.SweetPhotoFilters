@@ -2,6 +2,8 @@ package jlab.SweetPhotoFilters.Resource;
 
 import android.provider.MediaStore;
 
+import java.util.ArrayList;
+
 import jlab.SweetPhotoFilters.R;
 import jlab.SweetPhotoFilters.Utils;
 

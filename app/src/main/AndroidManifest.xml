@@ -4,9 +4,9 @@
     android:installLocation="auto">
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <!--<uses-permission android:name="android.permission.CAMERA" />-->
 
     <application
         android:allowBackup="true"
@@ -15,15 +15,32 @@
         android:label="@string/app_name">
 
         <activity
-            android:name="jlab.SweetPhotoFilters.Activity.DirectoryActivity"
+            android:name="jlab.SweetPhotoFilters.Activity.SplashActivity"
             android:label="@string/app_name"
-            android:theme="@style/AppImageTheme"
+            android:theme="@style/AppTheme.FullScreen"
             android:configChanges="orientation|screenSize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name="jlab.SweetPhotoFilters.Activity.DirectoryActivity"
+            android:label="@string/app_name"
+            android:theme="@style/AppImageTheme"
+            android:configChanges="orientation|screenSize">
+        </activity>
+
+        <!--<activity-->
+            <!--android:name="jlab.SweetPhotoFilters.Activity.CameraActivity"-->
+            <!--android:label="@string/app_name"-->
+            <!--android:theme="@style/AppTheme.FullScreen"-->
+            <!--android:configChanges="orientation|screenSize">-->
+            <!--<intent-filter>-->
+                <!--<action android:name="android.intent.action.VIEW" />-->
+            <!--</intent-filter>-->
+        <!--</activity>-->
 
         <activity
             android:name="jlab.SweetPhotoFilters.Activity.ImageViewActivity"
@@ -41,9 +58,6 @@
             </intent-filter>
         </activity>
 
-        <service android:name="jlab.SweetPhotoFilters.Service.DeleteResourceService" />
-        <service android:name="jlab.SweetPhotoFilters.Service.ResourceDownloaderService"/><!-- ATTENTION: This was auto-generated to add Google Play services to your project for
-     App Indexing.  See https://g.co/AppIndexing/AndroidStudio for more information. -->
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />

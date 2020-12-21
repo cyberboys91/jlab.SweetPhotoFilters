@@ -98,7 +98,7 @@
         android:layout_margin="@dimen/margin"
         android:visibility="invisible"
         app:srcCompat="@drawable/img_search"
-        app:backgroundTint="@color/blue"
+        app:backgroundTint="@color/gray"
         app:fabSize="mini"/>
 
 </android.support.design.widget.CoordinatorLayout>

@@ -51,7 +51,7 @@ public class ResourceDetailsAdapter extends ArrayAdapter<Resource> {
 
     @Override
     public long getItemId(int position) {
-        return 0;
+        return position;
     }
 
     public void setonGetSetViewListener(OnGetSetViewListener newListener) {

@@ -8,6 +8,7 @@ import android.os.Handler;
 import jlab.SweetPhotoFilters.R;
 import android.content.Context;
 import android.view.animation.AnimationUtils;
+import android.view.animation.ScaleAnimation;
 import android.widget.AbsListView;
 import android.widget.GridView;
 import android.widget.ImageView;
@@ -23,6 +24,7 @@ import jlab.SweetPhotoFilters.Activity.DirectoryActivity;
 import static jlab.SweetPhotoFilters.Utils.LOADING_VISIBLE;
 import static jlab.SweetPhotoFilters.Utils.REFRESH_LISTVIEW;
 import static jlab.SweetPhotoFilters.Utils.TIME_WAIT_LOADING;
+import static jlab.SweetPhotoFilters.Utils.favoriteDbManager;
 import static jlab.SweetPhotoFilters.Utils.stackVars;
 
 /*
@@ -65,13 +67,16 @@ public class GridDirectoryView extends GridView implements Interfaces.IListConte
         setOnItemClickListener(new OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                openResource(mdirectory.getResource(position), position, new Point((int) view.getX(), (int) view.getY()));
+                if (getAnimation() == null || getAnimation().hasEnded())
+                    openResource(mdirectory.getResource(position), position, new Point((int) view.getX(), (int) view.getY()));
             }
         });
         setOnItemLongClickListener(new OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> adapterView, View view, final int position, long id) {
-                return mListener.onResourceLongClick(mdirectory.getResource(position), position, new Point((int) view.getX(), (int) view.getY()));
+                return (getAnimation() == null || getAnimation().hasEnded())
+                        && mListener.onResourceLongClick(mdirectory.getResource(position),
+                        position, new Point((int) view.getX(), (int) view.getY()));
             }
         });
         setOnScrollListener(this);
@@ -85,10 +90,6 @@ public class GridDirectoryView extends GridView implements Interfaces.IListConte
 
     @Override
     public void onScrollStateChanged(AbsListView absListView, int scrollState) {
-        if (scrollState == SCROLL_STATE_IDLE && mdirectory != null && mdirectory.loaded()) {
-            scrollingStop(absListView);
-            scrolling = false;
-        }
         scrolling = scrollState == SCROLL_STATE_FLING;
     }
 
@@ -99,26 +100,25 @@ public class GridDirectoryView extends GridView implements Interfaces.IListConte
         last = first + visibleItemCount - 1;
     }
 
-    private void scrollingStop(AbsListView view) {
-
-    }
-
     @Override
     public void onViewRemoved(View child) {
-        if(child != null) {
-            ImageView ivIcon = (ImageView) child.findViewById(R.id.ivResourceIcon);
-            if(ivIcon != null)
-            ivIcon.setImageDrawable(null);
+        try {
+            if (child != null) {
+                ImageView ivIcon = child.findViewById(R.id.ivResourceIcon);
+                if (ivIcon != null)
+                    ivIcon.setImageDrawable(null);
+            }
+            super.onViewRemoved(child);
+        } catch (Exception ignored) {
+            ignored.printStackTrace();
         }
-        super.onViewRemoved(child);
     }
 
     public void setHandler(Handler handler) {
-         this.handler = handler;
+        this.handler = handler;
     }
 
-    public void setRelUrlDirectoryRoot(String nameRoot, String relUrlRoot)
-    {
+    public void setRelUrlDirectoryRoot(String nameRoot, String relUrlRoot) {
         this.relUrlDirectoryRoot = relUrlRoot;
         this.nameDirectoryRoot = nameRoot;
     }
@@ -187,8 +187,7 @@ public class GridDirectoryView extends GridView implements Interfaces.IListConte
         return mAdapter.isEmpty();
     }
 
-    public Directory getDirectory()
-    {
+    public Directory getDirectory() {
         return mdirectory;
     }
 
@@ -214,17 +213,45 @@ public class GridDirectoryView extends GridView implements Interfaces.IListConte
         }
     }
 
-    public void setListeners(DirectoryActivity activityDirectory)
-    {
+    @Override
+    public View getView() {
+        return this;
+    }
+
+    public void setListeners(DirectoryActivity activityDirectory) {
         this.mAdapter.setonGetSetViewListener(activityDirectory);
         this.mListener = activityDirectory;
     }
 
+    @Override
+    public void setNumColumns(final int numColumns) {
+        int col = getNumColumns();
+        if (col != numColumns)
+            super.setNumColumns(numColumns);
+    }
+
     private class ScaleListener extends ScaleGestureDetector.SimpleOnScaleGestureListener {
         @Override
-        public boolean onScaleBegin(ScaleGestureDetector detector) {
-//            setNumColumns(getNumColumns() + 1);
-            return true;
+        public void onScaleEnd(ScaleGestureDetector detector) {
+            int newColumns = detector.getScaleFactor() < 1
+                    ? favoriteDbManager.incrementNumColumns()
+                    : favoriteDbManager.decremtNumColuns();
+            if (!stackVars.isEmpty())
+                stackVars.get(stackVars.size() - 1).BeginPosition = getFirstVisiblePosition();
+            setNumColumns(newColumns);
+            mListener.refreshConfiguration();
+            loadDirectory();
+        }
+
+        @Override
+        public boolean onScale(ScaleGestureDetector detector) {
+            if (detector.getScaleFactor() != 1 && (getAnimation() == null
+                    || getAnimation().hasEnded()))
+                startAnimation(AnimationUtils.loadAnimation(getContext(),
+                        detector.getScaleFactor() < 1
+                                ? R.anim.beat_increment_col
+                                : R.anim.beat_decrement_col));
+            return super.onScale(detector);
         }
     }
 }

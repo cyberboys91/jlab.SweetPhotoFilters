@@ -4,6 +4,7 @@
     <dimen name="margin_right_fbNewFileOrFolder">22dp</dimen>
     <dimen name="margin_right_tvFButton">60dp</dimen>
     <dimen name="short_margin">5dp</dimen>
+    <dimen name="medium_margin">1dp</dimen>
     <dimen name="min_margin">.5dp</dimen>
     <dimen name="navigation_button_path_left">60dp</dimen>
     <dimen name="navigation_button_path_right">20dp</dimen>
@@ -13,10 +14,11 @@
     <dimen name="navigation_path_height">25dp</dimen>
     <dimen name="server_data_padding">7dp</dimen>
     <dimen name="icon_res">55dp</dimen>
-    <dimen name="text_size">13dp</dimen>
-    <dimen name="short_text_size_v1">12dp</dimen>
-    <dimen name="short_text_size_v2">11dp</dimen>
-    <dimen name="text_size_big">16dp</dimen>
+    <dimen name="text_size">17dp</dimen>
+    <dimen name="short_text_size">15dp</dimen>
+    <dimen name="min_text_size">13dp</dimen>
+    <dimen name="text_size_big">18dp</dimen>
+    <dimen name="album_big_text_size">27dp</dimen>
     <dimen name="title_size">18dp</dimen>
     <dimen name="tool_bar_height">60dp</dimen>
     <dimen name="image_swipe_margin">70dp</dimen>
@@ -27,6 +29,7 @@
     <dimen name="margin_bottom_btNewFile">125dp</dimen>
     <dimen name="margin_bottom_tvNewFile">130dp</dimen>
     <dimen name="margin_bottom_tvNewFolder">80dp</dimen>
-    <dimen name="media_textview_size">35dp</dimen>
-    <dimen name="filter_height">70dp</dimen>
+    <dimen name="filter_height">65dp</dimen>
+    <dimen name="favorite_big_size">35dp</dimen>
+    <dimen name="favorite_short_size">30dp</dimen>
 </resources>

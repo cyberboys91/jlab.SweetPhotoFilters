@@ -94,6 +94,11 @@ public class ListDirectoryView extends ListView implements AbsListView.OnScrollL
     }
 
     @Override
+    public View getView() {
+        return this;
+    }
+
+    @Override
     public void setNumColumns(int i) {
 
     }
@@ -117,8 +122,12 @@ public class ListDirectoryView extends ListView implements AbsListView.OnScrollL
 
     @Override
     public void onViewRemoved(View child) {
-        freeIconDrawable(child);
-        super.onViewRemoved(child);
+        try {
+            freeIconDrawable(child);
+            super.onViewRemoved(child);
+        }catch (Exception ignored) {
+            ignored.printStackTrace();
+        }
     }
 
     private void freeIconDrawable(View view) {
