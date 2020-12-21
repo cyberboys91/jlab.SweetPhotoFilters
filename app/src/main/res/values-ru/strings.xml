@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Сладкие фото фильтры</string>
+    <string name="app_name">Галерея &amp; милые фото фильтры</string>
     <string name="vp_activity_name">jlab.MediaPlayer</string>
     <string name="ap_activity_name">jlab.AudioPlayer</string>
     <string name="about">Oколо</string>
@@ -53,7 +53,7 @@
     <string name="folder_not_rename">Не удалось переименовать папку</string>
     <string name="file_not_rename">Не удалось переименовать файл</string>
     <string name="delete_begin_question">Вы хотите удалить</string>
-    <string name="about_content"><b>jlab.VideoPlayer v1.0</b>, свяжитесь с: <i> jlab.apps@gmail.com</i></string>
+    <string name="about_content"><b>jlab.SweetPhotoFilters v1.0</b>, свяжитесь с: <i> jlab.apps@gmail.com</i></string>
     <string name="internal_storage">Внутреннее хранилище</string>
     <string name="hint_download_folder">Загрузить в:</string>
     <string name="hint_comment">Описание</string>
@@ -110,7 +110,7 @@
     <string name="paste">Вставить</string>
     <string name="all_documents">Документация</string>
     <string name="new_server">Добавить новый сервер</string>
-    <string name="permission_denied">jlab.FileTransfer не может быть выполнен, вы предоставляете следующие разрешения:</string>
+    <string name="permission_denied">jlab.SweetPhotoFilters не может быть выполнен, вы предоставляете следующие разрешения:</string>
     <string name="enqueue_file_to_downloads">Добавлен файл для загрузки очереди</string>
     <string name="enqueue">в очереди</string>
     <string name="not_any">любой</string>
@@ -129,4 +129,5 @@
     <string name="loading_image_error">Ошибка загрузки изображения…</string>
     <string name="error_saving_image">Ошибка при сохранении изображения…</string>
     <string name="camera">Камера</string>
+    <string name="invalid_image">Неверное изображение</string>
 </resources>

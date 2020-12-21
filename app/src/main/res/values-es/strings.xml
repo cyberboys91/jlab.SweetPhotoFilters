@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Filtros de Fotos</string>
+    <string name="app_name">Galería &amp; Filtros de Fotos</string>
     <string name="vp_activity_name">jlab.MediaPlayer</string>
     <string name="ap_activity_name">jlab.AudioPlayer</string>
     <string name="about">Acerca de</string>
@@ -110,7 +110,7 @@
     <string name="paste">Pegar</string>
     <string name="all_documents">Documentos</string>
     <string name="new_server">Añadir Nuevo Servidor</string>
-    <string name="permission_denied">jlab.FileTransfer no puede ejecutarse, usted tiene que proveer los siguientes permisos:</string>
+    <string name="permission_denied">jlab.SweetPhotoFilters no puede ejecutarse, usted tiene que proveer los siguientes permisos:</string>
     <string name="enqueue_file_to_downloads">Añadido fichero a cola de descargas</string>
     <string name="enqueue">en cola</string>
     <string name="pending_to_download">está pendiente a descargar</string>
@@ -128,5 +128,6 @@
     <string name="please_wait">Por favor espere…</string>
     <string name="loading_image_error">Error cargando imagen…</string>
     <string name="error_saving_image">Error guardando imagen…</string>
+    <string name="invalid_image">Imagen inválida</string>
     <string name="camera">Cámara</string>
 </resources>

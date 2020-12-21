@@ -7,7 +7,6 @@ import android.view.animation.Animation;
 import android.widget.ImageView;
 import android.view.animation.AnimationUtils;
 import android.support.v7.app.AppCompatActivity;
-
 import jlab.SweetPhotoFilters.R;
 
 
@@ -17,6 +16,7 @@ import jlab.SweetPhotoFilters.R;
 
 public class SplashActivity extends AppCompatActivity {
     private ImageView ivIcon;
+    private boolean finish = false;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -36,10 +36,12 @@ public class SplashActivity extends AppCompatActivity {
                         } catch (InterruptedException ignored) {
                             ignored.printStackTrace();
                         }
-                        Intent intent = new Intent(getBaseContext(), DirectoryActivity.class);
-                        startActivity(intent);
-                        finish();
-                        overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+                        if(!finish) {
+                            Intent intent = new Intent(getBaseContext(), DirectoryActivity.class);
+                            startActivity(intent);
+                            overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+                            finish();
+                        }
                     }
                 }).start();
             }
@@ -49,6 +51,7 @@ public class SplashActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
+        this.finish = true;
         finish();
     }
 }

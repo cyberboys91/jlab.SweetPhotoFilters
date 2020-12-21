@@ -2,6 +2,8 @@ package jlab.SweetPhotoFilters.Activity;
 
 import android.Manifest;
 import android.animation.Animator;
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Point;
@@ -12,6 +14,10 @@ import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.provider.DocumentFile;
+import android.transition.ArcMotion;
+import android.transition.ChangeBounds;
+import android.transition.Fade;
+import android.transition.TransitionValues;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.Menu;
@@ -30,6 +36,7 @@ import android.view.ViewGroup;
 import android.view.ViewParent;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.animation.Interpolator;
 import android.view.animation.TranslateAnimation;
 import android.widget.AdapterView;
 import android.widget.TextView;
@@ -49,6 +56,9 @@ import android.content.res.ColorStateList;
 import android.text.SpannableStringBuilder;
 import jlab.SweetPhotoFilters.LoaderImageTask;
 import android.support.v7.widget.SearchView;
+
+import jlab.SweetPhotoFilters.View.anim.MorphDrawable;
+import jlab.SweetPhotoFilters.View.anim.MorphTransition;
 import jlab.SweetPhotoFilters.db.FavoriteDetails;
 import jlab.SweetPhotoFilters.db.FavoriteDbManager;
 import android.support.v4.view.GravityCompat;
@@ -61,12 +71,14 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.design.widget.NavigationView;
-
 import static java.lang.Math.max;
 import static jlab.SweetPhotoFilters.Utils.favoriteDbManager;
 import static jlab.SweetPhotoFilters.Utils.getDimensionScreen;
 import static jlab.SweetPhotoFilters.Utils.specialDirectories;
 import static jlab.SweetPhotoFilters.Utils.stackVars;
+import static jlab.SweetPhotoFilters.View.anim.MorphTransition.PROPERTY_COLOR;
+import static jlab.SweetPhotoFilters.View.anim.MorphTransition.PROPERTY_CORNER_RADIUS;
+
 import android.support.design.widget.FloatingActionButton;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestBuilder;
@@ -79,6 +91,7 @@ public class DirectoryActivity extends AppCompatActivity
         LoaderImageTask.OnSetImageIconUIThread, Interfaces.IGetDirectoryListener, Interfaces.ICopyRefresh,
         Interfaces.IElementRefreshListener, Interfaces.ICloseListener, Interfaces.IRefreshListener {
 
+    private static final int RC_LOGIN = 100;
     public static int iconSize, swipeColor = R.color.accent, countColumns;
     private FloatingActionButton mfbSearch;
     private TextView mtvEmptyFolder;
@@ -538,9 +551,8 @@ public class DirectoryActivity extends AppCompatActivity
                             @Override
                             public void run() {
                                 mlcResourcesDir.openResource(resource, index, position);
-                                alertDialog.dismiss();
                             }
-                        });
+                        }, index);
                         break;
                     case 1:
                         //Share
@@ -552,13 +564,12 @@ public class DirectoryActivity extends AppCompatActivity
                                     intent.setType(((FileResource) resource).getMimeType());
                                     intent.putExtra(Intent.EXTRA_STREAM, Uri.parse(resource.getAbsUrl()));
                                     startActivity(Intent.createChooser(intent, getString(R.string.share)));
+                                    overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
                                 } catch (Exception ignored) {
                                     ignored.printStackTrace();
-                                } finally {
-                                    alertDialog.dismiss();
                                 }
                             }
-                        });
+                        }, index);
                         break;
                     case 2:
                         //Set image as
@@ -570,13 +581,12 @@ public class DirectoryActivity extends AppCompatActivity
                                     intent.putExtra(((FileResource) resource).getExtension(), ((FileResource) resource).getMimeType());
                                     intent.setDataAndType(Uri.parse(resource.getAbsUrl()), ((FileResource) resource).getMimeType());
                                     startActivity(Intent.createChooser(intent, getString(R.string.set_image_as)));
+                                    overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
                                 } catch (Exception ignored) {
                                     ignored.printStackTrace();
-                                } finally {
-                                    alertDialog.dismiss();
                                 }
                             }
-                        });
+                        }, index);
                         break;
                     case 3:
                         //Details
@@ -591,11 +601,9 @@ public class DirectoryActivity extends AppCompatActivity
                                     details.show(getFragmentManager(), "jlab.Details");
                                 } catch (Exception exp) {
                                     exp.printStackTrace();
-                                } finally {
-                                    alertDialog.dismiss();
                                 }
                             }
-                        });
+                        }, index);
                         break;
                 }
             }
@@ -604,13 +612,14 @@ public class DirectoryActivity extends AppCompatActivity
             @Override
             public void run() {
             }
-        });
+        }, index);
         return true;
     }
 
-    private void startAnimationMenu(AlertDialog dialog, final Point position,
-                                    final boolean reverse, final Runnable onEndListener) {
-        Window window = dialog.getWindow();
+    private void startAnimationMenu(final AlertDialog dialog, final Point position,
+                                    final boolean reverse, final Runnable onEndListener,
+                                    final int index) {
+        final Window window = dialog.getWindow();
         if(window != null) {
             WindowManager.LayoutParams wlp = window.getAttributes();
             wlp.gravity = Gravity.BOTTOM;
@@ -645,7 +654,22 @@ public class DirectoryActivity extends AppCompatActivity
                             position.x + iconSize / 2, 0,
                             fromRadius, toRadius);
                     animator.setDuration(400);
-                    animator.addListener(new Animator.AnimatorListener() {
+
+                    final Animator animator1 = ViewAnimationUtils.createCircularReveal(mlcResourcesDir
+                                    .getChildAt(index - mlcResourcesDir.getFirstVisiblePosition()),
+                            iconSize / 2, iconSize / 2, reverse ? iconSize : 0, reverse ? 0 : iconSize);
+                    animator1.setDuration(200);
+                    animator1.setInterpolator(AnimationUtils.loadInterpolator(dialog.getContext(), android.R.interpolator.fast_out_linear_in));
+
+                    final Animator animator2 = ViewAnimationUtils.createCircularReveal(mlcResourcesDir
+                                    .getChildAt(index - mlcResourcesDir.getFirstVisiblePosition()),
+                            iconSize / 2, iconSize / 2, 0, iconSize);
+                    animator2.setDuration(200);
+                    animator2.setInterpolator(AnimationUtils.loadInterpolator(dialog.getContext(), android.R.interpolator.fast_out_linear_in));
+
+                    animator.setInterpolator(AnimationUtils.loadInterpolator(dialog.getContext(), android.R.interpolator.fast_out_linear_in));
+
+                    animator1.addListener(new Animator.AnimatorListener() {
                         @Override
                         public void onAnimationStart(Animator animation) {
 
@@ -653,12 +677,18 @@ public class DirectoryActivity extends AppCompatActivity
 
                         @Override
                         public void onAnimationEnd(Animator animation) {
-                            onEndListener.run();
+                            if (reverse) {
+                                animator2.start();
+                                onEndListener.run();
+                            }
                         }
 
                         @Override
                         public void onAnimationCancel(Animator animation) {
-                            onEndListener.run();
+                            if (reverse) {
+                                animator2.start();
+                                onEndListener.run();
+                            }
                         }
 
                         @Override
@@ -666,6 +696,39 @@ public class DirectoryActivity extends AppCompatActivity
 
                         }
                     });
+                    animator.addListener(new Animator.AnimatorListener() {
+                        @Override
+                        public void onAnimationStart(Animator animation) {
+                            if (!reverse)
+                                animator1.start();
+                        }
+
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
+                            if (reverse) {
+                                dialog.dismiss();
+                                animator1.start();
+                            }
+                            else
+                                onEndListener.run();
+                        }
+
+                        @Override
+                        public void onAnimationCancel(Animator animation) {
+                            if (reverse) {
+                                dialog.dismiss();
+                                animator1.start();
+                            }
+                            else
+                                onEndListener.run();
+                        }
+
+                        @Override
+                        public void onAnimationRepeat(Animator animation) {
+
+                        }
+                    });
+
                     animator.start();
                 }
             });
@@ -821,6 +884,7 @@ public class DirectoryActivity extends AppCompatActivity
                 Animator animator = ViewAnimationUtils.createCircularReveal(view,
                         fromPoint.x + iconSize / 2, fromPoint.y + iconSize / 2, 0,
                         max(view.getWidth(), view.getHeight()));
+                animator.setInterpolator(AnimationUtils.loadInterpolator(this, android.R.interpolator.fast_out_linear_in));
                 animator.setDuration(500);
                 animator.start();
             }
@@ -1149,7 +1213,7 @@ public class DirectoryActivity extends AppCompatActivity
                         final Menu menu = mnavMenuExplorer.getMenu();
                         for (int i = 0; i < menu.size(); i++) {
                             MenuItem elem = menu.getItem(i);
-                            TextView tv = (TextView) elem.getActionView().findViewById(R.id.tvMenuCount);
+                            TextView tv = elem.getActionView().findViewById(R.id.tvMenuCount);
                             switch (elem.getItemId()) {
                                 case R.id.navImages:
                                     tv.setText(String.valueOf(specialDirectories.getVideosDirDetails().getCountElements()));

@@ -35,4 +35,10 @@
     <color name="gray_dark">#1a1b22</color>
     <color name="gray_bright">#de282b36</color>
     <color name="black">#000000</color>
+    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorAccent">#FF4081</color>
+    <color name="fab_background_color">#FF4081</color>
+    <color name="dialog_background_color">#fafafa</color>
+    <color name="dialog_background_scrim">#99323232</color>
 </resources>

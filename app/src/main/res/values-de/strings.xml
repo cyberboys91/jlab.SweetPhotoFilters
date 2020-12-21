@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Süße Fotofilter</string>
+    <string name="app_name">Galerie &amp; Süße Fotofilter</string>
     <string name="vp_activity_name">jlab.MediaPlayer</string>
     <string name="ap_activity_name">jlab.AudioPlayer</string>
     <string name="about">Über</string>
@@ -108,7 +108,7 @@
     <string name="paste">Einfügen</string>
     <string name="all_documents">Dokumente</string>
     <string name="new_server">Neuen Server hinzufügen</string>
-    <string name="permission_denied">jlab.FileTransfer kann nicht ausgeführt werden, Sie müssen die folgenden Berechtigungen bereitstellen:</string>
+    <string name="permission_denied">jlab.SweetPhotoFilters kann nicht ausgeführt werden, Sie müssen die folgenden Berechtigungen bereitstellen:</string>
     <string name="has_been_downloaded">es wurde heruntergeladen</string>
     <string name="has_dont_been_downloaded">wurde nicht heruntergeladen</string>
     <string name="pending_to_download">steht ausstehend Download bereit</string>
@@ -128,5 +128,6 @@
     <string name="please_wait">Warten Sie mal…</string>
     <string name="loading_image_error">Fehler beim Laden des Bildes…</string>
     <string name="error_saving_image">Fehler beim Speichern des Bildes…</string>
+    <string name="invalid_image">Ungültiges Bild</string>
     <string name="camera">Kamera</string>
 </resources>

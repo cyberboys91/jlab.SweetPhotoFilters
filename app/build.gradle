@@ -1,13 +1,13 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 26
+    compileSdkVersion 30
     buildToolsVersion "26"
     defaultConfig {
         applicationId "jlab.SweetPhotoFilters"
         minSdkVersion 17
-        targetSdkVersion 23
-        versionCode 3
+        targetSdkVersion 30
+        versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }

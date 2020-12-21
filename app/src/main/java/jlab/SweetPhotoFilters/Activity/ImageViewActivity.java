@@ -2,8 +2,14 @@ package jlab.SweetPhotoFilters.Activity;
 
 import java.io.File;
 import java.util.List;
+
+import android.app.Activity;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.RequiresApi;
+import android.support.v4.content.ContextCompat;
+import android.transition.ArcMotion;
 import android.view.Menu;
 import android.view.View;
 import java.util.ArrayList;
@@ -14,6 +20,7 @@ import android.graphics.Matrix;
 import android.graphics.Bitmap;
 import jlab.SweetPhotoFilters.R;
 import android.view.MotionEvent;
+import android.view.animation.Interpolator;
 import android.widget.ImageView;
 import android.widget.AdapterView;
 import android.widget.LinearLayout;
@@ -52,6 +59,8 @@ import com.zomato.photofilters.imageprocessors.SubFilter;
 import static jlab.SweetPhotoFilters.Utils.saveFolderPath;
 import jlab.SweetPhotoFilters.View.ResourceDetailsAdapter;
 import android.support.design.widget.FloatingActionButton;
+import android.widget.RelativeLayout;
+
 import static jlab.SweetPhotoFilters.Utils.showAboutDialog;
 import jlab.SweetPhotoFilters.View.ImageSwipeRefreshLayout;
 import static jlab.SweetPhotoFilters.Utils.saveFavoriteData;
@@ -89,11 +98,13 @@ public class ImageViewActivity extends AppCompatActivity implements View.OnTouch
     private Bitmap bmCurrent;
     private Semaphore mutex = new Semaphore(1), mutexSave = new Semaphore(1);
     private FloatingActionButton fbSave, fbCancel, fbUndo;
+    private RelativeLayout rlContainer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_image_view);
+        this.rlContainer = (RelativeLayout) findViewById(R.id.rlImageViewContainer);
         this.msrlRefresh = (ImageSwipeRefreshLayout) findViewById(R.id.srlRefresh);
         int tbHeight = getResources().getDimensionPixelSize(R.dimen.image_swipe_margin);
         this.msrlRefresh.setProgressViewOffset(false, tbHeight, tbHeight);

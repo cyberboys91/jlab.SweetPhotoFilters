@@ -3,45 +3,33 @@ package jlab.SweetPhotoFilters.Activity.Fragment;
 import android.animation.Animator;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.text.method.LinkMovementMethod;
 import android.util.DisplayMetrics;
-import android.view.Gravity;
 import android.view.View;
 import android.content.Context;
 import android.view.ViewAnimationUtils;
 import android.view.ViewGroup;
 import android.view.ViewParent;
-import android.view.Window;
-import android.view.WindowManager;
 import android.view.animation.AnimationUtils;
-import android.view.animation.TranslateAnimation;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import jlab.SweetPhotoFilters.Activity.DirectoryActivity;
 import jlab.SweetPhotoFilters.R;
 import android.app.DialogFragment;
 import android.view.LayoutInflater;
-import android.widget.LinearLayout;
-
 import jlab.SweetPhotoFilters.Resource.AlbumDirectory;
-import jlab.SweetPhotoFilters.Resource.Directory;
 import jlab.SweetPhotoFilters.Utils;
 import android.support.v7.app.AlertDialog;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.signature.MediaStoreSignature;
-
 import java.util.ArrayList;
-
 import jlab.SweetPhotoFilters.Resource.Resource;
 import jlab.SweetPhotoFilters.Resource.FileResource;
-
-import static java.lang.Math.abs;
 import static java.lang.Math.max;
 import static jlab.SweetPhotoFilters.Activity.DirectoryActivity.fromPoint;
 import static jlab.SweetPhotoFilters.Activity.DirectoryActivity.iconSize;
-import static jlab.SweetPhotoFilters.Utils.getDimensionScreen;
 
 public class DetailsFragment extends DialogFragment {
 
@@ -82,7 +70,6 @@ public class DetailsFragment extends DialogFragment {
         name.setText(resource.getName());
         path.setText(resource.getRelUrl());
         modification.setText(resource.getModificationDateLong());
-
         if (resource.isDir())
             size.setText(String.format("%s %s", ((AlbumDirectory) resource).getCountElements()
                     , getString(R.string.elements)));
@@ -129,6 +116,7 @@ public class DetailsFragment extends DialogFragment {
                                             final Animator animator = ViewAnimationUtils.createCircularReveal(image,
                                                     image.getWidth() / 2, image.getHeight() / 2,
                                                     0, max(dimen.widthPixels, dimen.heightPixels));
+                                            animator.setInterpolator(AnimationUtils.loadInterpolator(dialog.getContext(), android.R.interpolator.fast_out_linear_in));
                                             animator.setDuration(1000);
                                             animator.start();
                                         }
@@ -233,6 +221,7 @@ public class DetailsFragment extends DialogFragment {
                             fromPoint.x + iconSize / 2,
                             fromPoint.y + iconSize / 2,
                             0, max(rootView.getWidth(), rootView.getHeight()));
+                    animator.setInterpolator(AnimationUtils.loadInterpolator(dialog.getContext(), android.R.interpolator.fast_out_linear_in));
                     animator.setDuration(400);
                     animator.start();
                 }
@@ -247,6 +236,7 @@ public class DetailsFragment extends DialogFragment {
                     fromPoint.y + iconSize / 2,
                     max(rootView.getWidth(), rootView.getHeight()), 0);
             animator.setDuration(400);
+            animator.setInterpolator(AnimationUtils.loadInterpolator(dialog.getContext(), android.R.interpolator.fast_out_linear_in));
             animator.addListener(new Animator.AnimatorListener() {
                 @Override
                 public void onAnimationStart(Animator animation) {

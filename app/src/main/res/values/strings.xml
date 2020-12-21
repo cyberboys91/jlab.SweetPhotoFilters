@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Sweet Photo Filters</string>
+    <string name="app_name">Gallery &amp; Sweet Photo Filters</string>
     <string name="vp_activity_name">jlab.MediaPlayer</string>
     <string name="ap_activity_name">jlab.AudioPlayer</string>
     <string name="about">About</string>
@@ -111,7 +111,7 @@
     <string name="paste">Paste</string>
     <string name="all_documents">Documents</string>
     <string name="new_server">Add New Server</string>
-    <string name="permission_denied">jlab.FileTransfer cannot be executed, you have provide the following permissions:</string>
+    <string name="permission_denied">jlab.SweetPhotoFilters cannot be executed, you have provide the following permissions:</string>
     <string name="enqueue_file_to_downloads">Added file to downloads queue</string>
     <string name="enqueue">in queue</string>
     <string name="not_any">not any</string>
@@ -130,5 +130,4 @@
     <string name="error_saving_image">Error saving image…</string>
     <string name="invalid_image">Invalid image</string>
     <string name="camera">Camera</string>
-    <string name="rotate_camera">Rotate Camera</string>
 </resources>

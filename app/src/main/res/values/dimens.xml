@@ -32,4 +32,11 @@
     <dimen name="filter_height">65dp</dimen>
     <dimen name="favorite_big_size">35dp</dimen>
     <dimen name="favorite_short_size">30dp</dimen>
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+    <dimen name="fab_margin">16dp</dimen>
+    <dimen name="dialog_margin">32dp</dimen>
+    <dimen name="dialog_corners">4dp</dimen>
+    <dimen name="dialog_elevation">6dp</dimen>
+    <dimen name="button_corners">4dp</dimen>
 </resources>
