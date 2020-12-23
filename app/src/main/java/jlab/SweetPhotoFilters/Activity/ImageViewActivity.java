@@ -2,14 +2,8 @@ package jlab.SweetPhotoFilters.Activity;
 
 import java.io.File;
 import java.util.List;
-
-import android.app.Activity;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.RequiresApi;
-import android.support.v4.content.ContextCompat;
-import android.transition.ArcMotion;
 import android.view.Menu;
 import android.view.View;
 import java.util.ArrayList;
@@ -20,13 +14,13 @@ import android.graphics.Matrix;
 import android.graphics.Bitmap;
 import jlab.SweetPhotoFilters.R;
 import android.view.MotionEvent;
-import android.view.animation.Interpolator;
 import android.widget.ImageView;
 import android.widget.AdapterView;
 import android.widget.LinearLayout;
 import android.media.ExifInterface;
 import android.view.LayoutInflater;
 import jlab.SweetPhotoFilters.Utils;
+import android.widget.RelativeLayout;
 import android.graphics.BitmapFactory;
 import java.util.concurrent.Semaphore;
 import jlab.SweetPhotoFilters.Interfaces;
@@ -59,8 +53,6 @@ import com.zomato.photofilters.imageprocessors.SubFilter;
 import static jlab.SweetPhotoFilters.Utils.saveFolderPath;
 import jlab.SweetPhotoFilters.View.ResourceDetailsAdapter;
 import android.support.design.widget.FloatingActionButton;
-import android.widget.RelativeLayout;
-
 import static jlab.SweetPhotoFilters.Utils.showAboutDialog;
 import jlab.SweetPhotoFilters.View.ImageSwipeRefreshLayout;
 import static jlab.SweetPhotoFilters.Utils.saveFavoriteData;

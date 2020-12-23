@@ -2,8 +2,6 @@ package jlab.SweetPhotoFilters.Activity;
 
 import android.Manifest;
 import android.animation.Animator;
-import android.animation.AnimatorSet;
-import android.animation.ObjectAnimator;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Point;
@@ -14,10 +12,6 @@ import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.provider.DocumentFile;
-import android.transition.ArcMotion;
-import android.transition.ChangeBounds;
-import android.transition.Fade;
-import android.transition.TransitionValues;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.Menu;
@@ -36,7 +30,8 @@ import android.view.ViewGroup;
 import android.view.ViewParent;
 import android.view.Window;
 import android.view.WindowManager;
-import android.view.animation.Interpolator;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
 import android.view.animation.TranslateAnimation;
 import android.widget.AdapterView;
 import android.widget.TextView;
@@ -56,9 +51,6 @@ import android.content.res.ColorStateList;
 import android.text.SpannableStringBuilder;
 import jlab.SweetPhotoFilters.LoaderImageTask;
 import android.support.v7.widget.SearchView;
-
-import jlab.SweetPhotoFilters.View.anim.MorphDrawable;
-import jlab.SweetPhotoFilters.View.anim.MorphTransition;
 import jlab.SweetPhotoFilters.db.FavoriteDetails;
 import jlab.SweetPhotoFilters.db.FavoriteDbManager;
 import android.support.v4.view.GravityCompat;
@@ -72,13 +64,11 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.design.widget.NavigationView;
 import static java.lang.Math.max;
+import static java.lang.Math.min;
 import static jlab.SweetPhotoFilters.Utils.favoriteDbManager;
 import static jlab.SweetPhotoFilters.Utils.getDimensionScreen;
 import static jlab.SweetPhotoFilters.Utils.specialDirectories;
 import static jlab.SweetPhotoFilters.Utils.stackVars;
-import static jlab.SweetPhotoFilters.View.anim.MorphTransition.PROPERTY_COLOR;
-import static jlab.SweetPhotoFilters.View.anim.MorphTransition.PROPERTY_CORNER_RADIUS;
-
 import android.support.design.widget.FloatingActionButton;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestBuilder;
@@ -91,7 +81,6 @@ public class DirectoryActivity extends AppCompatActivity
         LoaderImageTask.OnSetImageIconUIThread, Interfaces.IGetDirectoryListener, Interfaces.ICopyRefresh,
         Interfaces.IElementRefreshListener, Interfaces.ICloseListener, Interfaces.IRefreshListener {
 
-    private static final int RC_LOGIN = 100;
     public static int iconSize, swipeColor = R.color.accent, countColumns;
     private FloatingActionButton mfbSearch;
     private TextView mtvEmptyFolder;
@@ -194,6 +183,13 @@ public class DirectoryActivity extends AppCompatActivity
         fromPoint = new Point(0, 0);
         reloadSpecialDir();
         requestPermission();
+    }
+
+    @Override
+    protected void onPostCreate(@Nullable Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        refreshConfiguration();
+        loadDirectory();
     }
 
     private void reloadSpecialDir() {
@@ -649,50 +645,36 @@ public class DirectoryActivity extends AppCompatActivity
                     DisplayMetrics dimen = Utils.getDimensionScreen();
                     int radius = max(dimen.widthPixels, dimen.heightPixels),
                             fromRadius = reverse ? radius : 0,
-                            toRadius = reverse ? 0 : radius;
+                            toRadius = reverse ? 0 : radius,
+                            posY = mlcResourcesDir.getView().getHeight() - finalView.getHeight();
                     Animator animator = ViewAnimationUtils.createCircularReveal(finalView,
-                            position.x + iconSize / 2, 0,
+                            position.x + iconSize / 2, position.y <= posY - iconSize / 2
+                                    ? 0 : position.y - posY + iconSize / 2,
                             fromRadius, toRadius);
-                    animator.setDuration(400);
-
-                    final Animator animator1 = ViewAnimationUtils.createCircularReveal(mlcResourcesDir
-                                    .getChildAt(index - mlcResourcesDir.getFirstVisiblePosition()),
-                            iconSize / 2, iconSize / 2, reverse ? iconSize : 0, reverse ? 0 : iconSize);
+                    animator.setDuration(800);
+                    final View resView = mlcResourcesDir.getChildAt(index - mlcResourcesDir.getFirstVisiblePosition());
+                    final Animation animator1 = new AlphaAnimation(.2f, 1f);
                     animator1.setDuration(200);
-                    animator1.setInterpolator(AnimationUtils.loadInterpolator(dialog.getContext(), android.R.interpolator.fast_out_linear_in));
-
-                    final Animator animator2 = ViewAnimationUtils.createCircularReveal(mlcResourcesDir
-                                    .getChildAt(index - mlcResourcesDir.getFirstVisiblePosition()),
-                            iconSize / 2, iconSize / 2, 0, iconSize);
+                    final Animation animator2 = new AlphaAnimation(1f, .2f);
                     animator2.setDuration(200);
-                    animator2.setInterpolator(AnimationUtils.loadInterpolator(dialog.getContext(), android.R.interpolator.fast_out_linear_in));
 
-                    animator.setInterpolator(AnimationUtils.loadInterpolator(dialog.getContext(), android.R.interpolator.fast_out_linear_in));
+                    animator1.setAnimationListener(new Animation.AnimationListener() {
 
-                    animator1.addListener(new Animator.AnimatorListener() {
                         @Override
-                        public void onAnimationStart(Animator animation) {
+                        public void onAnimationStart(Animation animation) {
 
                         }
 
                         @Override
-                        public void onAnimationEnd(Animator animation) {
+                        public void onAnimationEnd(Animation animation) {
                             if (reverse) {
-                                animator2.start();
+                                resView.startAnimation(animator2);
                                 onEndListener.run();
                             }
                         }
 
                         @Override
-                        public void onAnimationCancel(Animator animation) {
-                            if (reverse) {
-                                animator2.start();
-                                onEndListener.run();
-                            }
-                        }
-
-                        @Override
-                        public void onAnimationRepeat(Animator animation) {
+                        public void onAnimationRepeat(Animation animation) {
 
                         }
                     });
@@ -700,14 +682,14 @@ public class DirectoryActivity extends AppCompatActivity
                         @Override
                         public void onAnimationStart(Animator animation) {
                             if (!reverse)
-                                animator1.start();
+                                resView.startAnimation(animator1);
                         }
 
                         @Override
                         public void onAnimationEnd(Animator animation) {
                             if (reverse) {
                                 dialog.dismiss();
-                                animator1.start();
+                                resView.startAnimation(animator1);
                             }
                             else
                                 onEndListener.run();
@@ -717,7 +699,7 @@ public class DirectoryActivity extends AppCompatActivity
                         public void onAnimationCancel(Animator animation) {
                             if (reverse) {
                                 dialog.dismiss();
-                                animator1.start();
+                                resView.startAnimation(animator1);
                             }
                             else
                                 onEndListener.run();
@@ -728,7 +710,6 @@ public class DirectoryActivity extends AppCompatActivity
 
                         }
                     });
-
                     animator.start();
                 }
             });
@@ -985,8 +966,6 @@ public class DirectoryActivity extends AppCompatActivity
         super.onResume();
         Utils.viewForSnack = (View) mlcResourcesDir;
         Utils.currentActivity = this;
-        refreshConfiguration();
-        loadDirectory();
     }
 
     public void refreshConfiguration() {
@@ -1009,6 +988,7 @@ public class DirectoryActivity extends AppCompatActivity
         fromPoint = new Point((displayMetrics.widthPixels - iconSize) / 2,
                 (displayMetrics.heightPixels - iconSize) / 2 - getResources()
                         .getDimensionPixelOffset(R.dimen.tool_bar_height));
+        loadDirectory();
     }
 
     @Override

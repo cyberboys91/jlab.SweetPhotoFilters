@@ -2,8 +2,8 @@ package jlab.SweetPhotoFilters.Activity.Fragment;
 
 import android.animation.Animator;
 import android.content.DialogInterface;
+import android.graphics.Point;
 import android.os.Bundle;
-import android.text.method.LinkMovementMethod;
 import android.util.DisplayMetrics;
 import android.view.View;
 import android.content.Context;
@@ -30,6 +30,7 @@ import jlab.SweetPhotoFilters.Resource.FileResource;
 import static java.lang.Math.max;
 import static jlab.SweetPhotoFilters.Activity.DirectoryActivity.fromPoint;
 import static jlab.SweetPhotoFilters.Activity.DirectoryActivity.iconSize;
+import static jlab.SweetPhotoFilters.Utils.getStatusBarHeight;
 
 public class DetailsFragment extends DialogFragment {
 
@@ -194,7 +195,7 @@ public class DetailsFragment extends DialogFragment {
                 });
             }
         });
-        DisplayMetrics dimen = Utils.getDimensionScreen();
+        final DisplayMetrics dimen = Utils.getDimensionScreen();
         image = detailsView.findViewById(R.id.ivResourceIcon);
         ViewGroup.LayoutParams lp = image
                 .getLayoutParams();
@@ -217,9 +218,12 @@ public class DetailsFragment extends DialogFragment {
             public void run() {
                 beginImageViewAnim();
                 if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+                    Point posMenu = new Point((dimen.widthPixels - rootView.getWidth()) / 2
+                            , (dimen.heightPixels - rootView.getHeight()) / 2);
                     Animator animator = ViewAnimationUtils.createCircularReveal(rootView,
-                            fromPoint.x + iconSize / 2,
-                            fromPoint.y + iconSize / 2,
+                            fromPoint.x - posMenu.x + iconSize / 2,
+                            fromPoint.y - posMenu.y + iconSize / 2 + getStatusBarHeight()
+                                    + getResources().getDimensionPixelOffset(R.dimen.tool_bar_height),
                             0, max(rootView.getWidth(), rootView.getHeight()));
                     animator.setInterpolator(AnimationUtils.loadInterpolator(dialog.getContext(), android.R.interpolator.fast_out_linear_in));
                     animator.setDuration(400);
@@ -231,9 +235,13 @@ public class DetailsFragment extends DialogFragment {
 
     private void endAnimation (final Runnable onEndAnimator) {
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+            final DisplayMetrics dimen = Utils.getDimensionScreen();
+            Point posMenu = new Point((dimen.widthPixels - rootView.getWidth()) / 2
+                    , (dimen.heightPixels - rootView.getHeight()) / 2);
             Animator animator = ViewAnimationUtils.createCircularReveal(rootView,
-                    fromPoint.x + iconSize / 2,
-                    fromPoint.y + iconSize / 2,
+                    fromPoint.x - posMenu.x + iconSize / 2,
+                    fromPoint.y - posMenu.y + iconSize / 2 + getStatusBarHeight()
+                            + getResources().getDimensionPixelOffset(R.dimen.tool_bar_height),
                     max(rootView.getWidth(), rootView.getHeight()), 0);
             animator.setDuration(400);
             animator.setInterpolator(AnimationUtils.loadInterpolator(dialog.getContext(), android.R.interpolator.fast_out_linear_in));

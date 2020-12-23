@@ -1150,4 +1150,14 @@ public class Utils {
                 ? String.format("%s(%s)%s", name, max + 1, (ext.length() > 0 ? "." : "") + ext)
                 : String.format("%s%s", name, (ext.length() > 0 ? "." : "") + ext);
     }
+
+    public static int getStatusBarHeight() {
+        int result = 0;
+        if(currentActivity != null) {
+            int resourceId = currentActivity.getResources().getIdentifier("status_bar_height", "dimen", "android");
+            if (resourceId > 0)
+                result = currentActivity.getResources().getDimensionPixelSize(resourceId);
+        }
+        return result;
+    }
 }

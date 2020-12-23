@@ -56,6 +56,9 @@
                 <data android:scheme="file" />
                 <data android:mimeType="image/*" />
             </intent-filter>
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".Activity.DirectoryActivity"/>
         </activity>
 
         <meta-data
