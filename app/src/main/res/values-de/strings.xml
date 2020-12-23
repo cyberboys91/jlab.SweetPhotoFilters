@@ -130,4 +130,6 @@
     <string name="error_saving_image">Fehler beim Speichern des Bildes…</string>
     <string name="invalid_image">Ungültiges Bild</string>
     <string name="camera">Kamera</string>
+    <string name="ads_app_id">ca-app-pub-6420027936185714~7871625707</string>
+    <string name="banner_ad_unit_id1">ca-app-pub-6420027936185714/6733626241</string>
 </resources>

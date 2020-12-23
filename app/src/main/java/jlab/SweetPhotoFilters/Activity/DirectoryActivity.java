@@ -74,6 +74,8 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestBuilder;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.signature.MediaStoreSignature;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
 
 public class DirectoryActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, Interfaces.ILoadThumbnailForFile,
@@ -183,6 +185,10 @@ public class DirectoryActivity extends AppCompatActivity
         fromPoint = new Point(0, 0);
         reloadSpecialDir();
         requestPermission();
+        AdView adView = (AdView) findViewById(R.id.adView);
+        AdRequest adRequest = new AdRequest.Builder()
+                .setRequestAgent("android_studio:ad_template").build();
+        adView.loadAd(adRequest);
     }
 
     @Override
@@ -301,8 +307,7 @@ public class DirectoryActivity extends AppCompatActivity
     public void setImage(final ImageView imageView, final FileResource file) {
         final RequestBuilder<Drawable> req = Glide.with(imageView).load(file.getRelUrl()).apply(
                 new RequestOptions().signature(new MediaStoreSignature(file.getMimeType(),
-                        file.getModificationDate(), 0))
-        );
+                        file.getModificationDate(), 0)));
         runOnUiThread(new Runnable() {
             @Override
             public void run() {

@@ -1,11 +1,9 @@
 package jlab.SweetPhotoFilters;
 
-import android.graphics.Bitmap;
 import android.view.View;
+import android.graphics.Bitmap;
 import android.widget.ImageView;
-
 import java.util.concurrent.Semaphore;
-
 import jlab.SweetPhotoFilters.db.FavoriteDetails;
 import jlab.SweetPhotoFilters.Resource.FileResource;
 
