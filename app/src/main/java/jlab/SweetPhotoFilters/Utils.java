@@ -233,6 +233,7 @@ public class Utils {
         public int BeginPosition;
         public String RelUrlDirectory = "";
         public String NameDirectory = "";
+        public Point posFather = new Point(0, 0);
 
         public Variables(String relUrlDirectory, String nameDirectory, int beginPosition) {
             this.RelUrlDirectory = relUrlDirectory;
@@ -240,10 +241,16 @@ public class Utils {
             this.BeginPosition = beginPosition;
         }
 
+        public Variables(String relUrlDirectory, String nameDirectory, int beginPosition, Point posFather) {
+            this(relUrlDirectory, nameDirectory, beginPosition);
+            this.posFather = posFather;
+        }
+
         Variables(Parcel in) {
             this.BeginPosition = in.readInt();
             this.RelUrlDirectory = in.readString();
             this.NameDirectory = in.readString();
+            this.posFather = new Point(in.readInt(), in.readInt());
         }
 
         @Override
@@ -256,6 +263,8 @@ public class Utils {
             out.writeInt(this.BeginPosition);
             out.writeString(this.RelUrlDirectory);
             out.writeString(this.NameDirectory);
+            out.writeInt(posFather.x);
+            out.writeInt(posFather.y);
         }
 
         public static final Creator<Variables> CREATOR

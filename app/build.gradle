@@ -24,7 +24,6 @@ android {
 }
 
 dependencies {
-    compile 'com.google.android.gms:play-services-appindexing:8.4.0'
     compile files('libs/glide-4.4.0.jar')
     compile 'com.github.zomato:androidphotofilters:1.0.2'
     compile 'com.android.support:appcompat-v7:26.0.0-alpha1'

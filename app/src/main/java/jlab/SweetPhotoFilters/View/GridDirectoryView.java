@@ -21,6 +21,9 @@ import jlab.SweetPhotoFilters.Interfaces;
 import jlab.SweetPhotoFilters.Resource.Resource;
 import jlab.SweetPhotoFilters.Activity.DirectoryActivity;
 
+import static java.lang.Math.abs;
+import static jlab.SweetPhotoFilters.Activity.DirectoryActivity.fromPoint;
+import static jlab.SweetPhotoFilters.Activity.DirectoryActivity.iconSize;
 import static jlab.SweetPhotoFilters.Utils.LOADING_VISIBLE;
 import static jlab.SweetPhotoFilters.Utils.REFRESH_LISTVIEW;
 import static jlab.SweetPhotoFilters.Utils.TIME_WAIT_LOADING;
@@ -102,13 +105,13 @@ public class GridDirectoryView extends GridView implements Interfaces.IListConte
 
     @Override
     public void onViewRemoved(View child) {
+        super.onViewRemoved(child);
         try {
             if (child != null) {
                 ImageView ivIcon = child.findViewById(R.id.ivResourceIcon);
                 if (ivIcon != null)
                     ivIcon.setImageDrawable(null);
             }
-            super.onViewRemoved(child);
         } catch (Exception ignored) {
             ignored.printStackTrace();
         }
@@ -125,7 +128,8 @@ public class GridDirectoryView extends GridView implements Interfaces.IListConte
 
     public void loadParentDirectory() {
         if (!stackVars.isEmpty()) {
-            stackVars.remove(stackVars.size() - 1);
+            Utils.Variables var = stackVars.remove(stackVars.size() - 1);
+            fromPoint = var.posFather;
             loadDirectory();
         }
     }
@@ -203,7 +207,9 @@ public class GridDirectoryView extends GridView implements Interfaces.IListConte
             Utils.Variables var = stackVars.get(stackVars.size() - 1);
             var.BeginPosition = getFirstVisiblePosition();
             if (res.isDir()) {
-                stackVars.add(new Utils.Variables(res.getRelUrl(), res.getName(), 0));
+                int posYFirstView = (int) abs(getChildAt(0).getY());
+                stackVars.add(new Utils.Variables(res.getRelUrl(), res.getName(), 0,
+                        new Point(position.x, position.y + (posYFirstView % iconSize))));
                 loadDirectory();
                 mListener.onDirectoryClick(res.getName(), res.getRelUrl(), index, position);
             } else

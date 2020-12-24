@@ -64,7 +64,6 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.design.widget.NavigationView;
 import static java.lang.Math.max;
-import static java.lang.Math.min;
 import static jlab.SweetPhotoFilters.Utils.favoriteDbManager;
 import static jlab.SweetPhotoFilters.Utils.getDimensionScreen;
 import static jlab.SweetPhotoFilters.Utils.specialDirectories;
@@ -876,7 +875,7 @@ public class DirectoryActivity extends AppCompatActivity
             }
             mlcResourcesDir.startAnimation(AnimationUtils.loadAnimation(
                     mlcResourcesDir.getView().getContext()
-                    ,showCircleAnimator ? R.anim.alpha_in_grid : R.anim.scale_in_grid));
+                    , showCircleAnimator ? R.anim.alpha_in_grid : R.anim.scale_in_grid));
 
             mlcResourcesDir.post(new Runnable() {
                 @Override
@@ -886,22 +885,21 @@ public class DirectoryActivity extends AppCompatActivity
                         final View current = mlcResourcesDir.getChildAt(i);
                         if (current != null) {
                             final TranslateAnimation animation = new TranslateAnimation(
-                                    fromPoint.x - current.getX(), 0, fromPoint.y - current.getY(), 0);
+                                    (fromPoint.x - current.getX()) / 2, 0, (fromPoint.y - current.getY()) / 2, 0);
                             animation.setStartOffset(showCircleAnimator ? -100 : -200);
-                            animation.setDuration(400);
-                            new Thread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    runOnUiThread(new Runnable() {
-                                        @Override
-                                        public void run() {
+                            animation.setDuration(500);
+//                            new Thread(new Runnable() {
+//                                @Override
+//                                public void run() {
+//                                    runOnUiThread(new Runnable() {
+//                                        @Override
+//                                        public void run() {
                                             current.startAnimation(animation);
-                                        }
-                                    });
-                                }
-                            }).start();
-                        }
-                        else
+//                                        }
+//                                    });
+//                                }
+//                            }).start();
+                        } else
                             break;
                     }
                 }
@@ -947,8 +945,8 @@ public class DirectoryActivity extends AppCompatActivity
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        mlcResourcesDir.loadDirectory();
         Utils.viewForSnack = (View) mlcResourcesDir;
+        mlcResourcesDir.loadDirectory();
         mutexLoadDirectory.release();
     }
 
@@ -969,8 +967,9 @@ public class DirectoryActivity extends AppCompatActivity
     @Override
     protected void onResume() {
         super.onResume();
-        Utils.viewForSnack = (View) mlcResourcesDir;
         Utils.currentActivity = this;
+        refreshConfiguration();
+        loadDirectory();
     }
 
     public void refreshConfiguration() {
@@ -993,7 +992,6 @@ public class DirectoryActivity extends AppCompatActivity
         fromPoint = new Point((displayMetrics.widthPixels - iconSize) / 2,
                 (displayMetrics.heightPixels - iconSize) / 2 - getResources()
                         .getDimensionPixelOffset(R.dimen.tool_bar_height));
-        loadDirectory();
     }
 
     @Override
