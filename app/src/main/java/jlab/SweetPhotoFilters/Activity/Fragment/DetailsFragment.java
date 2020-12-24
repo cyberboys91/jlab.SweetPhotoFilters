@@ -2,17 +2,21 @@ package jlab.SweetPhotoFilters.Activity.Fragment;
 
 import android.animation.Animator;
 import android.content.DialogInterface;
+import android.content.res.Configuration;
 import android.graphics.Point;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.util.DisplayMetrics;
 import android.view.View;
 import android.content.Context;
 import android.view.ViewAnimationUtils;
 import android.view.ViewGroup;
 import android.view.ViewParent;
+import android.view.WindowManager;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 import jlab.SweetPhotoFilters.Activity.DirectoryActivity;
 import jlab.SweetPhotoFilters.R;
@@ -64,19 +68,19 @@ public class DetailsFragment extends DialogFragment {
         Context context = getActivity().getBaseContext();
         LayoutInflater inflater = LayoutInflater.from(context);
         detailsView = inflater.inflate(R.layout.resource_details_dialog, null, false);
-        TextView name = detailsView.findViewById(R.id.tvResourceNameDetails),
-                path = detailsView.findViewById(R.id.tvResourcePathDetails),
-                size = detailsView.findViewById(R.id.tvResourceSizeDetails),
-                modification = detailsView.findViewById(R.id.tvResourceModificationDetails);
-        name.setText(resource.getName());
-        path.setText(resource.getRelUrl());
-        modification.setText(resource.getModificationDateLong());
+        TextView size = detailsView.findViewById(R.id.tvResourceSizeDetails);
+        detailsView.findViewById(R.id.fbInfo)
+                .setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        displayPopupWindow(v);
+                    }
+                });
         if (resource.isDir())
             size.setText(String.format("%s %s", ((AlbumDirectory) resource).getCountElements()
                     , getString(R.string.elements)));
         else
             size.setText(((FileResource) resource).sizeToString());
-
 
         dialog = new AlertDialog.Builder(inflater.getContext())
                 .setView(detailsView)
@@ -91,6 +95,34 @@ public class DetailsFragment extends DialogFragment {
         if (DirectoryActivity.mlcResourcesDir != null)
             DirectoryActivity.mlcResourcesDir.openResource(elem,
                     elem.getIndexPattern(), fromPoint);
+    }
+
+    private void displayPopupWindow(View anchorView) {
+        LayoutInflater inflater = LayoutInflater.from(anchorView.getContext());
+        PopupWindow popup = new PopupWindow(anchorView.getContext());
+        View layout = inflater.inflate(R.layout.resource_info_fragment, null);
+
+        TextView name = layout.findViewById(R.id.tvResourceNameDetails),
+                path = layout.findViewById(R.id.tvResourcePathDetails),
+                modification = layout.findViewById(R.id.tvResourceModificationDetails);
+
+        name.setText(resource.getName());
+        path.setText(resource.getRelUrl());
+        modification.setText(resource.getModificationDateLong());
+
+        popup.setContentView(layout);
+        popup.setBackgroundDrawable(getResources().getDrawable(R.color.transparent));
+        popup.setHeight(WindowManager.LayoutParams.WRAP_CONTENT);
+        popup.setWidth(WindowManager.LayoutParams.WRAP_CONTENT);
+        popup.setOutsideTouchable(true);
+        popup.setFocusable(true);
+        popup.showAsDropDown(anchorView);
+    }
+
+    @Override
+    public void onPictureInPictureModeChanged(boolean isInPictureInPictureMode, Configuration newConfig) {
+        super.onPictureInPictureModeChanged(isInPictureInPictureMode, newConfig);
+        dismiss();
     }
 
     private void beginImageViewAnim() {
@@ -197,10 +229,10 @@ public class DetailsFragment extends DialogFragment {
         });
         final DisplayMetrics dimen = Utils.getDimensionScreen();
         image = detailsView.findViewById(R.id.ivResourceIcon);
-        ViewGroup.LayoutParams lp = image
+        ViewGroup.LayoutParams lp = detailsView
                 .getLayoutParams();
-        lp.height = Math.min(dimen.widthPixels / 2, dimen.heightPixels / 2);
-        image.setLayoutParams(lp);
+        lp.height = Math.min(dimen.widthPixels, dimen.heightPixels);
+        detailsView.setLayoutParams(lp);
         View view = detailsView;
         ViewParent parent = view.getParent();
         while (parent != null) {

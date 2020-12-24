@@ -1,101 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+<RelativeLayout android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="@dimen/short_margin"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:padding="10dp">
 
-    <LinearLayout
-        android:id="@+id/rlResourceDetails"
-        android:orientation="vertical"
+    <ImageView
         android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/ivResourceIcon"/>
+
+    <ImageView
+        android:id="@+id/fbInfo"
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        android:layout_margin="@dimen/middle_margin"
+        android:src="@android:drawable/ic_dialog_info"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"/>
+
+    <TextView
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:padding="@dimen/margin">
+        android:id="@+id/tvResourceSizeDetails"
+        android:textSize="@dimen/min_text_size"
+        android:textColor="@color/white"
+        android:padding="5dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:background="@drawable/properties_background"/>
 
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/short_margin">
-
-            <ImageView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:id="@+id/ivResourceIcon"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/tvResourceSizeDetails"
-                android:textSize="@dimen/min_text_size"
-                android:textColor="@color/white"
-                android:padding="5dp"
-                android:layout_alignParentBottom="true"
-                android:layout_alignParentRight="true"
-                android:layout_alignParentEnd="true"
-                android:background="@drawable/properties_background"/>
-
-        </RelativeLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:orientation="vertical">
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/name"
-                android:textStyle="italic"
-                android:textSize="@dimen/text_size"
-                android:padding="@dimen/short_margin"
-                android:layout_marginTop="@dimen/short_margin"
-                android:textColor="@android:color/black"/>
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginRight="@dimen/short_margin"
-                android:layout_marginLeft="@dimen/short_margin"
-                android:id="@+id/tvResourceNameDetails"
-                android:textSize="@dimen/short_text_size"/>
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/Path"
-                android:textStyle="italic"
-                android:textSize="@dimen/text_size"
-                android:padding="@dimen/short_margin"
-                android:layout_marginTop="@dimen/short_margin"
-                android:textColor="@android:color/black"/>
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginRight="@dimen/short_margin"
-                android:layout_marginLeft="@dimen/short_margin"
-                android:id="@+id/tvResourcePathDetails"
-                android:textSize="@dimen/short_text_size"/>
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/modification"
-                android:textStyle="italic"
-                android:textSize="@dimen/text_size"
-                android:padding="@dimen/short_margin"
-                android:layout_marginTop="@dimen/short_margin"
-                android:textColor="@android:color/black"/>
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginRight="@dimen/short_margin"
-                android:layout_marginLeft="@dimen/short_margin"
-                android:id="@+id/tvResourceModificationDetails"
-                android:textSize="@dimen/short_text_size"/>
-
-        </LinearLayout>
-
-    </LinearLayout>
-
-</ScrollView>
+</RelativeLayout>

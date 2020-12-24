@@ -1,0 +1,63 @@
+<LinearLayout android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background="@drawable/popup_info_background"
+    android:padding="10dp">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/name"
+        android:textStyle="italic"
+        android:textSize="@dimen/text_size"
+        android:padding="@dimen/short_margin"
+        android:layout_marginTop="@dimen/short_margin"
+        android:textColor="@android:color/black"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="@dimen/short_margin"
+        android:layout_marginLeft="@dimen/short_margin"
+        android:id="@+id/tvResourceNameDetails"
+        android:textSize="@dimen/short_text_size"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/Path"
+        android:textStyle="italic"
+        android:textSize="@dimen/text_size"
+        android:padding="@dimen/short_margin"
+        android:layout_marginTop="@dimen/short_margin"
+        android:textColor="@android:color/black"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="@dimen/short_margin"
+        android:layout_marginLeft="@dimen/short_margin"
+        android:id="@+id/tvResourcePathDetails"
+        android:textSize="@dimen/short_text_size"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/modification"
+        android:textStyle="italic"
+        android:textSize="@dimen/text_size"
+        android:padding="@dimen/short_margin"
+        android:layout_marginTop="@dimen/short_margin"
+        android:textColor="@android:color/black"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="@dimen/short_margin"
+        android:layout_marginLeft="@dimen/short_margin"
+        android:id="@+id/tvResourceModificationDetails"
+        android:layout_marginBottom="@dimen/middle_margin"
+        android:textSize="@dimen/short_text_size"/>
+
+</LinearLayout>

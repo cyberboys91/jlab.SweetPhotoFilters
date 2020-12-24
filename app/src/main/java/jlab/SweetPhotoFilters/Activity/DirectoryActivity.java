@@ -864,15 +864,7 @@ public class DirectoryActivity extends AppCompatActivity
         else {
             final boolean showCircleAnimator = android.os.Build.VERSION.SDK_INT
                     >= android.os.Build.VERSION_CODES.LOLLIPOP;
-            if (showCircleAnimator) {
-                View view = mlcResourcesDir.getView();
-                Animator animator = ViewAnimationUtils.createCircularReveal(view,
-                        fromPoint.x + iconSize / 2, fromPoint.y + iconSize / 2, 0,
-                        max(view.getWidth(), view.getHeight()));
-                animator.setInterpolator(AnimationUtils.loadInterpolator(this, android.R.interpolator.fast_out_linear_in));
-                animator.setDuration(500);
-                animator.start();
-            }
+
             mlcResourcesDir.startAnimation(AnimationUtils.loadAnimation(
                     mlcResourcesDir.getView().getContext()
                     , showCircleAnimator ? R.anim.alpha_in_grid : R.anim.scale_in_grid));
@@ -880,6 +872,16 @@ public class DirectoryActivity extends AppCompatActivity
             mlcResourcesDir.post(new Runnable() {
                 @Override
                 public void run() {
+                    if (showCircleAnimator) {
+                        View view = mlcResourcesDir.getView();
+                        Animator animator = ViewAnimationUtils.createCircularReveal(view,
+                                fromPoint.x + iconSize / 2, fromPoint.y + iconSize / 2, 0,
+                                max(view.getWidth(), view.getHeight()));
+                        animator.setInterpolator(AnimationUtils.loadInterpolator(view.getContext()
+                                , android.R.interpolator.fast_out_linear_in));
+                        animator.setDuration(500);
+                        animator.start();
+                    }
                     int first = mlcResourcesDir.getFirstVisiblePosition();
                     for (int i = 0; i <= mlcResourcesDir.getLastVisiblePosition() - first; i++) {
                         final View current = mlcResourcesDir.getChildAt(i);
@@ -888,17 +890,17 @@ public class DirectoryActivity extends AppCompatActivity
                                     (fromPoint.x - current.getX()) / 2, 0, (fromPoint.y - current.getY()) / 2, 0);
                             animation.setStartOffset(showCircleAnimator ? -100 : -200);
                             animation.setDuration(500);
-//                            new Thread(new Runnable() {
-//                                @Override
-//                                public void run() {
-//                                    runOnUiThread(new Runnable() {
-//                                        @Override
-//                                        public void run() {
+                            new Thread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
                                             current.startAnimation(animation);
-//                                        }
-//                                    });
-//                                }
-//                            }).start();
+                                        }
+                                    });
+                                }
+                            }).start();
                         } else
                             break;
                     }
