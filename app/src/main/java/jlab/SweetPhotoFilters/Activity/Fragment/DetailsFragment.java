@@ -45,12 +45,14 @@ public class DetailsFragment extends DialogFragment {
     private String monitor = "monitor";
     private View rootView;
     private AlertDialog dialog;
+    private boolean openResourceOnClickImage;
 
     @Override
     public void onCreate(Bundle icicle) {
         super.onCreate(icicle);
         this.setCancelable(false);
         this.resource = (Resource) getArguments().getSerializable(Utils.RESOURCE_FOR_DETAILS_KEY);
+        this.openResourceOnClickImage = getArguments().getBoolean(Utils.OPEN_RESOURCE_ON_CLICKED);
         setStyle(DialogFragment.STYLE_NO_TITLE, 0);
     }
 
@@ -136,7 +138,7 @@ public class DetailsFragment extends DialogFragment {
                 for (int i = 0; i < resourcesForImage.size() && !stopThread; i++) {
                     final FileResource current = (FileResource) resourcesForImage.get(i);
                     synchronized (monitor) {
-                        if(!stopThread)
+                        if (!stopThread)
                             try {
                                 getActivity().runOnUiThread(new Runnable() {
                                     @Override
@@ -154,21 +156,22 @@ public class DetailsFragment extends DialogFragment {
                                             animator.start();
                                         }
                                         first[0] = false;
-                                        image.setOnClickListener(new View.OnClickListener() {
-                                            @Override
-                                            public void onClick(View v) {
-                                                endAnimation(new Runnable() {
-                                                    @Override
-                                                    public void run() {
-                                                        openResource(resource);
-                                                        dismiss();
-                                                    }
-                                                });
-                                            }
-                                        });
+                                        if (openResourceOnClickImage)
+                                            image.setOnClickListener(new View.OnClickListener() {
+                                                @Override
+                                                public void onClick(View v) {
+                                                    endAnimation(new Runnable() {
+                                                        @Override
+                                                        public void run() {
+                                                            openResource(resource);
+                                                            dismiss();
+                                                        }
+                                                    });
+                                                }
+                                            });
                                     }
                                 });
-                            }catch (Exception ignored) {
+                            } catch (Exception ignored) {
                                 ignored.printStackTrace();
                             }
                         else

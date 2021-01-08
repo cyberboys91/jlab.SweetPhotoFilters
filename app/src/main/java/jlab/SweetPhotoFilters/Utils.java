@@ -86,6 +86,7 @@ public class Utils {
     public static final String STORAGE_DIRECTORY_PHONE = "/";
     public static final String NAME_REMOTE_DIRECTORY_ROOT = "/";
     public static final String FIRST_POSITION = "FIRST_POSITION";
+    public static final String OPEN_RESOURCE_ON_CLICKED = "OPEN_RESOURCE_ON_CLICKED";
     public static final String INDEX_CURRENT_KEY = "jlab.IMAGEEXPLORER_INDEX_CURRENT_KEY";
     public static final String DIRECTORY_KEY = "jlab.IMAGEEXPLORER_DIRECTORY_KEY";
     public static final String RESOURCE_PATH_KEY = "jlab.IMAGEEXPLORER_RESOURCE_PATH_KEY";

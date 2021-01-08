@@ -597,6 +597,7 @@ public class DirectoryActivity extends AppCompatActivity
                                     DetailsFragment details = new DetailsFragment();
                                     Bundle bundle = new Bundle();
                                     bundle.putSerializable(Utils.RESOURCE_FOR_DETAILS_KEY, resource);
+                                    bundle.putBoolean(Utils.OPEN_RESOURCE_ON_CLICKED, true);
                                     details.setArguments(bundle);
                                     details.show(getFragmentManager(), "jlab.Details");
                                 } catch (Exception exp) {

@@ -38,6 +38,8 @@ import jlab.SweetPhotoFilters.View.ZoomImageView;
 import jlab.SweetPhotoFilters.Resource.LocalFile;
 import jlab.SweetPhotoFilters.db.FavoriteDetails;
 import android.support.design.widget.AppBarLayout;
+
+import static jlab.SweetPhotoFilters.Utils.OPEN_RESOURCE_ON_CLICKED;
 import static jlab.SweetPhotoFilters.Utils.isEqual;
 import static jlab.SweetPhotoFilters.Utils.rateApp;
 import jlab.SweetPhotoFilters.Resource.FileResource;
@@ -852,6 +854,7 @@ public class ImageViewActivity extends AppCompatActivity implements View.OnTouch
                     DetailsFragment details = new DetailsFragment();
                     Bundle bundle = new Bundle();
                     bundle.putSerializable(RESOURCE_FOR_DETAILS_KEY, resource);
+                    bundle.putBoolean(OPEN_RESOURCE_ON_CLICKED, false);
                     details.setArguments(bundle);
                     details.show(getFragmentManager(), "jlab.Details");
                 } catch (Exception exp) {
