@@ -28,7 +28,4 @@
         <item name="android:layout_marginLeft">0dp</item>
         <item name="android:layout_marginRight">@dimen/short_margin</item>
     </style>
-    <style name="AppTheme.FullScreen" parent="AppDefaultTheme">
-        <item name="android:windowFullscreen">true</item>
-    </style>
 </resources>

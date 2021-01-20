@@ -83,12 +83,13 @@ public class DetailsFragment extends DialogFragment {
         else
             size.setText(((FileResource) resource).sizeToString());
 
-        dialog = new AlertDialog.Builder(inflater.getContext())
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(inflater.getContext())
                 .setView(detailsView)
                 .setCancelable(true)
-                .setPositiveButton(getString(R.string.open), null)
-                .setNegativeButton(getString(R.string.close), null)
-                .create();
+                .setNegativeButton(getString(R.string.close), null);
+        if (openResourceOnClickImage)
+            dialogBuilder.setPositiveButton(getString(R.string.open), null);
+        dialog = dialogBuilder.create();
         return dialog;
     }
 
