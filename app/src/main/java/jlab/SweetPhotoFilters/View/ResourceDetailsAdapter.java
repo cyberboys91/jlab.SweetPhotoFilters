@@ -5,7 +5,7 @@ import java.util.Collection;
 import android.view.ViewGroup;
 import jlab.SweetPhotoFilters.Utils;
 import android.widget.ArrayAdapter;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import jlab.SweetPhotoFilters.Resource.Resource;
 
 /*

@@ -3,7 +3,7 @@ package jlab.SweetPhotoFilters.View;
 import android.content.Context;
 import android.view.MotionEvent;
 import android.util.AttributeSet;
-import android.support.v4.widget.SwipeRefreshLayout;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 /**
  * Created by Javier on 01/12/2020.

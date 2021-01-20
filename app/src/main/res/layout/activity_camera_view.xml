@@ -25,7 +25,7 @@
                 android:layout_marginBottom="@dimen/filter_height"
                 android:visibility="invisible">
 
-                <android.support.design.widget.FloatingActionButton
+                <com.google.android.material.floatingactionbutton.FloatingActionButton
                     android:id="@+id/fbCancelFilter"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -38,7 +38,7 @@
                     android:layout_marginEnd="@dimen/middle_margin"
                     android:visibility="invisible"/>
 
-                <android.support.design.widget.FloatingActionButton
+                <com.google.android.material.floatingactionbutton.FloatingActionButton
                     android:id="@+id/fbSaveFilter"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -577,21 +577,21 @@
 
         </RelativeLayout>
 
-    <android.support.design.widget.AppBarLayout
+    <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="@dimen/tool_bar_height"
         android:id="@+id/ablImageBar"
         app:theme="@style/AppDefaultTheme.AppBarOverlay">
 
-        <android.support.v7.widget.Toolbar
+        <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="?attr/colorPrimary"
             app:popupTheme="@style/AppDefaultTheme.PopupOverlay">
 
-        </android.support.v7.widget.Toolbar>
+        </androidx.appcompat.widget.Toolbar>
 
-    </android.support.design.widget.AppBarLayout>
+    </com.google.android.material.appbar.AppBarLayout>
 
 </RelativeLayout>

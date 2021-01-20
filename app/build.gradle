@@ -9,7 +9,7 @@ android {
         targetSdkVersion 30
         versionCode 3
         versionName "1.0"
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
     }
 
     buildTypes {
@@ -26,8 +26,8 @@ android {
 dependencies {
     compile files('libs/glide-4.4.0.jar')
     compile 'com.github.zomato:androidphotofilters:1.0.2'
-    compile 'com.android.support:appcompat-v7:26.0.0-alpha1'
-    compile 'com.android.support:design:26.0.0-alpha1'
-    compile 'com.android.support:cardview-v7:26.0.0-alpha1'
+    compile 'androidx.appcompat:appcompat:1.0.0'
+    compile 'com.google.android.material:material:1.0.0'
+    compile 'androidx.cardview:cardview:1.0.0'
     compile 'com.google.android.gms:play-services-ads:11.0.4'
 }

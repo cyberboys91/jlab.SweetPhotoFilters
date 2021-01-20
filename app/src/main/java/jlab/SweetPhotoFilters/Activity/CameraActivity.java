@@ -1,24 +1,20 @@
 package jlab.SweetPhotoFilters.Activity;
 
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.hardware.Camera;
-import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.design.widget.FloatingActionButton;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import androidx.annotation.NonNull;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.animation.AnimationUtils;
-import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
@@ -32,22 +28,15 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.Semaphore;
 
-import jlab.SweetPhotoFilters.Activity.Fragment.DetailsFragment;
 import jlab.SweetPhotoFilters.Filter.FilterType;
 import jlab.SweetPhotoFilters.R;
 import jlab.SweetPhotoFilters.Utils;
-import jlab.SweetPhotoFilters.View.ImageSwipeRefreshLayout;
-import jlab.SweetPhotoFilters.db.FavoriteDetails;
 
 import static jlab.SweetPhotoFilters.Activity.DirectoryActivity.STACK_VARS_KEY;
 import static jlab.SweetPhotoFilters.Utils.ApplyFilter;
 import static jlab.SweetPhotoFilters.Utils.DIRECTORY_KEY;
-import static jlab.SweetPhotoFilters.Utils.RESOURCE_FOR_DETAILS_KEY;
-import static jlab.SweetPhotoFilters.Utils.deleteFavoriteData;
-import static jlab.SweetPhotoFilters.Utils.isFavorite;
 import static jlab.SweetPhotoFilters.Utils.rateApp;
 import static jlab.SweetPhotoFilters.Utils.saveBitmapToAppFolder;
-import static jlab.SweetPhotoFilters.Utils.saveFavoriteData;
 import static jlab.SweetPhotoFilters.Utils.showAboutDialog;
 import static jlab.SweetPhotoFilters.Utils.showSnackBar;
 import static jlab.SweetPhotoFilters.Utils.stackVars;

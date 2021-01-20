@@ -8,10 +8,11 @@ import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Looper;
 import android.provider.MediaStore;
-import android.support.annotation.Nullable;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.provider.DocumentFile;
+import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
+import androidx.documentfile.provider.DocumentFile;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.Menu;
@@ -44,31 +45,31 @@ import jlab.SweetPhotoFilters.Resource.*;
 import java.util.ArrayList;
 import java.util.concurrent.Semaphore;
 import android.content.res.Configuration;
-import android.support.v7.widget.Toolbar;
-import android.support.annotation.NonNull;
-import android.support.v7.app.AlertDialog;
+import androidx.appcompat.widget.Toolbar;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import android.content.res.ColorStateList;
 import android.text.SpannableStringBuilder;
 import jlab.SweetPhotoFilters.LoaderImageTask;
-import android.support.v7.widget.SearchView;
+import androidx.appcompat.widget.SearchView;
 import jlab.SweetPhotoFilters.db.FavoriteDetails;
 import jlab.SweetPhotoFilters.db.FavoriteDbManager;
-import android.support.v4.view.GravityCompat;
+import androidx.core.view.GravityCompat;
 import android.view.animation.AnimationUtils;
-import android.support.v4.app.ActivityCompat;
+import androidx.core.app.ActivityCompat;
 import jlab.SweetPhotoFilters.Activity.Fragment.*;
-import android.support.v4.widget.DrawerLayout;
+import androidx.drawerlayout.widget.DrawerLayout;
 import android.text.style.BackgroundColorSpan;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.design.widget.NavigationView;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+import com.google.android.material.navigation.NavigationView;
 import static java.lang.Math.max;
 import static jlab.SweetPhotoFilters.Utils.favoriteDbManager;
 import static jlab.SweetPhotoFilters.Utils.getDimensionScreen;
 import static jlab.SweetPhotoFilters.Utils.specialDirectories;
 import static jlab.SweetPhotoFilters.Utils.stackVars;
-import android.support.design.widget.FloatingActionButton;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestBuilder;
 import com.bumptech.glide.request.RequestOptions;
@@ -105,7 +106,7 @@ public class DirectoryActivity extends AppCompatActivity
             mutexLoadDirectory = new Semaphore(1),
             semaphoreLoadFavoriteState = new Semaphore(2);
     public static Point fromPoint = new Point(0, 0);
-    private Handler handler = new Handler() {
+    private Handler handler = new Handler(Looper.getMainLooper()) {
         @Override
         public void handleMessage(final Message msg) {
             if (msg.what != Utils.SCROLLER_PATH) {

@@ -2,19 +2,14 @@ package jlab.SweetPhotoFilters;
 
 import java.io.File;
 
-import android.annotation.TargetApi;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Parcel;
-import android.os.storage.StorageManager;
-import android.os.storage.StorageVolume;
-import android.provider.DocumentsContract;
-import android.support.annotation.Nullable;
-import android.support.annotation.RequiresApi;
+
+import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import android.view.View;
 import java.io.IOException;
-import java.lang.reflect.Array;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import android.app.Activity;
 import android.os.Parcelable;
@@ -35,7 +30,6 @@ import android.provider.MediaStore;
 import android.media.ThumbnailUtils;
 import android.content.ContentValues;
 
-import java.util.List;
 import java.util.concurrent.Semaphore;
 import android.content.pm.PackageInfo;
 import android.graphics.BitmapFactory;
@@ -43,11 +37,11 @@ import android.content.DialogInterface;
 import android.content.ContentResolver;
 import jlab.SweetPhotoFilters.Filter.*;
 import android.content.pm.PackageManager;
-import android.support.v7.app.AlertDialog;
+import androidx.appcompat.app.AlertDialog;
 import android.media.MediaScannerConnection;
 import android.media.MediaMetadataRetriever;
-import android.support.design.widget.Snackbar;
-import android.support.v4.provider.DocumentFile;
+import com.google.android.material.snackbar.Snackbar;
+import androidx.documentfile.provider.DocumentFile;
 import android.graphics.drawable.BitmapDrawable;
 import jlab.SweetPhotoFilters.Resource.Resource;
 import jlab.SweetPhotoFilters.Resource.Directory;
@@ -174,10 +168,10 @@ public class Utils {
             mSize /= 1024;
             type = "TB";
         }
-        String format = "###" + (dec > 0 ? "." : "");
+        StringBuilder format = new StringBuilder("###").append(dec > 0 ? "." : "");
         while (dec-- > 0)
-            format += "#";
-        return new DecimalFormat(format).format(mSize) + " " + type;
+            format.append("#");
+        return new DecimalFormat(format.toString()).format(mSize) + " " + type;
     }
 
     public static boolean existAndMountDir(String path) {

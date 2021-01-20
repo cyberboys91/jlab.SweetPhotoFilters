@@ -14,7 +14,7 @@ import android.view.LayoutInflater;
 import jlab.SweetPhotoFilters.Utils;
 import android.content.DialogInterface;
 import jlab.SweetPhotoFilters.Interfaces;
-import android.support.v7.app.AlertDialog;
+import androidx.appcompat.app.AlertDialog;
 import jlab.SweetPhotoFilters.Resource.Resource;
 
 
