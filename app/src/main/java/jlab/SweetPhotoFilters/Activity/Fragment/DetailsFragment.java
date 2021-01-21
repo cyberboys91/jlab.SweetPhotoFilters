@@ -66,7 +66,7 @@ public class DetailsFragment extends DialogFragment {
     @Override
     public AlertDialog onCreateDialog(Bundle saveInstance) {
         stopThread = false;
-        Context context = getActivity().getBaseContext();
+        Context context = getActivity();
         LayoutInflater inflater = LayoutInflater.from(context);
         detailsView = inflater.inflate(R.layout.resource_details_dialog, null, false);
         TextView size = detailsView.findViewById(R.id.tvResourceSizeDetails);
@@ -83,7 +83,7 @@ public class DetailsFragment extends DialogFragment {
         else
             size.setText(((FileResource) resource).sizeToString());
 
-        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(inflater.getContext())
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(context)
                 .setView(detailsView)
                 .setCancelable(true)
                 .setNegativeButton(getString(R.string.close), null);
