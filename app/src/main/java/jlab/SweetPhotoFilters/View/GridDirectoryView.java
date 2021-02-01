@@ -14,6 +14,8 @@ import android.widget.GridView;
 import android.widget.ImageView;
 import android.util.AttributeSet;
 import android.widget.AdapterView;
+
+import jlab.SweetPhotoFilters.Resource.AlbumDirectory;
 import jlab.SweetPhotoFilters.Resource.Directory;
 import jlab.SweetPhotoFilters.Resource.FileResource;
 import jlab.SweetPhotoFilters.Utils;
@@ -38,7 +40,7 @@ public class GridDirectoryView extends GridView implements Interfaces.IListConte
 
     private ScaleGestureDetector mScaleDetector;
     private int first, antFirst, last;
-    public boolean scrolling = false;
+    public boolean scrolling = false, up;
     protected Handler handler = new Handler();
     protected Directory mdirectory;
     protected String relUrlDirectoryRoot, nameDirectoryRoot;
@@ -89,18 +91,6 @@ public class GridDirectoryView extends GridView implements Interfaces.IListConte
     public boolean onTouchEvent(MotionEvent ev) {
         mScaleDetector.onTouchEvent(ev);
         return super.onTouchEvent(ev);
-    }
-
-    @Override
-    public void onScrollStateChanged(AbsListView absListView, int scrollState) {
-        scrolling = scrollState == SCROLL_STATE_FLING;
-    }
-
-    @Override
-    public void onScroll(AbsListView absListView, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-        antFirst = first != firstVisibleItem ? first : antFirst;
-        first = firstVisibleItem;
-        last = first + visibleItemCount - 1;
     }
 
     @Override
@@ -155,8 +145,10 @@ public class GridDirectoryView extends GridView implements Interfaces.IListConte
     }
 
     public void loadDirectory() {
-        if (stackVars.isEmpty())
+        if (stackVars.isEmpty()) {
+            Utils.stackVars.add(new Utils.Variables(Utils.RELURL_SPECIAL_DIR, getContext().getString(R.string.albums_folder), 0));
             mListener.onDirectoryClick(nameDirectoryRoot, relUrlDirectoryRoot);
+        }
 
         Utils.Variables vars = stackVars.get(stackVars.size() - 1);
         mdirectory = mListener.getDirectory(vars.NameDirectory, vars.RelUrlDirectory);
@@ -216,6 +208,47 @@ public class GridDirectoryView extends GridView implements Interfaces.IListConte
                 mListener.onFileClick((FileResource) res, index, position);
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void onScrollStateChanged(AbsListView absListView, int scrollState) {
+        if (scrollState == SCROLL_STATE_IDLE && mdirectory != null && mdirectory.loaded()) {
+            scrollingStop(absListView);
+            scrolling = false;
+        }
+        scrolling = scrollState == SCROLL_STATE_FLING || scrollState == SCROLL_STATE_TOUCH_SCROLL;
+    }
+
+    @Override
+    public void onScroll(AbsListView absListView, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+        antFirst = first != firstVisibleItem ? first : antFirst;
+        first = firstVisibleItem;
+        last = firstVisibleItem + visibleItemCount - 1;
+        up = antFirst < first;
+    }
+
+    private void scrollingStop(AbsListView view) {
+        try {
+            int length = getChildCount();
+            int index = up ? first : last;
+            for (int i = up ? 0 : length - 1; (up ? i < length : i >= 0)
+                    && (up ? index <= last : index >= 0); i += up ? 1 : -1) {
+                Resource elem = mdirectory.getResource(index);
+                index += up ? 1 : -1;
+                if (!elem.isDir() && ((FileResource) elem).isThumbnailer()) {
+                    View child = view.getChildAt(i);
+                    mListener.loadThumbnailForFile((FileResource) elem,
+                            (ImageView) child.findViewById(R.id.ivResourceIcon),
+                            (ImageView) view.getChildAt(i).findViewById(R.id.ivFavorite),true, false);
+                }
+                else if (elem instanceof AlbumDirectory && ((AlbumDirectory) elem).getCountElements() > 0)
+                    mListener.loadThumbnailForFile((FileResource) ((AlbumDirectory) elem).getResource(0),
+                            (ImageView) view.getChildAt(i).findViewById(R.id.ivResourceIcon),
+                            (ImageView) view.getChildAt(i).findViewById(R.id.ivFavorite),true, true);
+            }
+        } catch (Exception ignored) {
+            ignored.printStackTrace();
         }
     }
 

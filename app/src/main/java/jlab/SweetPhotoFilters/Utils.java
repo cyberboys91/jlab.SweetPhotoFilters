@@ -30,6 +30,7 @@ import android.provider.MediaStore;
 import android.media.ThumbnailUtils;
 import android.content.ContentValues;
 
+import java.util.HashMap;
 import java.util.concurrent.Semaphore;
 import android.content.pm.PackageInfo;
 import android.graphics.BitmapFactory;
@@ -122,7 +123,7 @@ public class Utils {
 
         @Override
         public int getColumnMicroKind() {
-            return MediaStore.Video.Thumbnails.MINI_KIND;
+            return MediaStore.Video.Thumbnails.MICRO_KIND;
         }
 
         @Override
@@ -139,7 +140,7 @@ public class Utils {
 
         @Override
         public int getColumnMicroKind() {
-            return MediaStore.Images.Thumbnails.MINI_KIND;
+            return MediaStore.Images.Thumbnails.MICRO_KIND;
         }
 
         @Override
@@ -324,47 +325,20 @@ public class Utils {
         }).start();
     }
 
-    public static Bitmap getThumbnailForUriFile(String path, FileResource file) {
+    public static Bitmap getThumbnailForUriFile(ContentResolver resolver, String path) {
         try {
-            semaphoreLoadThumbnail.acquire();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        if (currentActivity == null)
-            return null;
-        Bitmap bm = getThumbnailForUriFile(currentActivity.getContentResolver(), path, file);
-        semaphoreLoadThumbnail.release();
-        return bm;
-    }
-
-    public static Bitmap getThumbnailForUriFile(ContentResolver resolver, String path, FileResource file) {
-        Bitmap bm, copy = null;
-        try {
-            if (file.isVideo() || file.isImage()) {
-                Interfaces.IDetailsThumbnailerResource details = getDetailsThumbFromType(file);
-                Cursor ca = resolver.query(details.getUriThumbnails(),
-                        new String[]{MediaStore.MediaColumns._ID}, MediaStore.MediaColumns.DATA + "=?", new String[]{path}, null);
-                copy = getBitmap(ca, resolver, details);
-            } else if (file.isAudio()) {
-                bm = getArtThumbnailFromAudioFile(path, THUMB_SIZE, THUMB_SIZE);
-                return bm;
+            String selections = new StringBuilder(MediaStore.MediaColumns.DATA).append("=?").toString();
+            Cursor ca = resolver.query(imageThumbnailerDetails.getUriThumbnails(),
+                    new String[]{MediaStore.MediaColumns._ID}, selections, new String[]{path}, null);
+            while (ca.moveToNext()) {
+                int id = ca.getInt(ca.getColumnIndex(MediaStore.MediaColumns._ID));
+                return imageThumbnailerDetails.getThumbnail(resolver, id);
             }
-            if (copy == null && file.isImage()) {
-                copy = BitmapFactory.decodeFile(path);
-                bm = ThumbnailUtils.extractThumbnail(copy, THUMB_SIZE, THUMB_SIZE);
-                recycleBitmap(copy);
-                return bm;
-            } else if (copy == null && file.isVideo())
-                copy = ThumbnailUtils.createVideoThumbnail(path, MediaStore.Images.Thumbnails.MINI_KIND);
-            else if (copy == null)
-                return null;
+            ca.close();
         } catch (Exception | OutOfMemoryError ignored) {
             ignored.printStackTrace();
         }
-        //TODO: Si se comenta hay más consumo de memoria
-        //bm = ThumbnailUtils.extractThumbnail(copy, THUMB_WITH_MINI, THUMB_HEIGHT_MINI);
-        //recycleBitmap(copy);
-        return copy;
+        return null;
     }
 
     public static void recycleBitmap(final Bitmap bm) {
@@ -397,25 +371,6 @@ public class Utils {
             ignored.printStackTrace();
             return null;
         }
-    }
-
-    private static Interfaces.IDetailsThumbnailerResource getDetailsThumbFromType(FileResource file) {
-        if (file.isVideo())
-            return videoThumbnailerDetails;
-        else
-            return imageThumbnailerDetails;
-    }
-
-    private static Bitmap getBitmap(Cursor ca, ContentResolver resolver, Interfaces.IDetailsThumbnailerResource details) {
-        Bitmap bm = null;
-        if (ca != null && ca.moveToFirst()) {
-            int id = ca.getInt(ca.getColumnIndex(MediaStore.MediaColumns._ID));
-            ca.close();
-            bm = details.getThumbnail(resolver, id);
-        }
-        if (ca != null)
-            ca.close();
-        return bm;
     }
 
     public static BitmapDrawable getIconApk(String path) {

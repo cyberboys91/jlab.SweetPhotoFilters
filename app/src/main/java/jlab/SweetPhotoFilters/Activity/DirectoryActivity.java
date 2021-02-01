@@ -94,6 +94,7 @@ public class DirectoryActivity extends AppCompatActivity
     private LinearLayout llDirectory;
     private Toolbar toolbar;
     private SearchView msvSearch;
+    private String relUrlDirRoot;
     private boolean isRemoteDirectory = false, isPortrait, isMoving = false;
     private static final short TIME_WAIT_FBUTTON_ANIM = 300,
             CAMERA_REQUEST_CODE = 9101, PERMISSION_REQUEST_CODE = 9102;
@@ -177,9 +178,11 @@ public class DirectoryActivity extends AppCompatActivity
         setContentView(R.layout.activity_directory);
         LoaderImageTask.monSetImageIcon = this;
         loadViews();
-        if (haveExtras)
+        if (haveExtras) {
+            relUrlDirRoot = extras.getString(Utils.RELATIVE_URL_DIRECTORY_ROOT);
             mlcResourcesDir.setRelUrlDirectoryRoot(this.isRemoteDirectory ?
-                    Utils.NAME_REMOTE_DIRECTORY_ROOT : "", extras.getString(Utils.RELATIVE_URL_DIRECTORY_ROOT));
+                    Utils.NAME_REMOTE_DIRECTORY_ROOT : "", relUrlDirRoot);
+        }
         setOnListeners();
         this.mlinflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
         fromPoint = new Point(0, 0);
@@ -749,12 +752,14 @@ public class DirectoryActivity extends AppCompatActivity
                         setDefaultView(icon, view, resource);
                     }
                 });
-                if (resource.isDir()) {
-                    Directory dir = (Directory) resource;
-                    if (!dir.isEmpty() && dir.getResource(0) instanceof FileResource)
-                        loadThumbnailForFile((FileResource) dir.getResource(0), icon, ivfavorite, true, true);
-                } else
-                    loadThumbnailForFile((FileResource) resource, icon, ivfavorite, true, false);
+                if (!mlcResourcesDir.scrolling()) {
+                    if (resource.isDir()) {
+                        Directory dir = (Directory) resource;
+                        if (!dir.isEmpty() && dir.getResource(0) instanceof FileResource)
+                            loadThumbnailForFile((FileResource) dir.getResource(0), icon, ivfavorite, true, true);
+                    } else
+                        loadThumbnailForFile((FileResource) resource, icon, ivfavorite, true, false);
+                }
             }
         }).start();
     }
