@@ -5,10 +5,12 @@ import android.net.Uri;
 import android.os.Handler;
 import android.graphics.Bitmap;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.widget.ImageView;
 import android.content.ContentResolver;
 import jlab.SweetPhotoFilters.Activity.*;
+import jlab.SweetPhotoFilters.Filter.Filter;
 import jlab.SweetPhotoFilters.Resource.*;
 import jlab.SweetPhotoFilters.View.ResourceDetailsAdapter;
 
@@ -16,30 +18,6 @@ import jlab.SweetPhotoFilters.View.ResourceDetailsAdapter;
  * Created by Javier on 30/07/2017.
  */
 public class Interfaces {
-
-    public interface IStatusChangeListener {
-
-        void loadingVisible();
-
-        void loadingInvisible();
-
-        void refreshListView();
-    }
-
-    public interface IAudioPlayerCreateListener {
-        void create(FileResource fsFile);
-    }
-
-    public interface INotifyControllersListener {
-
-        void notifyPlay(FileResource file);
-
-        void notifyPause(FileResource file);
-
-        void notifySeek(int current, int max);
-
-        void notify(FileResource file, boolean isplaying);
-    }
 
     public interface ICloseListener {
 
@@ -50,20 +28,8 @@ public class Interfaces {
         void loaded(FileResource fsFile);
     }
 
-    public interface IElementSelectorListener {
-        boolean select(String possible);
-    }
-
     public interface IElementRefreshListener {
         void refresh(FileResource resource, int position, boolean isplaying);
-    }
-
-    public interface ICreateDialogListener {
-        void createDialog(int msgId);
-    }
-
-    public interface IHideListener {
-        void hide();
     }
 
     public interface ILoadThumbnailForFile {
@@ -151,10 +117,6 @@ public class Interfaces {
         void refresh();
     }
 
-    public interface IFinishListener {
-        void refresh(boolean successfully);
-    }
-
     public interface ICopyRefresh {
         void refresh(Runnable run);
     }
@@ -177,5 +139,12 @@ public class Interfaces {
 
     public interface IPostOnSave {
         void run (String path, String name);
+    }
+
+    public interface IImageContent {
+        void setImageBitmap (final Bitmap bm);
+        void setFilter (Filter filter);
+        void setLayoutParams(ViewGroup.LayoutParams params);
+        ViewGroup.LayoutParams getLayoutParams();
     }
 }

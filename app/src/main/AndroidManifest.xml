@@ -59,8 +59,23 @@
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
+                <data android:scheme="file" />
+                <data android:mimeType="image/*" />
+            </intent-filter>
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".Activity.DirectoryActivity"/>
+        </activity>
 
-                <data android:scheme="http" />
+        <activity
+            android:name="jlab.SweetPhotoFilters.Activity.SlowImageViewActivity"
+            android:label="@string/app_name"
+            android:icon="@drawable/icon_image"
+            android:theme="@style/AppImageViewerTheme"
+            android:configChanges="orientation|screenSize">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
                 <data android:scheme="file" />
                 <data android:mimeType="image/*" />
             </intent-filter>

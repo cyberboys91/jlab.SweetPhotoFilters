@@ -6,8 +6,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Parcel;
 
-import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 import android.view.View;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -30,7 +28,6 @@ import android.provider.MediaStore;
 import android.media.ThumbnailUtils;
 import android.content.ContentValues;
 
-import java.util.HashMap;
 import java.util.concurrent.Semaphore;
 import android.content.pm.PackageInfo;
 import android.graphics.BitmapFactory;
@@ -44,6 +41,82 @@ import android.media.MediaMetadataRetriever;
 import com.google.android.material.snackbar.Snackbar;
 import androidx.documentfile.provider.DocumentFile;
 import android.graphics.drawable.BitmapDrawable;
+
+import jlab.SweetPhotoFilters.Filter.gpu.GPUImage3x3ConvolutionFilter;
+import jlab.SweetPhotoFilters.Filter.gpu.GPUImage3x3TextureSamplingFilter;
+import jlab.SweetPhotoFilters.Filter.gpu.GPUImageAddBlendFilter;
+import jlab.SweetPhotoFilters.Filter.gpu.GPUImageAlphaBlendFilter;
+import jlab.SweetPhotoFilters.Filter.gpu.GPUImageBilateralFilter;
+import jlab.SweetPhotoFilters.Filter.gpu.GPUImageBoxBlurFilter;
+import jlab.SweetPhotoFilters.Filter.gpu.GPUImageBrightnessFilter;
+import jlab.SweetPhotoFilters.Filter.gpu.GPUImageBulgeDistortionFilter;
+import jlab.SweetPhotoFilters.Filter.gpu.GPUImageCGAColorspaceFilter;
+import jlab.SweetPhotoFilters.Filter.gpu.GPUImageChromaKeyBlendFilter;
+import jlab.SweetPhotoFilters.Filter.gpu.GPUImageColorBalanceFilter;
+import jlab.SweetPhotoFilters.Filter.gpu.GPUImageColorBlendFilter;
+import jlab.SweetPhotoFilters.Filter.gpu.GPUImageColorBurnBlendFilter;
+import jlab.SweetPhotoFilters.Filter.gpu.GPUImageColorDodgeBlendFilter;
+import jlab.SweetPhotoFilters.Filter.gpu.GPUImageColorInvertFilter;
+import jlab.SweetPhotoFilters.Filter.gpu.GPUImageColorMatrixFilter;
+import jlab.SweetPhotoFilters.Filter.gpu.GPUImageContrastFilter;
+import jlab.SweetPhotoFilters.Filter.gpu.GPUImageCrosshatchFilter;
+import jlab.SweetPhotoFilters.Filter.gpu.GPUImageDarkenBlendFilter;
+import jlab.SweetPhotoFilters.Filter.gpu.GPUImageDifferenceBlendFilter;
+import jlab.SweetPhotoFilters.Filter.gpu.GPUImageDilationFilter;
+import jlab.SweetPhotoFilters.Filter.gpu.GPUImageDirectionalSobelEdgeDetectionFilter;
+import jlab.SweetPhotoFilters.Filter.gpu.GPUImageDissolveBlendFilter;
+import jlab.SweetPhotoFilters.Filter.gpu.GPUImageDivideBlendFilter;
+import jlab.SweetPhotoFilters.Filter.gpu.GPUImageEmbossFilter;
+import jlab.SweetPhotoFilters.Filter.gpu.GPUImageExclusionBlendFilter;
+import jlab.SweetPhotoFilters.Filter.gpu.GPUImageFalseColorFilter;
+import jlab.SweetPhotoFilters.Filter.gpu.GPUImageFilterGroup;
+import jlab.SweetPhotoFilters.Filter.gpu.GPUImageGammaFilter;
+import jlab.SweetPhotoFilters.Filter.gpu.GPUImageGaussianBlurFilter;
+import jlab.SweetPhotoFilters.Filter.gpu.GPUImageGlassSphereFilter;
+import jlab.SweetPhotoFilters.Filter.gpu.GPUImageGrayscaleFilter;
+import jlab.SweetPhotoFilters.Filter.gpu.GPUImageHalftoneFilter;
+import jlab.SweetPhotoFilters.Filter.gpu.GPUImageHardLightBlendFilter;
+import jlab.SweetPhotoFilters.Filter.gpu.GPUImageHazeFilter;
+import jlab.SweetPhotoFilters.Filter.gpu.GPUImageHighlightShadowFilter;
+import jlab.SweetPhotoFilters.Filter.gpu.GPUImageHueBlendFilter;
+import jlab.SweetPhotoFilters.Filter.gpu.GPUImageHueFilter;
+import jlab.SweetPhotoFilters.Filter.gpu.GPUImageKuwaharaFilter;
+import jlab.SweetPhotoFilters.Filter.gpu.GPUImageLaplacianFilter;
+import jlab.SweetPhotoFilters.Filter.gpu.GPUImageLevelsFilter;
+import jlab.SweetPhotoFilters.Filter.gpu.GPUImageLightenBlendFilter;
+import jlab.SweetPhotoFilters.Filter.gpu.GPUImageLinearBurnBlendFilter;
+import jlab.SweetPhotoFilters.Filter.gpu.GPUImageLookupFilter;
+import jlab.SweetPhotoFilters.Filter.gpu.GPUImageLuminosityBlendFilter;
+import jlab.SweetPhotoFilters.Filter.gpu.GPUImageMonochromeFilter;
+import jlab.SweetPhotoFilters.Filter.gpu.GPUImageMultiplyBlendFilter;
+import jlab.SweetPhotoFilters.Filter.gpu.GPUImageNonMaximumSuppressionFilter;
+import jlab.SweetPhotoFilters.Filter.gpu.GPUImageNormalBlendFilter;
+import jlab.SweetPhotoFilters.Filter.gpu.GPUImageOpacityFilter;
+import jlab.SweetPhotoFilters.Filter.gpu.GPUImageOverlayBlendFilter;
+import jlab.SweetPhotoFilters.Filter.gpu.GPUImagePixelationFilter;
+import jlab.SweetPhotoFilters.Filter.gpu.GPUImagePosterizeFilter;
+import jlab.SweetPhotoFilters.Filter.gpu.GPUImageRGBFilter;
+import jlab.SweetPhotoFilters.Filter.gpu.GPUImageSaturationBlendFilter;
+import jlab.SweetPhotoFilters.Filter.gpu.GPUImageSaturationFilter;
+import jlab.SweetPhotoFilters.Filter.gpu.GPUImageScreenBlendFilter;
+import jlab.SweetPhotoFilters.Filter.gpu.GPUImageSepiaFilter;
+import jlab.SweetPhotoFilters.Filter.gpu.GPUImageSharpenFilter;
+import jlab.SweetPhotoFilters.Filter.gpu.GPUImageSketchFilter;
+import jlab.SweetPhotoFilters.Filter.gpu.GPUImageSmoothToonFilter;
+import jlab.SweetPhotoFilters.Filter.gpu.GPUImageSobelEdgeDetection;
+import jlab.SweetPhotoFilters.Filter.gpu.GPUImageSobelThresholdFilter;
+import jlab.SweetPhotoFilters.Filter.gpu.GPUImageSoftLightBlendFilter;
+import jlab.SweetPhotoFilters.Filter.gpu.GPUImageSourceOverBlendFilter;
+import jlab.SweetPhotoFilters.Filter.gpu.GPUImageSphereRefractionFilter;
+import jlab.SweetPhotoFilters.Filter.gpu.GPUImageSubtractBlendFilter;
+import jlab.SweetPhotoFilters.Filter.gpu.GPUImageSwirlFilter;
+import jlab.SweetPhotoFilters.Filter.gpu.GPUImageToneCurveFilter;
+import jlab.SweetPhotoFilters.Filter.gpu.GPUImageToonFilter;
+import jlab.SweetPhotoFilters.Filter.gpu.GPUImageTransformFilter;
+import jlab.SweetPhotoFilters.Filter.gpu.GPUImageView;
+import jlab.SweetPhotoFilters.Filter.gpu.GPUImageVignetteFilter;
+import jlab.SweetPhotoFilters.Filter.gpu.GPUImageWeakPixelInclusionFilter;
+import jlab.SweetPhotoFilters.Filter.gpu.GPUImageWhiteBalanceFilter;
 import jlab.SweetPhotoFilters.Resource.Resource;
 import jlab.SweetPhotoFilters.Resource.Directory;
 import jlab.SweetPhotoFilters.db.FavoriteDetails;
@@ -843,6 +916,238 @@ public class Utils {
         System.loadLibrary("NativeImageProcessor");
     }
 
+    public static void ApplyGPUFilter (GPUImageFilterGroup filter, FilterType type) {
+        switch (type) {
+            case GPU3x3Convolution:
+                filter.addFilter(new GPUImage3x3ConvolutionFilter());
+                break;
+            case GPUAddBlend:
+                filter.addFilter(new GPUImageAddBlendFilter());
+                break;
+            case GPU3x3TextureSampling:
+                filter.addFilter(new GPUImage3x3TextureSamplingFilter());
+                break;
+            case GPUALphaBlend:
+                filter.addFilter(new GPUImageAlphaBlendFilter());
+                break;
+            case GPUBilateral:
+                filter.addFilter(new GPUImageBilateralFilter());
+                break;
+            case GPUBoxBlur:
+                filter.addFilter(new GPUImageBoxBlurFilter());
+                break;
+            case GPUBrightness:
+                filter.addFilter(new GPUImageBrightnessFilter());
+                break;
+            case GPUBulgeDistortion:
+                filter.addFilter(new GPUImageBulgeDistortionFilter());
+                break;
+            case GPUCGAColorSpace:
+                filter.addFilter(new GPUImageCGAColorspaceFilter());
+                break;
+            case GPUChromaKeyBlend:
+                filter.addFilter(new GPUImageChromaKeyBlendFilter());
+                break;
+            case GPUColorBalance:
+                filter.addFilter(new GPUImageColorBalanceFilter());
+                break;
+            case GPUColorBlend:
+                filter.addFilter(new GPUImageColorBlendFilter());
+                break;
+            case GPUColorBurnBlend:
+                filter.addFilter(new GPUImageColorBurnBlendFilter());
+                break;
+            case GPUColorDodgeBlend:
+                filter.addFilter(new GPUImageColorDodgeBlendFilter());
+                break;
+            case GPUColorMatrix:
+                filter.addFilter(new GPUImageColorMatrixFilter());
+                break;
+            case GPUContrast:
+                filter.addFilter(new GPUImageContrastFilter());
+                break;
+            case GPUCrosshatch:
+                filter.addFilter(new GPUImageCrosshatchFilter());
+                break;
+            case GPUDarkenBlend:
+                filter.addFilter(new GPUImageDarkenBlendFilter());
+                break;
+            case GPUDifferenceBlend:
+                filter.addFilter(new GPUImageDifferenceBlendFilter());
+                break;
+            case GPUDilation:
+                filter.addFilter(new GPUImageDilationFilter());
+                break;
+            case GPUDirectionalSobelEdgeDetection:
+                filter.addFilter(new GPUImageDirectionalSobelEdgeDetectionFilter());
+                break;
+            case GPUDissolveBlend:
+                filter.addFilter(new GPUImageDissolveBlendFilter());
+                break;
+            case GPUDivideBlend:
+                filter.addFilter(new GPUImageDivideBlendFilter());
+                break;
+            case GPUEmboss:
+                filter.addFilter(new GPUImageEmbossFilter());
+                break;
+            case GPUExclusionBlend:
+                filter.addFilter(new GPUImageExclusionBlendFilter());
+                break;
+            case GPUFalseColor:
+                filter.addFilter(new GPUImageFalseColorFilter());
+                break;
+            case GPUGamma:
+                filter.addFilter(new GPUImageGammaFilter());
+                break;
+            case GPUGaussianBlur:
+                filter.addFilter(new GPUImageGaussianBlurFilter());
+                break;
+            case GPUHalftone:
+                filter.addFilter(new GPUImageHalftoneFilter());
+                break;
+            case GPUHardLightBlend:
+                filter.addFilter(new GPUImageHardLightBlendFilter());
+                break;
+            case GPUHaze:
+                filter.addFilter(new GPUImageHazeFilter());
+                break;
+            case GPUHighlightShadow:
+                filter.addFilter(new GPUImageHighlightShadowFilter());
+                break;
+            case GPUHue:
+                filter.addFilter(new GPUImageHueFilter());
+                break;
+            case GPUHueBlend:
+                filter.addFilter(new GPUImageHueBlendFilter());
+                break;
+            case GPUGlassSphere:
+                filter.addFilter(new GPUImageGlassSphereFilter());
+                break;
+            case GPUGrayscale:
+                filter.addFilter(new GPUImageGrayscaleFilter());
+                break;
+            case GPUColorInvert:
+                filter.addFilter(new GPUImageColorInvertFilter());
+                break;
+            case GPUKuwahara:
+                filter.addFilter(new GPUImageKuwaharaFilter());
+                break;
+            case GPULaplacian:
+                filter.addFilter(new GPUImageLaplacianFilter());
+                break;
+            case GPULevels:
+                filter.addFilter(new GPUImageLevelsFilter());
+                break;
+            case GPULightenBlend:
+                filter.addFilter(new GPUImageLightenBlendFilter());
+                break;
+            case GPULinearBurnBlend:
+                filter.addFilter(new GPUImageLinearBurnBlendFilter());
+                break;
+            case GPULookup:
+                filter.addFilter(new GPUImageLookupFilter());
+                break;
+            case GPULuminosityBlend:
+                filter.addFilter(new GPUImageLuminosityBlendFilter());
+                break;
+            case GPUMonochrome:
+                filter.addFilter(new GPUImageMonochromeFilter());
+                break;
+            case GPUMultiplyBlend:
+                filter.addFilter(new GPUImageMultiplyBlendFilter());
+                break;
+            case GPUNonMaximumSuppression:
+                filter.addFilter(new GPUImageNonMaximumSuppressionFilter());
+                break;
+            case GPUNormalBlend:
+                filter.addFilter(new GPUImageNormalBlendFilter());
+                break;
+            case GPUOpacity:
+                filter.addFilter(new GPUImageOpacityFilter());
+                break;
+            case GPUOverlayBlend:
+                filter.addFilter(new GPUImageOverlayBlendFilter());
+                break;
+            case GPUPixelation:
+                filter.addFilter(new GPUImagePixelationFilter());
+                break;
+            case GPUPosterize:
+                filter.addFilter(new GPUImagePosterizeFilter());
+                break;
+            case GPURGB:
+                filter.addFilter(new GPUImageRGBFilter());
+                break;
+            case GPURGBDilation:
+                filter.addFilter(new GPUImageDilationFilter());
+                break;
+            case GPUSaturation:
+                filter.addFilter(new GPUImageSaturationFilter());
+                break;
+            case GPUSaturationBlend:
+                filter.addFilter(new GPUImageSaturationBlendFilter());
+                break;
+            case GPUScreenBlend:
+                filter.addFilter(new GPUImageScreenBlendFilter());
+                break;
+            case GPUSepia:
+                filter.addFilter(new GPUImageSepiaFilter());
+                break;
+            case GPUSharpen:
+                filter.addFilter(new GPUImageSharpenFilter());
+                break;
+            case GPUSketch:
+                filter.addFilter(new GPUImageSketchFilter());
+                break;
+            case GPUSmoothToon:
+                filter.addFilter(new GPUImageSmoothToonFilter());
+                break;
+            case GPUSobelEdgeDetection:
+                filter.addFilter(new GPUImageSobelEdgeDetection());
+                break;
+            case GPUSobelThreshold:
+                filter.addFilter(new GPUImageSobelThresholdFilter());
+                break;
+            case GPUSoftLightBlend:
+                filter.addFilter(new GPUImageSoftLightBlendFilter());
+                break;
+            case GPUSourceOverBlend:
+                filter.addFilter(new GPUImageSourceOverBlendFilter());
+                break;
+            case GPUSphereRefraction:
+                filter.addFilter(new GPUImageSphereRefractionFilter());
+                break;
+            case GPUSubtractBlend:
+                filter.addFilter(new GPUImageSubtractBlendFilter());
+                break;
+            case GPUSwirlFilter:
+                filter.addFilter(new GPUImageSwirlFilter());
+                break;
+            case GPUToneCurve:
+                filter.addFilter(new GPUImageToneCurveFilter());
+                break;
+            case GPUToon:
+                filter.addFilter(new GPUImageToonFilter());
+                break;
+            case GPUTransform:
+                filter.addFilter(new GPUImageTransformFilter());
+                break;
+            case GPUTwoPassTextureSampling:
+                filter.addFilter(new GPUImage3x3TextureSamplingFilter());
+                break;
+            case GPUVignette:
+                filter.addFilter(new GPUImageVignetteFilter());
+                break;
+            case GPUWeakPixelInclusion:
+                filter.addFilter(new GPUImageWeakPixelInclusionFilter());
+                break;
+            case GPUWhiteBalance:
+                filter.addFilter(new GPUImageWhiteBalanceFilter());
+                break;
+            default:
+                break;
+        }
+    }
+
     public static void ApplyFilter (Filter filter, FilterType type, float ...params) {
         switch (type) {
             case Brightness:
@@ -1037,6 +1342,8 @@ public class Utils {
             case Other:
                 filter.addSubFilter(new OthersubFilter());
                 break;
+            default:
+                break;
         }
     }
 
@@ -1072,6 +1379,31 @@ public class Utils {
                                 : Bitmap.CompressFormat.PNG,
                         100, new FileOutputStream(pathImage));
                 Utils.addFileToContent(currentActivity, pathImage);
+            }
+        } catch (Exception ignored) {
+            ignored.printStackTrace();
+            return null;
+        }
+        return name;
+    }
+
+    public static String saveGPUImageToAppFolder(GPUImageView imageView, String name,
+                                                 final Interfaces.IPostOnSave postOnSave) {
+        name = getNameForImageFile(name);
+        final String pathImage = String.format("%s/%s"
+                , saveFolderPath
+                , name);
+        try {
+            if ((parentDir.exists() || rootDir.createDirectory("SweetPhotoFilters").exists())
+                    && (new File(pathImage).exists() || parentDir.createFile("", name).exists())) {
+                final String finalName = name;
+                imageView.saveToPictures("SweetPhotoFilters", name, new GPUImageView.OnPictureSavedListener() {
+                    @Override
+                    public void onPictureSaved(Uri uri) {
+                        Utils.addFileToContent(currentActivity, pathImage);
+                        postOnSave.run(pathImage, finalName);
+                    }
+                });
             }
         } catch (Exception ignored) {
             ignored.printStackTrace();

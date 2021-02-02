@@ -25,7 +25,10 @@ import android.widget.ImageView;
 import android.widget.OverScroller;
 import android.widget.Scroller;
 
-public class ZoomImageView extends ImageView {
+import jlab.SweetPhotoFilters.Filter.Filter;
+import jlab.SweetPhotoFilters.Interfaces;
+
+public class ZoomImageView extends ImageView implements Interfaces.IImageContent {
 
 //	private static final String DEBUG = "DEBUG";
 
@@ -149,6 +152,11 @@ public class ZoomImageView extends ImageView {
         super.setImageBitmap(bm);
         savePreviousImageValues();
         fitImageToView();
+    }
+
+    @Override
+    public void setFilter(Filter filter) {
+
     }
 
     @Override
