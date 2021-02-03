@@ -215,7 +215,7 @@ public class DirectoryActivity extends AppCompatActivity
             getContentResolver().takePersistableUriPermission(treeUri, Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
         } else if (resultCode == RESULT_OK && requestCode == CAMERA_REQUEST_CODE) {
             //TODO: Testing GPU filters
-//            Intent intent = new Intent(this, SlowImageViewActivity.class);
+//            Intent intent = new Intent(this, GPUImageViewActivity.class);
             Intent intent = new Intent(this, ImageViewActivity.class);
             intent.setAction(Intent.ACTION_VIEW);
             intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
@@ -928,7 +928,7 @@ public class DirectoryActivity extends AppCompatActivity
 
     private void createOptionActivity(final FileResource file, final int position) {
         //TODO: Testing GPU filters
-//        Intent intent = new Intent(this, SlowImageViewActivity.class);
+//        Intent intent = new Intent(this, GPUImageViewActivity.class);
         Intent intent = new Intent(this, ImageViewActivity.class);
         intent.setAction(Intent.ACTION_VIEW);
         intent.setDataAndType(Uri.parse(file.getAbsUrl()), file.getMimeType());

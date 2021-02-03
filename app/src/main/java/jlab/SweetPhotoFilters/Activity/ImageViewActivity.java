@@ -118,58 +118,41 @@ public class ImageViewActivity extends AppCompatActivity implements View.OnTouch
         this.currentView = view;
     }
 
+    public void setContentView() {
+        setContentView(R.layout.activity_image_view);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_image_view);
+        setContentView();
         this.rlContainer = findViewById(R.id.rlImageViewContainer);
         this.msrlRefresh = findViewById(R.id.srlRefresh);
         int tbHeight = getResources().getDimensionPixelSize(R.dimen.image_swipe_margin);
         this.msrlRefresh.setProgressViewOffset(false, tbHeight, tbHeight);
         this.msrlRefresh.setColorSchemeResources(R.color.red, R.color.blue, R.color.green);
         this.barImage = findViewById(R.id.ablImageBar);
-        this.gallery = findViewById(R.id.gallery);
         this.layoutFilters = findViewById(R.id.llFilters);
         HorizontalScrollView hsvFilters = findViewById(R.id.hsvFilters);
         this.layoutActions = findViewById(R.id.llActionButtons);
         fbSave = findViewById(R.id.fbSaveFilter);
         fbCancel = findViewById(R.id.fbCancelFilter);
         fbUndo = findViewById(R.id.fbUndoFilter);
-        fbSave.setOnClickListener(saveFilterOnClick);
+        fbSave.setOnClickListener(saveFilterOnClick());
         fbCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 resetFilter();
             }
         });
-        fbUndo.setOnClickListener(undoFilterOnClick);
+        fbUndo.setOnClickListener(undoFilterOnClick());
         this.mlInflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
         initFilter();
         Utils.currentActivity = this;
         Utils.viewForSnack = gallery;
-        Uri uri = savedInstanceState != null && savedInstanceState.containsKey(RESOURCE_PATH_KEY)
-                ? Uri.parse(savedInstanceState.getString(RESOURCE_PATH_KEY))
-                : getIntent().getData();
-        loadResource(uri);
-        this.toolbar = findViewById(R.id.toolbar);
-        this.toolbar.setTitleTextAppearance(this, R.style.ToolBarApparence);
-        this.toolbar.setTitle(resource.getName());
-        setSupportActionBar(toolbar);
-        loadFromBundle(savedInstanceState != null && savedInstanceState.containsKey(DIRECTORY_KEY)
-                ? savedInstanceState : getIntent().getExtras());
-        ResourceDetailsAdapter adapter = new ResourceDetailsAdapter();
-        adapter.addAll(directory.getContent());
-        adapter.setonGetSetViewListener(this);
-        gallery.setOnItemSelectedListener(this);
-        gallery.setOnItemClickListener(this);
-        gallery.setAdapter(adapter);
-        gallery.setSelection(currentIndex, true);
-        gallery.setLoadImageListener(new Interfaces.ILoadImageListener() {
-            @Override
-            public boolean loadImage() {
-                return loadingImage;
-            }
-        });
+
+        loadDataAndGallery(savedInstanceState);
+
         hsvFilters.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
@@ -187,6 +170,34 @@ public class ImageViewActivity extends AppCompatActivity implements View.OnTouch
             }
         });
         loadFiltersImages();
+    }
+
+    protected void loadDataAndGallery(Bundle savedInstanceState) {
+        Uri uri = savedInstanceState != null && savedInstanceState.containsKey(RESOURCE_PATH_KEY)
+                ? Uri.parse(savedInstanceState.getString(RESOURCE_PATH_KEY))
+                : getIntent().getData();
+        loadResource(uri);
+        this.toolbar = findViewById(R.id.toolbar);
+        this.toolbar.setTitleTextAppearance(this, R.style.ToolBarApparence);
+        this.toolbar.setTitle(resource.getName());
+        setSupportActionBar(toolbar);
+        loadFromBundle(savedInstanceState != null && savedInstanceState.containsKey(DIRECTORY_KEY)
+                ? savedInstanceState : getIntent().getExtras());
+
+        ResourceDetailsAdapter adapter = new ResourceDetailsAdapter();
+        adapter.addAll(directory.getContent());
+        adapter.setonGetSetViewListener(this);
+        this.gallery = findViewById(R.id.gallery);
+        gallery.setOnItemSelectedListener(this);
+        gallery.setOnItemClickListener(this);
+        gallery.setAdapter(adapter);
+        gallery.setSelection(currentIndex, true);
+        gallery.setLoadImageListener(new Interfaces.ILoadImageListener() {
+            @Override
+            public boolean loadImage() {
+                return loadingImage;
+            }
+        });
     }
 
     @Override
@@ -467,7 +478,7 @@ public class ImageViewActivity extends AppCompatActivity implements View.OnTouch
         };
     }
 
-    private void resetFilter() {
+    protected void resetFilter() {
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -527,59 +538,71 @@ public class ImageViewActivity extends AppCompatActivity implements View.OnTouch
         }).start();
     }
 
-    private View.OnClickListener undoFilterOnClick = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    if (loadingImage)
-                        showSnackBar(R.string.loading_image);
-                    else if (invalidImage)
-                        showSnackBar(R.string.invalid_image);
-                    else {
-                        int countFilters = filter.getSubFilters().size();
-                        if (countFilters > 0) {
-                            if (countFilters == 1)
-                                resetFilter();
-                            else {
-                                try {
-                                    mutex.acquire();
-                                    final Interfaces.IImageContent aux = currentView;
-                                    loadingImage = true;
-                                    runOnUiThread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            msrlRefresh.setRefreshing(true);
-                                        }
-                                    });
-                                    if (loadBitmapForResource(true)) {
-                                        List<SubFilter> subFilters = filter.getSubFilters();
-                                        final SubFilter removedSubFilter = subFilters
-                                                .remove(filter.getSubFilters().size() - 1);
-                                        clearSubFilters();
-                                        filter.addSubFilters(subFilters);
-                                        final Bitmap copy = Bitmap.createBitmap(bmCurrent);
-                                        final boolean error = !ApplyFilter(bmCurrent, filter, false);
+    protected View.OnClickListener undoFilterOnClick () {
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (loadingImage)
+                            showSnackBar(R.string.loading_image);
+                        else if (invalidImage)
+                            showSnackBar(R.string.invalid_image);
+                        else {
+                            int countFilters = filter.getSubFilters().size();
+                            if (countFilters > 0) {
+                                if (countFilters == 1)
+                                    resetFilter();
+                                else {
+                                    try {
+                                        mutex.acquire();
+                                        final Interfaces.IImageContent aux = currentView;
+                                        loadingImage = true;
                                         runOnUiThread(new Runnable() {
                                             @Override
                                             public void run() {
-                                                if (error) {
-                                                    showSnackBar(R.string.loading_image_error);
-                                                    filter.addSubFilter(removedSubFilter);
-                                                    bmCurrent = copy;
-                                                    showActionsLayout(true);
-                                                } else {
-                                                    aux.setImageBitmap(bmCurrent);
-                                                    recycleBitmap(copy);
-                                                    showActionsLayout(true);
-                                                }
-                                                mutex.release();
-                                                loadingImage = false;
-                                                msrlRefresh.setRefreshing(false);
+                                                msrlRefresh.setRefreshing(true);
                                             }
                                         });
-                                    } else {
+                                        if (loadBitmapForResource(true)) {
+                                            List<SubFilter> subFilters = filter.getSubFilters();
+                                            final SubFilter removedSubFilter = subFilters
+                                                    .remove(filter.getSubFilters().size() - 1);
+                                            clearSubFilters();
+                                            filter.addSubFilters(subFilters);
+                                            final Bitmap copy = Bitmap.createBitmap(bmCurrent);
+                                            final boolean error = !ApplyFilter(bmCurrent, filter, false);
+                                            runOnUiThread(new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                    if (error) {
+                                                        showSnackBar(R.string.loading_image_error);
+                                                        filter.addSubFilter(removedSubFilter);
+                                                        bmCurrent = copy;
+                                                        showActionsLayout(true);
+                                                    } else {
+                                                        aux.setImageBitmap(bmCurrent);
+                                                        recycleBitmap(copy);
+                                                        showActionsLayout(true);
+                                                    }
+                                                    mutex.release();
+                                                    loadingImage = false;
+                                                    msrlRefresh.setRefreshing(false);
+                                                }
+                                            });
+                                        } else {
+                                            mutex.release();
+                                            loadingImage = false;
+                                            runOnUiThread(new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                    msrlRefresh.setRefreshing(false);
+                                                }
+                                            });
+                                        }
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
                                         mutex.release();
                                         loadingImage = false;
                                         runOnUiThread(new Runnable() {
@@ -589,37 +612,29 @@ public class ImageViewActivity extends AppCompatActivity implements View.OnTouch
                                             }
                                         });
                                     }
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                    mutex.release();
-                                    loadingImage = false;
-                                    runOnUiThread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            msrlRefresh.setRefreshing(false);
-                                        }
-                                    });
                                 }
                             }
                         }
                     }
-                }
-            }).start();
-        }
-    };
+                }).start();
+            }
+        };
+    }
 
-    private View.OnClickListener saveFilterOnClick = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            saveImage(new Interfaces.IPostOnSave() {
-                @Override
-                public void run(String path, String name) {
-                    showSnackBar(String.format("%s \"%s\"", getString(R.string.save_image_complete),
-                            name));
-                }
-            });
-        }
-    };
+    protected View.OnClickListener saveFilterOnClick () {
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                saveImage(new Interfaces.IPostOnSave() {
+                    @Override
+                    public void run(String path, String name) {
+                        showSnackBar(String.format("%s \"%s\"", getString(R.string.save_image_complete),
+                                name));
+                    }
+                });
+            }
+        };
+    }
 
     protected void saveImage(final Interfaces.IPostOnSave postOnSave) {
         if (savingFilter)
@@ -671,7 +686,7 @@ public class ImageViewActivity extends AppCompatActivity implements View.OnTouch
         return new Point(width, height);
     }
 
-    private void loadFromBundle(Bundle bundle) {
+    protected void loadFromBundle(Bundle bundle) {
         String name = bundle != null ? bundle.getString(DIRECTORY_KEY) : "";
         currentIndex = bundle != null ? bundle.getInt(INDEX_CURRENT_KEY) : 0;
         if (bundle != null && bundle.containsKey(STACK_VARS_KEY))

@@ -64,6 +64,10 @@ public class GPUImageView extends FrameLayout implements Interfaces.IImageConten
         mGPUImage.setGLSurfaceView(mGLSurfaceView);
     }
 
+    public GLSurfaceView getmGLSurfaceView() {
+        return mGLSurfaceView;
+    }
+
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         if (mRatio != 0.0f) {

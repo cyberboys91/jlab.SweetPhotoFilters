@@ -1,8 +1,22 @@
 package jlab.SweetPhotoFilters.Activity;
 
+import android.hardware.Camera;
+import android.net.Uri;
+import android.opengl.GLSurfaceView;
+import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.MotionEvent;
+import android.view.Surface;
+import android.view.SurfaceHolder;
+import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AnimationUtils;
+import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
+
+import java.io.IOException;
+
 import jlab.SweetPhotoFilters.Filter.FilterType;
 import jlab.SweetPhotoFilters.Filter.gpu.GPUImageFilterGroup;
 import jlab.SweetPhotoFilters.Filter.gpu.GPUImageView;
@@ -17,7 +31,8 @@ import static jlab.SweetPhotoFilters.Utils.showSnackBar;
  * Created by Javier on 02/02/2021.
  */
 
-public class SlowImageViewActivity extends ImageViewActivity {
+//TODO: Incomplete
+public class GPUImageViewActivity extends ImageViewActivity {
 
     protected GPUImageFilterGroup filter;
 
@@ -226,7 +241,8 @@ public class SlowImageViewActivity extends ImageViewActivity {
         };
     }
 
-    private void resetFilter() {
+    @Override
+    protected void resetFilter() {
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -276,60 +292,64 @@ public class SlowImageViewActivity extends ImageViewActivity {
         }).start();
     }
 
-    private View.OnClickListener undoFilterOnClick = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    if (loadingImage)
-                        showSnackBar(R.string.loading_image);
-                    else if (invalidImage)
-                        showSnackBar(R.string.invalid_image);
-                    else {
-                        int countFilters = filter.getFilters().size();
-                        if (countFilters > 0) {
-                            if (countFilters == 1)
-                                resetFilter();
-                            else {
-                                try {
-                                    mutex.acquire();
-                                    loadingImage = true;
-                                    runOnUiThread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            msrlRefresh.setRefreshing(true);
-                                        }
-                                    });
-                                    filter.removeFilter(getCountFilters() - 1);
-                                    runOnUiThread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            currentView.setFilter(filter);
-                                            mutex.release();
-                                            loadingImage = false;
-                                            msrlRefresh.setRefreshing(false);
-                                        }
-                                    });
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                    mutex.release();
-                                    loadingImage = false;
-                                    runOnUiThread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            msrlRefresh.setRefreshing(false);
-                                        }
-                                    });
+    @Override
+    protected View.OnClickListener undoFilterOnClick () {
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (loadingImage)
+                            showSnackBar(R.string.loading_image);
+                        else if (invalidImage)
+                            showSnackBar(R.string.invalid_image);
+                        else {
+                            int countFilters = filter.getFilters().size();
+                            if (countFilters > 0) {
+                                if (countFilters == 1)
+                                    resetFilter();
+                                else {
+                                    try {
+                                        mutex.acquire();
+                                        loadingImage = true;
+                                        runOnUiThread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                msrlRefresh.setRefreshing(true);
+                                            }
+                                        });
+                                        filter.removeFilter(getCountFilters() - 1);
+                                        runOnUiThread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                currentView.setFilter(filter);
+                                                mutex.release();
+                                                loadingImage = false;
+                                                msrlRefresh.setRefreshing(false);
+                                            }
+                                        });
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                        mutex.release();
+                                        loadingImage = false;
+                                        runOnUiThread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                msrlRefresh.setRefreshing(false);
+                                            }
+                                        });
+                                    }
                                 }
                             }
                         }
                     }
-                }
-            }).start();
-        }
-    };
+                }).start();
+            }
+        };
+    }
 
+    @Override
     protected void saveImage (final Interfaces.IPostOnSave postOnSave) {
         if (savingFilter)
             showSnackBar(R.string.saving_image_wait);
@@ -341,7 +361,7 @@ public class SlowImageViewActivity extends ImageViewActivity {
                 savingFilter = true;
                 showSnackBar(R.string.saving_image);
                 final String name = resource.getName();
-
+                //TODO: Revisar
                 saveGPUImageToAppFolder((GPUImageView) currentView, name, new Interfaces.IPostOnSave() {
                     @Override
                     public void run(String path, String name) {
