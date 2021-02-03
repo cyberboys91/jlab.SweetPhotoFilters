@@ -17,15 +17,15 @@ import android.view.MotionEvent;
 import android.widget.ImageView;
 import android.widget.AdapterView;
 import android.widget.LinearLayout;
-import android.media.ExifInterface;
+import androidx.annotation.NonNull;
 import android.view.LayoutInflater;
 import jlab.SweetPhotoFilters.Utils;
 import android.widget.RelativeLayout;
 import android.graphics.BitmapFactory;
 import java.util.concurrent.Semaphore;
+import android.annotation.SuppressLint;
 import jlab.SweetPhotoFilters.Interfaces;
 import androidx.appcompat.widget.Toolbar;
-import androidx.annotation.NonNull;
 import android.widget.HorizontalScrollView;
 import android.view.animation.AnimationUtils;
 import com.zomato.photofilters.geometry.Point;
@@ -37,9 +37,7 @@ import jlab.SweetPhotoFilters.View.ImageGallery;
 import jlab.SweetPhotoFilters.View.ZoomImageView;
 import jlab.SweetPhotoFilters.Resource.LocalFile;
 import jlab.SweetPhotoFilters.db.FavoriteDetails;
-import com.google.android.material.appbar.AppBarLayout;
-
-import static jlab.SweetPhotoFilters.Utils.OPEN_RESOURCE_ON_CLICKED;
+import androidx.exifinterface.media.ExifInterface;
 import static jlab.SweetPhotoFilters.Utils.isEqual;
 import static jlab.SweetPhotoFilters.Utils.rateApp;
 import jlab.SweetPhotoFilters.Resource.FileResource;
@@ -48,13 +46,13 @@ import static jlab.SweetPhotoFilters.Utils.isFavorite;
 import com.zomato.photofilters.imageprocessors.Filter;
 import jlab.SweetPhotoFilters.Resource.LocalDirectory;
 import static jlab.SweetPhotoFilters.Utils.ApplyFilter;
+import com.google.android.material.appbar.AppBarLayout;
 import static jlab.SweetPhotoFilters.Utils.showSnackBar;
 import static jlab.SweetPhotoFilters.Utils.recycleBitmap;
 import static jlab.SweetPhotoFilters.Utils.DIRECTORY_KEY;
 import com.zomato.photofilters.imageprocessors.SubFilter;
 import static jlab.SweetPhotoFilters.Utils.saveFolderPath;
 import jlab.SweetPhotoFilters.View.ResourceDetailsAdapter;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import static jlab.SweetPhotoFilters.Utils.showAboutDialog;
 import jlab.SweetPhotoFilters.View.ImageSwipeRefreshLayout;
 import static jlab.SweetPhotoFilters.Utils.saveFavoriteData;
@@ -65,7 +63,9 @@ import static jlab.SweetPhotoFilters.Utils.specialDirectories;
 import jlab.SweetPhotoFilters.Resource.LocalStorageDirectories;
 import jlab.SweetPhotoFilters.Activity.Fragment.DetailsFragment;
 import static jlab.SweetPhotoFilters.Utils.saveBitmapToAppFolder;
+import static jlab.SweetPhotoFilters.Utils.OPEN_RESOURCE_ON_CLICKED;
 import static jlab.SweetPhotoFilters.Utils.RESOURCE_FOR_DETAILS_KEY;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import static jlab.SweetPhotoFilters.Activity.DirectoryActivity.STACK_VARS_KEY;
 import jlab.SweetPhotoFilters.View.ResourceDetailsAdapter.OnGetSetViewListener;
 
@@ -107,7 +107,7 @@ public class ImageViewActivity extends AppCompatActivity implements View.OnTouch
     }
 
     protected boolean isEmptySubFiltersList () {
-        return getCountFilters() == 0;
+        return getCountFilters() != 0;
     }
 
     protected void initFilter () {
@@ -122,6 +122,7 @@ public class ImageViewActivity extends AppCompatActivity implements View.OnTouch
         setContentView(R.layout.activity_image_view);
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -149,7 +150,6 @@ public class ImageViewActivity extends AppCompatActivity implements View.OnTouch
         this.mlInflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
         initFilter();
         Utils.currentActivity = this;
-        Utils.viewForSnack = gallery;
 
         loadDataAndGallery(savedInstanceState);
 
@@ -169,6 +169,7 @@ public class ImageViewActivity extends AppCompatActivity implements View.OnTouch
                 return false;
             }
         });
+
         loadFiltersImages();
     }
 
@@ -198,6 +199,7 @@ public class ImageViewActivity extends AppCompatActivity implements View.OnTouch
                 return loadingImage;
             }
         });
+        Utils.viewForSnack = gallery;
     }
 
     @Override
@@ -273,79 +275,79 @@ public class ImageViewActivity extends AppCompatActivity implements View.OnTouch
     }
 
     protected void loadFiltersImages() {
-        final ImageView ivBrightnessFilter = (ImageView) findViewById(R.id.ivDefaultBrightnessFilter),
-                ivHightBrightnessFilter = (ImageView) findViewById(R.id.ivHightBrightnessFilter),
-                ivBlackAndWhiteFilter = (ImageView) findViewById(R.id.ivBlackAndWhiteFilter),
-                ivLowBrightnessFilter = (ImageView) findViewById(R.id.ivLowBrightnessFilter),
-                ivLowSaturationFilter = (ImageView) findViewById(R.id.ivLowSaturationFilter),
-                ivDefaultSaturationFilter = (ImageView) findViewById(R.id.ivDefaultSaturationFilter),
-                ivHightSaturationFilter = (ImageView) findViewById(R.id.ivHightSaturationFilter),
-                ivColorOverlayFilter = (ImageView) findViewById(R.id.ivColorOverlayFilter),
-                ivContrastFilter = (ImageView) findViewById(R.id.ivContrastFilter),
-                ivVignetteFilter = (ImageView) findViewById(R.id.ivVignetteFilter),
-                ivAverageSmoothFilter = (ImageView) findViewById(R.id.ivAverageSmoothFilter),
-                ivGammaCorrectionAFilter = (ImageView) findViewById(R.id.ivGammaCorrectionAFilter),
-                ivGammaCorrectionBFilter = (ImageView) findViewById(R.id.ivGammaCorrectionBFilter),
-                ivGammaCorrectionCFilter = (ImageView) findViewById(R.id.ivGammaCorrectionCFilter),
-                ivGammaCorrectionDFilter = (ImageView) findViewById(R.id.ivGammaCorrectionDFilter),
-                ivXORFilter = (ImageView) findViewById(R.id.ivXORFilter),
-                ivORFilter = (ImageView) findViewById(R.id.ivORFilter),
-                ivLightFilter = (ImageView) findViewById(R.id.ivLightFilter),
-                ivPixelateFilter = (ImageView) findViewById(R.id.ivPixelateFilter),
-                ivSketchFilter = (ImageView) findViewById(R.id.ivSketchFilter),
-//                ivTvFilter = (ImageView) findViewById(R.id.ivTvFilter),
-//                ivWeaveFilter = (ImageView) findViewById(R.id.ivWeaveFilter),
-                ivUnsharpFilter = (ImageView) findViewById(R.id.ivUnsharpFilter),
-                ivThresholdFilter = (ImageView) findViewById(R.id.ivThresholdFilter),
-                ivStampFilter = (ImageView) findViewById(R.id.ivStampFilter),
-                ivSolarizeFilter = (ImageView) findViewById(R.id.ivSolarizeFilter),
-                ivSmearFilter = (ImageView) findViewById(R.id.ivSmearFilter),
-                ivSharpenFilter = (ImageView) findViewById(R.id.ivSharpenFilter),
-                ivRippleFilter = (ImageView) findViewById(R.id.ivRippleFilter),
-                ivRescaleFilter = (ImageView) findViewById(R.id.ivRescaleFilter),
-                ivQuantizeFilter = (ImageView) findViewById(R.id.ivQuantizeFilter),
-//                ivOtherFilter = (ImageView) findViewById(R.id.ivOtherFilter),
-                ivPosterizeFilter = (ImageView) findViewById(R.id.ivPosterizeFilter),
-//                ivOilFilter = (ImageView) findViewById(R.id.ivOilFilter),
-//                ivPointillizeFilter = (ImageView) findViewById(R.id.ivPointillizeFilter),
-//                ivOffsetFilter = (ImageView) findViewById(R.id.ivOffsetFilter),
-                ivNoiseFilter = (ImageView) findViewById(R.id.ivNoiseFilter),
-//                ivMinimumFilter = (ImageView) findViewById(R.id.ivMinimumFilter),
-                ivMaskFilter = (ImageView) findViewById(R.id.ivMaskFilter),
-                ivMarbleFilter = (ImageView) findViewById(R.id.ivMarbleFilter),
-                ivInvertFilter = (ImageView) findViewById(R.id.ivInvertFilter),
-                ivGaussianFilter = (ImageView) findViewById(R.id.ivGaussianFilter),
-                ivExposeFilter = (ImageView) findViewById(R.id.ivExposeFilter),
-//                ivFlipFilter = (ImageView) findViewById(R.id.ivFlipFilter),
-                ivEmbossFilter = (ImageView) findViewById(R.id.ivEmbossFilter),
-                ivEdgeFilter = (ImageView) findViewById(R.id.ivEdgeFilter),
-                ivDiffuseFilter = (ImageView) findViewById(R.id.ivDiffuseFilter),
-//                ivCrystallizeFilter = (ImageView) findViewById(R.id.ivCrystallizeFilter),
-                ivDisplaceFilter = (ImageView) findViewById(R.id.ivDisplaceFilter),
-                ivContourFilter = (ImageView) findViewById(R.id.ivContourFilter),
-//                ivColorHalftoneFilter = (ImageView) findViewById(R.id.ivColorHalftoneFilter),
-                ivBumpFilter = (ImageView) findViewById(R.id.ivBumpFilter),
-                ivHgayanOneFilter = (ImageView) findViewById(R.id.ivHgayanOneFilter),
-//                ivHgayanTwoFilter = (ImageView) findViewById(R.id.ivHgayanTwoFilter),
-                ivHgayanThreeFilter = (ImageView) findViewById(R.id.ivHgayanThreeFilter),
-                ivHgayanFourFilter = (ImageView) findViewById(R.id.ivHgayanFourFilter),
-                ivHgayanFiveFilter = (ImageView) findViewById(R.id.ivHgayanFiveFilter),
-                ivHgayanSixFilter = (ImageView) findViewById(R.id.ivHgayanSixFilter),
-                ivHgayanSevenFilter = (ImageView) findViewById(R.id.ivHgayanSevenFilter),
-                ivHgayanEightFilter = (ImageView) findViewById(R.id.ivHgayanEightFilter),
-//                ivHgayanNineFilter = (ImageView) findViewById(R.id.ivHgayanNineFilter),
-                ivHgayanTenFilter = (ImageView) findViewById(R.id.ivHgayanTenFilter),
-                ivHgayanElevenFilter = (ImageView) findViewById(R.id.ivHgayanElevenFilter),
-                ivHgayanTwelveFilter = (ImageView) findViewById(R.id.ivHgayanTwelveFilter),
-                ivHgayanFourteenFilter = (ImageView) findViewById(R.id.ivHgayanFourteenFilter),
-                ivHgayanFifteenFilter = (ImageView) findViewById(R.id.ivHgayanFifteenFilter),
-                ivHgayanSixteenFilter = (ImageView) findViewById(R.id.ivHgayanSixteenFilter),
-                ivVintageFilter = (ImageView) findViewById(R.id.ivVintageFilter),
-                ivSepiaFilter = (ImageView) findViewById(R.id.ivSepiaFilter),
-                ivBrownishFilter = (ImageView) findViewById(R.id.ivBrownishFilter),
-                ivTintLowFilter = (ImageView) findViewById(R.id.ivTintLowFilter),
-                ivTintMediumFilter = (ImageView) findViewById(R.id.ivTintMediumFilter),
-                ivTintHighFilter = (ImageView) findViewById(R.id.ivTintHighFilter);
+        final ImageView ivBrightnessFilter = findViewById(R.id.ivDefaultBrightnessFilter),
+                ivHightBrightnessFilter = findViewById(R.id.ivHightBrightnessFilter),
+                ivBlackAndWhiteFilter = findViewById(R.id.ivBlackAndWhiteFilter),
+                ivLowBrightnessFilter = findViewById(R.id.ivLowBrightnessFilter),
+                ivLowSaturationFilter = findViewById(R.id.ivLowSaturationFilter),
+                ivDefaultSaturationFilter = findViewById(R.id.ivDefaultSaturationFilter),
+                ivHightSaturationFilter = findViewById(R.id.ivHightSaturationFilter),
+                ivColorOverlayFilter = findViewById(R.id.ivColorOverlayFilter),
+                ivContrastFilter = findViewById(R.id.ivContrastFilter),
+                ivVignetteFilter = findViewById(R.id.ivVignetteFilter),
+                ivAverageSmoothFilter = findViewById(R.id.ivAverageSmoothFilter),
+                ivGammaCorrectionAFilter = findViewById(R.id.ivGammaCorrectionAFilter),
+                ivGammaCorrectionBFilter = findViewById(R.id.ivGammaCorrectionBFilter),
+                ivGammaCorrectionCFilter = findViewById(R.id.ivGammaCorrectionCFilter),
+                ivGammaCorrectionDFilter = findViewById(R.id.ivGammaCorrectionDFilter),
+                ivXORFilter = findViewById(R.id.ivXORFilter),
+                ivORFilter = findViewById(R.id.ivORFilter),
+                ivLightFilter = findViewById(R.id.ivLightFilter),
+                ivPixelateFilter = findViewById(R.id.ivPixelateFilter),
+                ivSketchFilter = findViewById(R.id.ivSketchFilter),
+//                ivTvFilter = findViewById(R.id.ivTvFilter),
+//                ivWeaveFilter = findViewById(R.id.ivWeaveFilter),
+                ivUnsharpFilter = findViewById(R.id.ivUnsharpFilter),
+                ivThresholdFilter = findViewById(R.id.ivThresholdFilter),
+                ivStampFilter = findViewById(R.id.ivStampFilter),
+                ivSolarizeFilter = findViewById(R.id.ivSolarizeFilter),
+                ivSmearFilter = findViewById(R.id.ivSmearFilter),
+                ivSharpenFilter = findViewById(R.id.ivSharpenFilter),
+                ivRippleFilter = findViewById(R.id.ivRippleFilter),
+                ivRescaleFilter = findViewById(R.id.ivRescaleFilter),
+                ivQuantizeFilter = findViewById(R.id.ivQuantizeFilter),
+//                ivOtherFilter = findViewById(R.id.ivOtherFilter),
+                ivPosterizeFilter = findViewById(R.id.ivPosterizeFilter),
+//                ivOilFilter = findViewById(R.id.ivOilFilter),
+//                ivPointillizeFilter = findViewById(R.id.ivPointillizeFilter),
+//                ivOffsetFilter = findViewById(R.id.ivOffsetFilter),
+                ivNoiseFilter = findViewById(R.id.ivNoiseFilter),
+//                ivMinimumFilter = findViewById(R.id.ivMinimumFilter),
+                ivMaskFilter = findViewById(R.id.ivMaskFilter),
+                ivMarbleFilter = findViewById(R.id.ivMarbleFilter),
+                ivInvertFilter = findViewById(R.id.ivInvertFilter),
+                ivGaussianFilter = findViewById(R.id.ivGaussianFilter),
+                ivExposeFilter = findViewById(R.id.ivExposeFilter),
+//                ivFlipFilter = findViewById(R.id.ivFlipFilter),
+                ivEmbossFilter = findViewById(R.id.ivEmbossFilter),
+                ivEdgeFilter = findViewById(R.id.ivEdgeFilter),
+                ivDiffuseFilter = findViewById(R.id.ivDiffuseFilter),
+//                ivCrystallizeFilter = findViewById(R.id.ivCrystallizeFilter),
+                ivDisplaceFilter = findViewById(R.id.ivDisplaceFilter),
+                ivContourFilter = findViewById(R.id.ivContourFilter),
+//                ivColorHalftoneFilter = findViewById(R.id.ivColorHalftoneFilter),
+                ivBumpFilter = findViewById(R.id.ivBumpFilter),
+                ivHgayanOneFilter = findViewById(R.id.ivHgayanOneFilter),
+//                ivHgayanTwoFilter = findViewById(R.id.ivHgayanTwoFilter),
+                ivHgayanThreeFilter = findViewById(R.id.ivHgayanThreeFilter),
+                ivHgayanFourFilter = findViewById(R.id.ivHgayanFourFilter),
+                ivHgayanFiveFilter = findViewById(R.id.ivHgayanFiveFilter),
+                ivHgayanSixFilter = findViewById(R.id.ivHgayanSixFilter),
+                ivHgayanSevenFilter = findViewById(R.id.ivHgayanSevenFilter),
+                ivHgayanEightFilter = findViewById(R.id.ivHgayanEightFilter),
+//                ivHgayanNineFilter = findViewById(R.id.ivHgayanNineFilter),
+                ivHgayanTenFilter = findViewById(R.id.ivHgayanTenFilter),
+                ivHgayanElevenFilter = findViewById(R.id.ivHgayanElevenFilter),
+                ivHgayanTwelveFilter = findViewById(R.id.ivHgayanTwelveFilter),
+                ivHgayanFourteenFilter = findViewById(R.id.ivHgayanFourteenFilter),
+                ivHgayanFifteenFilter = findViewById(R.id.ivHgayanFifteenFilter),
+                ivHgayanSixteenFilter = findViewById(R.id.ivHgayanSixteenFilter),
+                ivVintageFilter = findViewById(R.id.ivVintageFilter),
+                ivSepiaFilter = findViewById(R.id.ivSepiaFilter),
+                ivBrownishFilter = findViewById(R.id.ivBrownishFilter),
+                ivTintLowFilter = findViewById(R.id.ivTintLowFilter),
+                ivTintMediumFilter = findViewById(R.id.ivTintMediumFilter),
+                ivTintHighFilter = findViewById(R.id.ivTintHighFilter);
 
         ivBrightnessFilter.setOnClickListener(applyFilterAux(FilterType.Brightness, 60));
         ivHightBrightnessFilter.setOnClickListener(applyFilterAux(FilterType.Brightness, 90));
@@ -497,10 +499,7 @@ public class ImageViewActivity extends AppCompatActivity implements View.OnTouch
                                 msrlRefresh.setRefreshing(true);
                             }
                         });
-                        final List<SubFilter> subFilters = new ArrayList<>();
-                        for (SubFilter subFilter : filter.getSubFilters()) {
-                            subFilters.add(subFilter);
-                        }
+                        final List<SubFilter> subFilters = new ArrayList<>(filter.getSubFilters());
                         clearSubFilters();
                         runOnUiThread(new Runnable() {
                             @Override
@@ -796,114 +795,106 @@ public class ImageViewActivity extends AppCompatActivity implements View.OnTouch
 
     @Override
     public boolean onOptionsItemSelected(final MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.mnFavorite:
-                if (resource.isImage()) {
-                    if (!resource.getFavoriteStateLoad())
-                        isFavorite(resource);
+        final int id = item.getItemId();
+        if (id == R.id.mnFavorite) {
+            if (resource.isImage()) {
+                if (!resource.getFavoriteStateLoad())
+                    isFavorite(resource);
 
-                    if (resource.isFavorite())
-                        resource.setIsFavorite(false, deleteFavoriteData(resource.getIdFavorite()));
-                    else
-                        resource.setIsFavorite(true, saveFavoriteData(new FavoriteDetails(resource.getRelUrl(),
-                                resource.getComment(), resource.getParentName(), resource.mSize, resource.getModificationDate())));
+                if (resource.isFavorite())
+                    resource.setIsFavorite(false, deleteFavoriteData(resource.getIdFavorite()));
+                else
+                    resource.setIsFavorite(true, saveFavoriteData(new FavoriteDetails(resource.getRelUrl(),
+                            resource.getComment(), resource.getParentName(), resource.mSize, resource.getModificationDate())));
 
-                    item.setIcon(resource.isFavorite()
-                            ? R.drawable.img_favorite_checked
-                            : R.drawable.img_favorite_not_checked);
-                    item.setTitle(resource.isFavorite()
-                            ? R.string.remove_of_favorite_folder
-                            : R.string.add_to_favorite_folder);
-                }
-                break;
-            case R.id.mnShare:
-                //Share
-                try {
-                    if (loadingImage)
-                        showSnackBar(R.string.loading_image);
-                    else {
-                        final String mimeType = resource.getMimeType();
-                        Interfaces.IPostOnSave runnable = new Interfaces.IPostOnSave() {
-                            @Override
-                            public void run(final String path, String name) {
-                                runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        Intent intent = new Intent(Intent.ACTION_SEND);
-                                        intent.setType(mimeType);
-                                        intent.putExtra(Intent.EXTRA_STREAM, Uri.parse(path));
-                                        startActivity(Intent.createChooser(intent, getString(R.string.share)));
-                                    }
-                                });
-                            }
-                        };
-                        if (!isEmptySubFiltersList())
-                            saveImage(runnable);
-                        else
-                            runnable.run(resource.getAbsUrl(), resource.getName());
-                    }
-                } catch (Exception ignored) {
-                    ignored.printStackTrace();
-                }
-                break;
-            case R.id.mnSetImageAs:
-                //Set image as
-                try {
-                    if(loadingImage)
-                        showSnackBar(R.string.loading_image);
+                item.setIcon(resource.isFavorite()
+                        ? R.drawable.img_favorite_checked
+                        : R.drawable.img_favorite_not_checked);
+                item.setTitle(resource.isFavorite()
+                        ? R.string.remove_of_favorite_folder
+                        : R.string.add_to_favorite_folder);
+            }
+        } else if (id == R.id.mnShare) {
+            //Share
+            try {
+                if (loadingImage)
+                    showSnackBar(R.string.loading_image);
+                else {
+                    final String mimeType = resource.getMimeType();
+                    Interfaces.IPostOnSave runnable = new Interfaces.IPostOnSave() {
+                        @Override
+                        public void run(final String path, String name) {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Intent intent = new Intent(Intent.ACTION_SEND);
+                                    intent.setType(mimeType);
+                                    intent.putExtra(Intent.EXTRA_STREAM, Uri.parse(path));
+                                    startActivity(Intent.createChooser(intent, getString(R.string.share)));
+                                }
+                            });
+                        }
+                    };
+                    if (isEmptySubFiltersList())
+                        saveImage(runnable);
                     else
-                    {
-                        final FileResource aux = resource;
-                        Interfaces.IPostOnSave runnable = new Interfaces.IPostOnSave() {
-                            @Override
-                            public void run(final String path, String name) {
-                                runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        Intent intent = new Intent(Intent.ACTION_ATTACH_DATA);
-                                        intent.putExtra(aux.getExtension(), aux.getMimeType());
-                                        intent.setDataAndType(Uri.parse(path), aux.getMimeType());
-                                        startActivity(Intent.createChooser(intent, getString(R.string.set_image_as)));
-                                    }
-                                });
-                            }
-                        };
-                        if (!isEmptySubFiltersList())
-                            saveImage(runnable);
-                        else
-                            runnable.run(aux.getAbsUrl(), aux.getName());
-                    }
-                } catch (Exception ignored) {
-                    ignored.printStackTrace();
+                        runnable.run(resource.getAbsUrl(), resource.getName());
                 }
-                break;
-            case R.id.mnRateApp:
-                try {
-                    rateApp();
-                } catch (Exception ignored) {
-                    ignored.printStackTrace();
+            } catch (Exception ignored) {
+                ignored.printStackTrace();
+            }
+        } else if (id == R.id.mnSetImageAs) {
+            //Set image as
+            try {
+                if (loadingImage)
+                    showSnackBar(R.string.loading_image);
+                else {
+                    final FileResource aux = resource;
+                    Interfaces.IPostOnSave runnable = new Interfaces.IPostOnSave() {
+                        @Override
+                        public void run(final String path, String name) {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Intent intent = new Intent(Intent.ACTION_ATTACH_DATA);
+                                    intent.putExtra(aux.getExtension(), aux.getMimeType());
+                                    intent.setDataAndType(Uri.parse(path), aux.getMimeType());
+                                    startActivity(Intent.createChooser(intent, getString(R.string.set_image_as)));
+                                }
+                            });
+                        }
+                    };
+                    if (isEmptySubFiltersList())
+                        saveImage(runnable);
+                    else
+                        runnable.run(aux.getAbsUrl(), aux.getName());
                 }
-                break;
-            case R.id.mnAbout:
-                showAboutDialog();
-                break;
-            case R.id.mnDetails:
-                //Details
-                try {
-                    DetailsFragment details = new DetailsFragment();
-                    Bundle bundle = new Bundle();
-                    bundle.putSerializable(RESOURCE_FOR_DETAILS_KEY, resource);
-                    bundle.putBoolean(OPEN_RESOURCE_ON_CLICKED, false);
-                    details.setArguments(bundle);
-                    details.show(getFragmentManager(), "jlab.Details");
-                } catch (Exception exp) {
-                    exp.printStackTrace();
-                }
-                break;
-            case R.id.mnClose:
-                finish();
-                break;
-        }
+            } catch (Exception ignored) {
+                ignored.printStackTrace();
+            }
+        } else if (id == R.id.mnRateApp) {
+            try {
+                rateApp();
+            } catch (Exception ignored) {
+                ignored.printStackTrace();
+            }
+        } else if (id == R.id.mnAbout)
+            showAboutDialog();
+
+        else if (id == R.id.mnDetails) {
+            //Details
+            try {
+                DetailsFragment details = new DetailsFragment();
+                Bundle bundle = new Bundle();
+                bundle.putSerializable(RESOURCE_FOR_DETAILS_KEY, resource);
+                bundle.putBoolean(OPEN_RESOURCE_ON_CLICKED, false);
+                details.setArguments(bundle);
+                details.show(getFragmentManager(), "jlab.Details");
+            } catch (Exception exp) {
+                exp.printStackTrace();
+            }
+        } else if (id == R.id.mnClose)
+            finish();
         return true;
     }
 
@@ -916,6 +907,7 @@ public class ImageViewActivity extends AppCompatActivity implements View.OnTouch
         outState.putParcelableArrayList(STACK_VARS_KEY, stackVars);
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     public boolean onTouch(View view, MotionEvent motionEvent) {
         return gallery.onTouchEvent(motionEvent);

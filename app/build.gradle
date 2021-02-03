@@ -7,7 +7,7 @@ android {
         applicationId "jlab.SweetPhotoFilters"
         minSdkVersion 17
         targetSdkVersion 30
-        versionCode 6
+        versionCode 7
         versionName "1.0"
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
     }
@@ -29,5 +29,6 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.2.0'
     implementation 'com.google.android.material:material:1.2.1'
     implementation 'androidx.cardview:cardview:1.0.0'
-    implementation 'com.google.android.gms:play-services-ads:19.6.0'
+    implementation 'com.google.android.gms:play-services-ads:19.7.0'
+    implementation 'androidx.exifinterface:exifinterface:1.3.2'
 }
