@@ -1,6 +1,5 @@
 <resources>
     <string name="app_name">Galereya &amp; Shirin foto filtrlari</string>
-    <string name="about">Haqida</string>
     <string name="close">Yoping</string>
     <string name="show_hidden_files">Yashirin rasmlarni ko\'rsatish</string>
     <string name="hidden_hidden_files">Yashirin rasmlarni yashirish</string>
@@ -27,16 +26,12 @@
     <string name="file_rename">Fayl qayta nomlandi</string>
     <string name="folder_not_rename">Jildning nomini o\'zgartirib bo\'lmadi</string>
     <string name="file_not_rename">Fayl nomini o\'zgartirib bo\'lmadi</string>
-    <string name="about_content"><b>jlab.SweetPhotoFilters v1.0</b>, ga murojaat qiling: <i> jlab.apps@gmail.com</i></string>
     <string name="lost_connection">Oflayn.</string>
     <string name="accept">OK</string>
     <string name="cancel">Bekor qilish</string>
     <string name="navigation_drawer_open">Navigatsiya tortmasini oching</string>
     <string name="navigation_drawer_close">Navigatsiya tortmachasini yoping</string>
     <string name="search">Qidirmoq</string>
-    <string name="mail">jlab.apps@gmail.com</string>
-    <string name="contact">Aloqa</string>
-    <string name="app_mail_not_found">Sizda elektron pochta orqali ariza yo\'q.</string>
     <string name="rate_app">Ushbu ilovani baholang</string>
     <string name="elements">elems.</string>
     <string name="loading_image">Rasm yuklanmoqda, iltimos, kuting…</string>

@@ -1,6 +1,5 @@
 <resources>
     <string name="app_name">Galleria &amp; Filtri fotografici dolci</string>
-    <string name="about">Informazioni</string>
     <string name="close">Uscita</string>
     <string name="show_hidden_files">Mostra immagini nascoste</string>
     <string name="hidden_hidden_files">Nascondi le immagini nascoste</string>
@@ -27,16 +26,12 @@
     <string name="file_rename">Il file è stato rinominato correttamente</string>
     <string name="folder_not_rename">Impossibile rinominare la cartella</string>
     <string name="file_not_rename">Impossibile rinominare il file</string>
-    <string name="about_content"><b>jlab.SweetPhotoFilters v1.0</b>, contattare per: <i> jlab.apps@gmail.com</i></string>
     <string name="lost_connection">Disconnesso.</string>
     <string name="accept">Accettare</string>
     <string name="cancel">Annulla</string>
     <string name="navigation_drawer_open">Apri il riquadro a scomparsa di navigazione</string>
     <string name="navigation_drawer_close">Chiudi il riquadro a scomparsa di navigazione</string>
     <string name="search">Cercare</string>
-    <string name="mail">jlab.apps@gmail.com</string>
-    <string name="contact">Contatto</string>
-    <string name="app_mail_not_found">Non hai un applicazione di posta elettronica.</string>
     <string name="rate_app">Valuta questa applicazione</string>
     <string name="elements">elems.</string>
     <string name="loading_image">Caricamento immagine, attendere prego…</string>

@@ -16,11 +16,6 @@
         android:title="@string/rate_app"
         app:showAsAction="never" />
     <item
-        android:id="@+id/mnAbout"
-        android:orderInCategory="100"
-        android:title="@string/about"
-        app:showAsAction="never" />
-    <item
         android:id="@+id/mnClose"
         android:orderInCategory="100"
         android:title="@string/close"

@@ -7,7 +7,7 @@ android {
         applicationId "jlab.SweetPhotoFilters"
         minSdkVersion 17
         targetSdkVersion 30
-        versionCode 7
+        versionCode 8
         versionName "1.0"
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
     }

@@ -1,6 +1,5 @@
 <resources>
     <string name="app_name">Галерея &amp; милые фото фильтры</string>
-    <string name="about">Oколо</string>
     <string name="close">Закрыть</string>
     <string name="camera_folder">Камера</string>
     <string name="downloads_folder">Загрузки</string>
@@ -27,16 +26,12 @@
     <string name="file_rename">Файл был переименован успешно</string>
     <string name="folder_not_rename">Не удалось переименовать папку</string>
     <string name="file_not_rename">Не удалось переименовать файл</string>
-    <string name="about_content"><b>jlab.SweetPhotoFilters v1.0</b>, свяжитесь с: <i> jlab.apps@gmail.com</i></string>
     <string name="lost_connection">Oтключен.</string>
     <string name="accept">принимать</string>
     <string name="cancel">Отмена</string>
     <string name="navigation_drawer_open">Открыть панель навигации</string>
     <string name="navigation_drawer_close">Закрыть панель навигации</string>
     <string name="search">Поиск</string>
-    <string name="contact">контакт</string>
-    <string name="mail">jlab.apps@gmail.com</string>
-    <string name="app_mail_not_found">У вас нет приложения для писем.</string>
     <string name="rate_app">квалифицировать заявку</string>
     <string name="elements">Элемс.</string>
     <string name="loading_image">Загрузка изображения, подождите…</string>

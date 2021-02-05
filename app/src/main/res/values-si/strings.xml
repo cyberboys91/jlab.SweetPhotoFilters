@@ -1,6 +1,5 @@
 <resources>
     <string name="app_name">ගැලරිය &amp; මිහිරි ඡායාරූප පෙරහන්</string>
-    <string name="about">ගැන</string>
     <string name="close">වසන්න</string>
     <string name="show_hidden_files">සැඟවුණු රූප පෙන්වන්න</string>
     <string name="hidden_hidden_files">සැඟවුණු රූප සඟවන්න</string>
@@ -27,16 +26,12 @@
     <string name="file_rename">ගොනුව සාර්ථකව නම් කරන ලදී</string>
     <string name="folder_not_rename">ෆෝල්ඩරය නැවත නම් කළ නොහැක</string>
     <string name="file_not_rename">ගොනුව නැවත නම් කිරීමට නොහැකි විය</string>
-    <string name="about_content"><b>jlab.SweetPhotoFilters v1.0</b>, වෙත සම්බන්ධ වන්න: <i> jlab.apps@gmail.com</i></string>
     <string name="lost_connection">නොබැඳි.</string>
     <string name="accept">පිළිගන්න</string>
     <string name="cancel">අවලංගු කරන්න</string>
     <string name="navigation_drawer_open">සංචාලන ලාච්චුව විවෘත කරන්න</string>
     <string name="navigation_drawer_close">සංචාලන ලාච්චුව වසන්න</string>
     <string name="search">සෙවීම</string>
-    <string name="mail">jlab.apps@gmail.com</string>
-    <string name="contact">අමතන්න</string>
-    <string name="app_mail_not_found">ඔබට ඊමේල් යෙදුමක් නොමැත.</string>
     <string name="rate_app">මෙම යෙදුම ශ්‍රේණිගත කරන්න</string>
     <string name="elements">මූලද්රව්ය.</string>
     <string name="loading_image">රූපය පූරණය වෙමින්, කරුණාකර රැඳී සිටින්න…</string>

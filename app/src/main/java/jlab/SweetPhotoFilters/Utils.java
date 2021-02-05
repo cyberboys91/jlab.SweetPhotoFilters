@@ -796,30 +796,6 @@ public class Utils {
             return builder.getNotification();
     }
 
-    public static void showAboutDialog() {
-        try {
-            new AlertDialog.Builder(currentActivity)
-                    .setTitle(R.string.about)
-                    .setMessage(R.string.about_content)
-                    .setPositiveButton(R.string.accept, null)
-                    .setNegativeButton(getString(R.string.contact), new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            try {
-                                currentActivity.startActivity(new Intent(Intent.ACTION_SENDTO)
-                                        .setData(Uri.parse(String.format("mailto:%s", getString(R.string.mail)))));
-                            } catch (Exception ignored) {
-                                ignored.printStackTrace();
-                                Utils.showSnackBar(R.string.app_mail_not_found);
-                            }
-                        }
-                    })
-                    .show();
-        } catch (Exception ignored) {
-            ignored.printStackTrace();
-        }
-    }
-
     public static void rateApp() {
         Uri uri = Uri.parse(String.format("market://details?id=%s", getPackageName()));
         Intent goToMarket = new Intent(Intent.ACTION_VIEW, uri);

@@ -53,7 +53,6 @@ import static jlab.SweetPhotoFilters.Utils.DIRECTORY_KEY;
 import com.zomato.photofilters.imageprocessors.SubFilter;
 import static jlab.SweetPhotoFilters.Utils.saveFolderPath;
 import jlab.SweetPhotoFilters.View.ResourceDetailsAdapter;
-import static jlab.SweetPhotoFilters.Utils.showAboutDialog;
 import jlab.SweetPhotoFilters.View.ImageSwipeRefreshLayout;
 import static jlab.SweetPhotoFilters.Utils.saveFavoriteData;
 import static jlab.SweetPhotoFilters.Utils.INDEX_CURRENT_KEY;
@@ -878,9 +877,7 @@ public class ImageViewActivity extends AppCompatActivity implements View.OnTouch
             } catch (Exception ignored) {
                 ignored.printStackTrace();
             }
-        } else if (id == R.id.mnAbout)
-            showAboutDialog();
-
+        }
         else if (id == R.id.mnDetails) {
             //Details
             try {

@@ -1143,43 +1143,35 @@ public class DirectoryActivity extends AppCompatActivity
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.mnShowCamera:
-                try {
+        int id = item.getItemId();
+        if (id == R.id.mnShowCamera) {
+            try {
                     /*Intent intent = new Intent(this, CameraActivity.class);
                     intent.setAction(Intent.ACTION_VIEW);
                     startActivity(intent);*/
-                    startActivityForResult(new Intent(MediaStore.ACTION_IMAGE_CAPTURE), CAMERA_REQUEST_CODE);
-                    overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
-                }catch (Exception ignored) {
-                    ignored.printStackTrace();
-                }
-                break;
-            case R.id.mnShowHiddenFiles:
-                Utils.showHiddenFiles = !Utils.showHiddenFiles;
-                item.setTitle(Utils.showHiddenFiles ? R.string.hidden_hidden_files : R.string.show_hidden_files);
-                updateBeginPosition(0);
-                if (this.mdrawer.isDrawerOpen(GravityCompat.START))
-                    updateLocalStorageDescription(true);
-                else {
-                    reloadSpecialDir();
-                    loadDirectory();
-                }
-                break;
-            case R.id.mnRateApp:
-                try {
-                    Utils.rateApp();
-                } catch (Exception ignored) {
-                    ignored.printStackTrace();
-                }
-                break;
-            case R.id.mnAbout:
-                Utils.showAboutDialog();
-                break;
-            case R.id.mnClose:
-                finish();
-                break;
-        }
+                startActivityForResult(new Intent(MediaStore.ACTION_IMAGE_CAPTURE), CAMERA_REQUEST_CODE);
+                overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+            } catch (Exception ignored) {
+                ignored.printStackTrace();
+            }
+        } else if (id == R.id.mnShowHiddenFiles) {
+            Utils.showHiddenFiles = !Utils.showHiddenFiles;
+            item.setTitle(Utils.showHiddenFiles ? R.string.hidden_hidden_files : R.string.show_hidden_files);
+            updateBeginPosition(0);
+            if (this.mdrawer.isDrawerOpen(GravityCompat.START))
+                updateLocalStorageDescription(true);
+            else {
+                reloadSpecialDir();
+                loadDirectory();
+            }
+        } else if (id == R.id.mnRateApp) {
+            try {
+                Utils.rateApp();
+            } catch (Exception ignored) {
+                ignored.printStackTrace();
+            }
+        } else if (id == R.id.mnClose)
+            finish();
         return true;
     }
 
@@ -1210,23 +1202,17 @@ public class DirectoryActivity extends AppCompatActivity
                         for (int i = 0; i < menu.size(); i++) {
                             MenuItem elem = menu.getItem(i);
                             TextView tv = elem.getActionView().findViewById(R.id.tvMenuCount);
-                            switch (elem.getItemId()) {
-                                case R.id.navImages:
-                                    tv.setText(String.valueOf(specialDirectories.getVideosDirDetails().getCountElements()));
-                                    break;
-                                case R.id.navAlbumsVideos:
-                                    tv.setText(String.valueOf(specialDirectories.getAlbumsDirDetails().getCountElements()));
-                                    break;
-                                case R.id.navFavoriteVideos:
-                                    tv.setText(String.valueOf(specialDirectories.getFavoritesDirDetails().getCountElements()));
-                                    break;
-                                case R.id.navCameraVideos:
-                                    tv.setText(String.valueOf(specialDirectories.getCameraDirDetails().getCountElements()));
-                                    break;
-                                case R.id.navDownloadVideos:
-                                    tv.setText(String.valueOf(specialDirectories.getDownloadDirDetails().getCountElements()));
-                                    break;
-                            }
+                            int id = elem.getItemId();
+                            if (id == R.id.navImages)
+                                tv.setText(String.valueOf(specialDirectories.getVideosDirDetails().getCountElements()));
+                            else if (id == R.id.navAlbumsVideos)
+                                tv.setText(String.valueOf(specialDirectories.getAlbumsDirDetails().getCountElements()));
+                            else if (id == R.id.navFavoriteVideos)
+                                tv.setText(String.valueOf(specialDirectories.getFavoritesDirDetails().getCountElements()));
+                            else if (id == R.id.navCameraVideos)
+                                tv.setText(String.valueOf(specialDirectories.getCameraDirDetails().getCountElements()));
+                            else if (id == R.id.navDownloadVideos)
+                                tv.setText(String.valueOf(specialDirectories.getDownloadDirDetails().getCountElements()));
                         }
                         if(loadDir)
                             loadDirectory();

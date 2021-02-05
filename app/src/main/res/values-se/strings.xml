@@ -1,6 +1,5 @@
 <resources>
     <string name="app_name">Galleri &amp; Söta fotofilter</string>
-    <string name="about">Handla om</string>
     <string name="close">Stänga</string>
     <string name="show_hidden_files">Visa dolda bilder</string>
     <string name="hidden_hidden_files">Dölj dolda bilder</string>
@@ -27,16 +26,12 @@
     <string name="file_rename">Filen döptes om framgångsrikt</string>
     <string name="folder_not_rename">Det gick inte att byta namn på mappen</string>
     <string name="file_not_rename">Det gick inte att byta namn på filen</string>
-    <string name="about_content"><b>jlab.SweetPhotoFilters v1.0</b>, kontakta till: <i> jlab.apps@gmail.com</i></string>
     <string name="lost_connection">Off-line.</string>
     <string name="accept">Acceptera</string>
     <string name="cancel">Annullera</string>
     <string name="navigation_drawer_open">Öppna navigationslådan</string>
     <string name="navigation_drawer_close">Stäng navigerings lådan</string>
     <string name="search">Sök</string>
-    <string name="mail">jlab.apps@gmail.com</string>
-    <string name="contact">Kontakt</string>
-    <string name="app_mail_not_found">Du har ingen e-post applikation.</string>
     <string name="rate_app">Betygsätt denna app</string>
     <string name="elements">element.</string>
     <string name="loading_image">Laddar bild, vänta…</string>

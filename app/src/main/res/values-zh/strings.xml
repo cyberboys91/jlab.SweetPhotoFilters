@@ -1,6 +1,5 @@
 <resources>
     <string name="app_name">畫廊 &amp; 甜美的照片濾鏡</string>
-    <string name="about">關於</string>
     <string name="close">關</string>
     <string name="show_hidden_files">顯示隱藏的圖像</string>
     <string name="hidden_hidden_files">隱藏隱藏的圖像</string>
@@ -27,16 +26,12 @@
     <string name="file_rename">文件已成功重命名</string>
     <string name="folder_not_rename">無法重命名文件夾</string>
     <string name="file_not_rename">無法重命名文件</string>
-    <string name="about_content"><b>jlab.SweetPhotoFilters v1.0</b>, 聯繫到: <i> jlab.apps@gmail.com</i></string>
     <string name="lost_connection">離線.</string>
     <string name="accept">接受</string>
     <string name="cancel">取消</string>
     <string name="navigation_drawer_open">打開導航抽屜</string>
     <string name="navigation_drawer_close">關閉導航抽屜</string>
     <string name="search">搜索</string>
-    <string name="mail">jlab.apps@gmail.com</string>
-    <string name="contact">聯繫</string>
-    <string name="app_mail_not_found">您沒有電子郵件應用程序.</string>
     <string name="rate_app">為這個應用軟件評分</string>
     <string name="elements">元素.</string>
     <string name="loading_image">正在載入圖片，請稍候…</string>
