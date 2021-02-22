@@ -2,6 +2,7 @@ package jlab.SweetPhotoFilters.Activity;
 
 import java.io.File;
 import java.util.List;
+import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.Menu;
@@ -37,7 +38,6 @@ import jlab.SweetPhotoFilters.View.ImageGallery;
 import jlab.SweetPhotoFilters.View.ZoomImageView;
 import jlab.SweetPhotoFilters.Resource.LocalFile;
 import jlab.SweetPhotoFilters.db.FavoriteDetails;
-import androidx.exifinterface.media.ExifInterface;
 import static jlab.SweetPhotoFilters.Utils.isEqual;
 import static jlab.SweetPhotoFilters.Utils.rateApp;
 import jlab.SweetPhotoFilters.Resource.FileResource;

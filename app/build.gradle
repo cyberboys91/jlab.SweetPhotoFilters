@@ -7,9 +7,14 @@ android {
         applicationId "jlab.SweetPhotoFilters"
         minSdkVersion 17
         targetSdkVersion 30
-        versionCode 8
+        versionCode 9
         versionName "1.0"
-        testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
+
+        ndkVersion "22.0.7026061"
+        ndk {
+            // https://developer.android.com/ndk/guides/abis.html#sa
+            abiFilters 'armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64'
+        }
     }
 
     buildTypes {

@@ -6,8 +6,10 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Parcel;
 
+import android.os.StrictMode;
 import android.view.View;
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import android.app.Activity;
 import android.os.Parcelable;
@@ -1426,5 +1428,14 @@ public class Utils {
                 result = currentActivity.getResources().getDimensionPixelSize(resourceId);
         }
         return result;
+    }
+
+    public static void disabledFileCheck() {
+        try {
+            Method m = StrictMode.class.getMethod("disableDeathOnFileUriExposure");
+            m.invoke(null);
+        } catch (Exception | OutOfMemoryError e) {
+            e.printStackTrace();
+        }
     }
 }

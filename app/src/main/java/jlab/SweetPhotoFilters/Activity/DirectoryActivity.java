@@ -65,6 +65,7 @@ import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.google.android.material.navigation.NavigationView;
 import static java.lang.Math.max;
+import static jlab.SweetPhotoFilters.Utils.disabledFileCheck;
 import static jlab.SweetPhotoFilters.Utils.favoriteDbManager;
 import static jlab.SweetPhotoFilters.Utils.getDimensionScreen;
 import static jlab.SweetPhotoFilters.Utils.specialDirectories;
@@ -570,6 +571,8 @@ public class DirectoryActivity extends AppCompatActivity
                                     intent.setType(((FileResource) resource).getMimeType());
                                     intent.putExtra(Intent.EXTRA_STREAM, Uri.parse(resource.getAbsUrl()));
                                     startActivity(Intent.createChooser(intent, getString(R.string.share)));
+                                    if(Build.VERSION.SDK_INT >= 24)
+                                        disabledFileCheck();
                                     overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
                                 } catch (Exception ignored) {
                                     ignored.printStackTrace();
@@ -587,6 +590,8 @@ public class DirectoryActivity extends AppCompatActivity
                                     intent.putExtra(((FileResource) resource).getExtension(), ((FileResource) resource).getMimeType());
                                     intent.setDataAndType(Uri.parse(resource.getAbsUrl()), ((FileResource) resource).getMimeType());
                                     startActivity(Intent.createChooser(intent, getString(R.string.set_image_as)));
+                                    if(Build.VERSION.SDK_INT >= 24)
+                                        disabledFileCheck();
                                     overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
                                 } catch (Exception ignored) {
                                     ignored.printStackTrace();
@@ -935,6 +940,8 @@ public class DirectoryActivity extends AppCompatActivity
         intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         intent.putExtra(Utils.INDEX_CURRENT_KEY, position);
         intent.putExtra(Utils.DIRECTORY_KEY, getDirectory().getName());
+        if(Build.VERSION.SDK_INT >= 24)
+            disabledFileCheck();
         startActivity(intent);
         overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
     }
